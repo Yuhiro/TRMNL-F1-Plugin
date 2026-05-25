@@ -182,7 +182,7 @@ function main() {
       })),
       standings: {
         constructors: standings.constructors
-          .slice(0, 10)
+          .slice(0, 5)
           .map(c => ({
             position: c.position,
             name: TEAM_NAMES[c.team] ?? c.team,
@@ -190,7 +190,7 @@ function main() {
           })),
         drivers: standings.drivers
           .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
-          .slice(0, 10)
+          .slice(0, 5)
           .map(d => ({
             position: d.position_current ?? 0,
             name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
