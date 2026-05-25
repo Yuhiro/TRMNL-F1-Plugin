@@ -14,10 +14,11 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
 
       - name: Fetch, build, and push to TRMNL
         env:
           TRMNL_WEBHOOK_URL: ${{ secrets.TRMNL_WEBHOOK_URL }}
           USER_TIMEZONE: ${{ secrets.USER_TIMEZONE }}
-        run: node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js
+        shell: bash
+        run: set -o pipefail && node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js

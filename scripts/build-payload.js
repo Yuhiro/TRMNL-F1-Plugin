@@ -79,8 +79,8 @@ const TEAM_NAMES = {
 
 // Open-Meteo WMO weathercode → Tabler Icon class
 function weathercodeIcon(code) {
-  if (code === 0)                          return 'ti-sun';
-  if (code <= 2)                           return 'ti-cloud-sun';
+  if (code == null)                        return 'ti-cloud';
+  if (code <= 2)                           return 'ti-sun';
   if (code === 3)                          return 'ti-cloud';
   if (code === 45 || code === 48)          return 'ti-mist';
   if (code >= 51 && code <= 55)            return 'ti-cloud-drizzle';

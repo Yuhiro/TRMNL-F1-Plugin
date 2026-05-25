@@ -1,9 +1,9 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
-<div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xxlarge);">
+<div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xlarge);">
 
   <!-- Header: circuit image + race info -->
-  <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
+  <div style="display: flex; flex-direction: row; gap: var(--gap-large); align-items: center;">
     {% if meeting.circuit_image_url %}
     <div style="text-align: center; flex-shrink: 0;">
       <img src="{{ meeting.circuit_image_url }}" style="height: 83px; width: 111px; object-fit: contain;" alt="">
@@ -18,20 +18,19 @@
   </div>
 
   <!-- Body: sessions (left) + standings (right) -->
-  <div style="display: flex; flex-direction: row; gap: var(--gap-small); flex: 1; align-items: flex-end;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex: 1;">
 
     <!-- Sessions column -->
-    <div style="flex: 1; display: flex; flex-direction: column; gap: var(--gap-small); justify-content: flex-end;">
+    <div style="display: flex; flex-direction: column; gap: var(--gap-medium); justify-content: flex-end;">
       {% for session in sessions %}
 
         {% if session.status == 'live' %}
-        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
-          <div style="text-align: center; min-width: 28px; flex-shrink: 0;">
+        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: flex-start;">
+          <div style="text-align: center; flex-shrink: 0; min-width: 28px;">
             <div class="text--large font--bold">{{ session.day }}</div>
             <div class="text--small text--muted">{{ session.month }}</div>
           </div>
-          <div style="width: 1px; background: var(--light-grey); align-self: stretch;"></div>
-          <div style="flex: 1; display: flex; flex-direction: column;">
+          <div style="display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--light-grey); padding-left: var(--gap-small);">
             <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
               <span class="text--large font--bold">{{ session.name }}</span>
               <span class="label label--small label--filled rounded--full">LIVE</span>
@@ -41,26 +40,24 @@
         </div>
 
         {% elsif session.status == 'completed' %}
-        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
-          <div style="text-align: center; min-width: 28px; flex-shrink: 0;">
-            <div class="text--base text--muted">{{ session.day }}</div>
+        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: flex-start;">
+          <div style="text-align: center; flex-shrink: 0; min-width: 28px;">
+            <div class="text--large text--muted">{{ session.day }}</div>
             <div class="text--small text--muted">{{ session.month }}</div>
           </div>
-          <div style="width: 1px; background: var(--light-grey); align-self: stretch;"></div>
-          <div style="display: flex; flex-direction: column;">
-            <span class="text--base text--muted">{{ session.name }}</span>
+          <div style="display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--light-grey); padding-left: var(--gap-small);">
+            <span class="text--large text--muted">{{ session.name }}</span>
             <span class="text--small text--muted">{{ session.time_range }}</span>
           </div>
         </div>
 
         {% else %}
-        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
-          <div style="text-align: center; min-width: 28px; flex-shrink: 0;">
+        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: flex-start;">
+          <div style="text-align: center; flex-shrink: 0; min-width: 28px;">
             <div class="text--large font--bold">{{ session.day }}</div>
             <div class="text--small text--muted">{{ session.month }}</div>
           </div>
-          <div style="width: 1px; background: var(--light-grey); align-self: stretch;"></div>
-          <div style="display: flex; flex-direction: column;">
+          <div style="display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--light-grey); padding-left: var(--gap-small);">
             <span class="text--large font--bold">{{ session.name }}</span>
             <span class="text--small">{{ session.time_range }}{% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}</span>
           </div>
@@ -71,12 +68,12 @@
     </div>
 
     <!-- Standings -->
-    <div style="display: flex; flex-direction: row; gap: var(--gap-small);">
+    <div style="display: flex; flex-direction: row; gap: var(--gap-xlarge);">
 
       <!-- Constructors -->
       <div style="width: 145px;">
         {% for c in standings.constructors %}
-        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-xsmall); border-bottom: 1px solid var(--light-grey); padding: 4px 0;">
+        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap); border-bottom: 1px solid var(--light-grey); padding: var(--gap-xsmall) 0;">
           <span class="text--small text--muted" style="min-width: 14px; text-align: center;">{{ c.position }}</span>
           <span class="text--small" style="flex: 1;">{{ c.name }}</span>
           <span class="text--small" style="min-width: 24px; text-align: right;">{{ c.points }}</span>
@@ -87,7 +84,7 @@
       <!-- Drivers -->
       <div style="width: 145px;">
         {% for d in standings.drivers %}
-        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-xsmall); border-bottom: 1px solid var(--light-grey); padding: 4px 0;">
+        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap); border-bottom: 1px solid var(--light-grey); padding: var(--gap-xsmall) 0;">
           <span class="text--small text--muted" style="min-width: 14px; text-align: center;">{{ d.position }}</span>
           <span class="text--small" style="flex: 1;">{{ d.name }}</span>
           <span class="text--small" style="min-width: 24px; text-align: right;">{{ d.points }}</span>
