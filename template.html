@@ -1,65 +1,90 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
-<div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xlarge);">
+<div class="layout layout--col layout--stretch-x" style="padding: var(--gap-xxlarge); justify-content: space-between;">
 
   <!-- Header: circuit image + race info -->
-  <div style="display: flex; flex-direction: row; gap: var(--gap-large); align-items: center;">
+  <div style="display: flex; flex-direction: row; gap: var(--gap-xxlarge); align-items: flex-start;">
     {% if meeting.circuit_image_url %}
-    <div style="text-align: center; flex-shrink: 0;">
-      <img src="{{ meeting.circuit_image_url }}" style="height: 83px; width: 111px; object-fit: contain;" alt="">
-      <div class="text--small text--muted">{{ meeting.circuit_name }}</div>
+    <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0;">
+      <img src="{{ meeting.circuit_image_url }}" style="height: 143px; width: 191px; object-fit: contain;" alt="">
+      <div class="text--small text--muted" style="text-align: center;">{{ meeting.circuit_name }}</div>
     </div>
     {% endif %}
-    <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall);">
-      <div class="text--xxlarge font--bold">{{ meeting.name }}</div>
-      <div class="text--large font--bold">{{ meeting.location }}</div>
-      <div class="text--base text--muted">{{ meeting.date_range }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
+    <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall); flex: 1;">
+      <div class="text--xxxlarge">{{ meeting.name }}</div>
+      <div class="text--xxlarge">{{ meeting.location }}</div>
+      <div class="text--xlarge text--muted">{{ meeting.date_range }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
     </div>
   </div>
 
   <!-- Body: sessions (left) + standings (right) -->
-  <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end; flex: 1;">
+  <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: flex-end;">
 
     <!-- Sessions column -->
-    <div style="display: flex; flex-direction: column; gap: var(--gap-medium); justify-content: flex-end;">
+    <div style="display: flex; flex-direction: column; gap: 24px;">
       {% for session in sessions %}
 
         {% if session.status == 'live' %}
-        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: flex-start;">
-          <div style="text-align: center; flex-shrink: 0; min-width: 28px;">
-            <div class="text--large font--bold">{{ session.day }}</div>
-            <div class="text--small text--muted">{{ session.month }}</div>
+        <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: flex-start;">
+          <div style="display: flex; flex-direction: column; gap: var(--gap-small); align-items: center; align-self: stretch; flex-shrink: 0; text-align: center;">
+            <div class="text--xxlarge">{{ session.day }}</div>
+            <div class="text--large text--muted">{{ session.month }}</div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--light-grey); padding-left: var(--gap-small);">
-            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
-              <span class="text--large font--bold">{{ session.name }}</span>
-              <span class="label label--small label--filled rounded--full">LIVE</span>
+          <div style="width: 1px; align-self: stretch; flex-shrink: 0; background-color: var(--light-grey, #ccc);"></div>
+          <div style="display: flex; flex-direction: column; gap: var(--gap-small); align-items: flex-start; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
+              <span class="text--xxlarge">{{ session.name }}</span>
+              <span class="label label--filled text--xlarge" style="border-radius: 4px; padding: 2px 8px;">LIVE</span>
             </div>
-            <span class="text--small">{{ session.time_range }}{% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}</span>
+            <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
+              <span class="text--large">{{ session.time_range }}</span>
+              {% if session.weather %}
+              <span class="text--small">·</span>
+              <span class="text--large">{{ session.weather.temp }}</span>
+              <span class="text--small">·</span>
+              <div style="display: flex; flex-direction: row; gap: 4px; align-items: center;">
+                <i class="ti {{ session.weather.icon }}" style="font-size: 16px; line-height: 1;"></i>
+                <span class="text--large">{{ session.weather.precip }}</span>
+              </div>
+              {% endif %}
+            </div>
           </div>
         </div>
 
         {% elsif session.status == 'completed' %}
-        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: flex-start;">
-          <div style="text-align: center; flex-shrink: 0; min-width: 28px;">
+        <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: flex-start;">
+          <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; align-self: stretch; flex-shrink: 0; text-align: center;">
             <div class="text--large text--muted">{{ session.day }}</div>
-            <div class="text--small text--muted">{{ session.month }}</div>
+            <div class="text--base text--muted">{{ session.month }}</div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--light-grey); padding-left: var(--gap-small);">
+          <div style="width: 1px; align-self: stretch; flex-shrink: 0; background-color: var(--light-grey, #ccc);"></div>
+          <div style="display: flex; flex-direction: column; gap: 2px; align-items: flex-start; flex-shrink: 0;">
             <span class="text--large text--muted">{{ session.name }}</span>
-            <span class="text--small text--muted">{{ session.time_range }}</span>
+            <span class="text--base text--muted">{{ session.time_range }}</span>
           </div>
         </div>
 
         {% else %}
-        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: flex-start;">
-          <div style="text-align: center; flex-shrink: 0; min-width: 28px;">
-            <div class="text--large font--bold">{{ session.day }}</div>
-            <div class="text--small text--muted">{{ session.month }}</div>
+        <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: flex-start;">
+          <div style="display: flex; flex-direction: column; gap: var(--gap-small); align-items: center; align-self: stretch; flex-shrink: 0; text-align: center;">
+            <div class="text--xxlarge">{{ session.day }}</div>
+            <div class="text--large text--muted">{{ session.month }}</div>
           </div>
-          <div style="display: flex; flex-direction: column; gap: 2px; border-left: 1px solid var(--light-grey); padding-left: var(--gap-small);">
-            <span class="text--large font--bold">{{ session.name }}</span>
-            <span class="text--small">{{ session.time_range }}{% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}</span>
+          <div style="width: 1px; align-self: stretch; flex-shrink: 0; background-color: var(--light-grey, #ccc);"></div>
+          <div style="display: flex; flex-direction: column; gap: var(--gap-small); align-items: flex-start; flex-shrink: 0;">
+            <span class="text--xxlarge">{{ session.name }}</span>
+            <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
+              <span class="text--large">{{ session.time_range }}</span>
+              {% if session.weather %}
+              <span class="text--small">·</span>
+              <span class="text--large">{{ session.weather.temp }}</span>
+              <span class="text--small">·</span>
+              <div style="display: flex; flex-direction: row; gap: 4px; align-items: center;">
+                <i class="ti {{ session.weather.icon }}" style="font-size: 24px; line-height: 1;"></i>
+                <span class="text--large">{{ session.weather.precip }}</span>
+              </div>
+              {% endif %}
+            </div>
           </div>
         </div>
         {% endif %}
@@ -68,26 +93,26 @@
     </div>
 
     <!-- Standings -->
-    <div style="display: flex; flex-direction: row; gap: var(--gap-xlarge);">
+    <div style="display: flex; flex-direction: row; gap: 48px; align-items: flex-end;">
 
       <!-- Constructors -->
-      <div style="width: 145px;">
+      <div style="width: 200px;">
         {% for c in standings.constructors %}
-        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap); border-bottom: 1px solid var(--light-grey); padding: var(--gap-xsmall) 0;">
-          <span class="text--small text--muted" style="min-width: 14px; text-align: center;">{{ c.position }}</span>
-          <span class="text--small" style="flex: 1;">{{ c.name }}</span>
-          <span class="text--small" style="min-width: 24px; text-align: right;">{{ c.points }}</span>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); border-bottom: 1px solid var(--light-grey, #ccc); padding: var(--gap-small) 0;">
+          <span class="text--large text--muted" style="min-width: 24px; text-align: center;">{{ c.position }}</span>
+          <span class="text--large" style="flex: 1;">{{ c.name }}</span>
+          <span class="text--large" style="min-width: 36px; text-align: right;">{{ c.points }}</span>
         </div>
         {% endfor %}
       </div>
 
       <!-- Drivers -->
-      <div style="width: 145px;">
+      <div style="width: 240px;">
         {% for d in standings.drivers %}
-        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap); border-bottom: 1px solid var(--light-grey); padding: var(--gap-xsmall) 0;">
-          <span class="text--small text--muted" style="min-width: 14px; text-align: center;">{{ d.position }}</span>
-          <span class="text--small" style="flex: 1;">{{ d.name }}</span>
-          <span class="text--small" style="min-width: 24px; text-align: right;">{{ d.points }}</span>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); border-bottom: 1px solid var(--light-grey, #ccc); padding: var(--gap-small) 0;">
+          <span class="text--large text--muted" style="min-width: 24px; text-align: center;">{{ d.position }}</span>
+          <span class="text--large" style="flex: 1;">{{ d.name }}</span>
+          <span class="text--large" style="min-width: 36px; text-align: right;">{{ d.points }}</span>
         </div>
         {% endfor %}
       </div>
