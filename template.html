@@ -1,89 +1,97 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 
-<div class="layout">
+<div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xxlarge);">
 
-  <!-- Header: track map + race info -->
-  <div class="flex flex--row flex--center-y gap--small">
+  <!-- Header: circuit image + race info -->
+  <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
     {% if meeting.circuit_image_url %}
-      <img src="{{ meeting.circuit_image_url }}" style="height: 60px; width: auto; object-fit: contain;" alt="">
+    <div style="text-align: center; flex-shrink: 0;">
+      <img src="{{ meeting.circuit_image_url }}" style="height: 83px; width: 111px; object-fit: contain;" alt="">
+      <div class="text--small text--muted">{{ meeting.circuit_name }}</div>
+    </div>
     {% endif %}
-    <div>
-      <div class="title title--large">{{ meeting.name }}</div>
-      <div class="description">{{ meeting.location }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
-      <div class="description">{{ meeting.date_range }}</div>
+    <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall);">
+      <div class="text--xxlarge font--bold">{{ meeting.name }}</div>
+      <div class="text--large font--bold">{{ meeting.location }}</div>
+      <div class="text--base text--muted">{{ meeting.date_range }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
     </div>
   </div>
-  <hr>
 
   <!-- Body: sessions (left) + standings (right) -->
-  <div class="flex flex--row gap--small" style="flex: 1;">
+  <div style="display: flex; flex-direction: row; gap: var(--gap-small); flex: 1; align-items: flex-end;">
 
-    <!-- Sessions column (~55%) -->
-    <div style="width: 55%;">
+    <!-- Sessions column -->
+    <div style="flex: 1; display: flex; flex-direction: column; gap: var(--gap-small); justify-content: flex-end;">
       {% for session in sessions %}
 
         {% if session.status == 'live' %}
-          <div class="item item--emphasis-3">
-            <div class="meta"></div>
-            <div class="content">
-              <div class="flex flex--row flex--between flex--center-y">
-                <span class="title title--small">{{ session.name }}</span>
-                <span class="label label--small label--filled rounded--full">LIVE</span>
-              </div>
-              <span class="description">
-                {{- session.time_range -}}
-                {% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}
-              </span>
-            </div>
+        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
+          <div style="text-align: center; min-width: 28px; flex-shrink: 0;">
+            <div class="text--large font--bold">{{ session.day }}</div>
+            <div class="text--small text--muted">{{ session.month }}</div>
           </div>
+          <div style="width: 1px; background: var(--light-grey); align-self: stretch;"></div>
+          <div style="flex: 1; display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: row; justify-content: space-between; align-items: center;">
+              <span class="text--large font--bold">{{ session.name }}</span>
+              <span class="label label--small label--filled rounded--full">LIVE</span>
+            </div>
+            <span class="text--small">{{ session.time_range }}{% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}</span>
+          </div>
+        </div>
 
         {% elsif session.status == 'completed' %}
-          <div class="item">
-            <div class="meta"></div>
-            <div class="content">
-              <span class="title title--small text--muted">{{ session.name }}</span>
-              <span class="description text--muted">{{ session.time_range }}</span>
-            </div>
+        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
+          <div style="text-align: center; min-width: 28px; flex-shrink: 0;">
+            <div class="text--base text--muted">{{ session.day }}</div>
+            <div class="text--small text--muted">{{ session.month }}</div>
           </div>
+          <div style="width: 1px; background: var(--light-grey); align-self: stretch;"></div>
+          <div style="display: flex; flex-direction: column;">
+            <span class="text--base text--muted">{{ session.name }}</span>
+            <span class="text--small text--muted">{{ session.time_range }}</span>
+          </div>
+        </div>
 
         {% else %}
-          <div class="item">
-            <div class="meta"></div>
-            <div class="content">
-              <span class="title title--small">{{ session.name }}</span>
-              <span class="description">
-                {{- session.time_range -}}
-                {% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}
-              </span>
-            </div>
+        <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
+          <div style="text-align: center; min-width: 28px; flex-shrink: 0;">
+            <div class="text--large font--bold">{{ session.day }}</div>
+            <div class="text--small text--muted">{{ session.month }}</div>
           </div>
+          <div style="width: 1px; background: var(--light-grey); align-self: stretch;"></div>
+          <div style="display: flex; flex-direction: column;">
+            <span class="text--large font--bold">{{ session.name }}</span>
+            <span class="text--small">{{ session.time_range }}{% if session.weather %} · {{ session.weather.temp }} · <i class="ti {{ session.weather.icon }}"></i> {{ session.weather.precip }}{% endif %}</span>
+          </div>
+        </div>
         {% endif %}
 
       {% endfor %}
     </div>
 
-    <!-- Standings column (~45%) -->
-    <div class="flex flex--row gap--small" style="width: 45%;">
+    <!-- Standings -->
+    <div style="display: flex; flex-direction: row; gap: var(--gap-small);">
 
       <!-- Constructors -->
-      <div style="flex: 1;">
-        <div class="label label--small font--bold">Constructors</div>
+      <div style="width: 145px;">
         {% for c in standings.constructors %}
-          <div class="flex flex--row flex--between">
-            <span class="description">{{ c.position }}. {{ c.name }}</span>
-            <span class="description font--bold">{{ c.points }}</span>
-          </div>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-xsmall); border-bottom: 1px solid var(--light-grey); padding: 4px 0;">
+          <span class="text--small text--muted" style="min-width: 14px; text-align: center;">{{ c.position }}</span>
+          <span class="text--small" style="flex: 1;">{{ c.name }}</span>
+          <span class="text--small" style="min-width: 24px; text-align: right;">{{ c.points }}</span>
+        </div>
         {% endfor %}
       </div>
 
       <!-- Drivers -->
-      <div style="flex: 1;">
-        <div class="label label--small font--bold">Drivers</div>
+      <div style="width: 145px;">
         {% for d in standings.drivers %}
-          <div class="flex flex--row flex--between">
-            <span class="description">{{ d.position }}. {{ d.name }}</span>
-            <span class="description font--bold">{{ d.points }}</span>
-          </div>
+        <div style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-xsmall); border-bottom: 1px solid var(--light-grey); padding: 4px 0;">
+          <span class="text--small text--muted" style="min-width: 14px; text-align: center;">{{ d.position }}</span>
+          <span class="text--small" style="flex: 1;">{{ d.name }}</span>
+          <span class="text--small" style="min-width: 24px; text-align: right;">{{ d.points }}</span>
+        </div>
         {% endfor %}
       </div>
 

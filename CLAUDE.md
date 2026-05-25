@@ -6,8 +6,27 @@ A TRMNL e-ink display plugin for Formula 1 fans. It shows the current race weeke
 ## Current Status
 - Design is in Figma (three view states designed: pre-weekend, between sessions, live)
 - Architecture and data sources decided
-- `scripts/fetch-data.js` and `scripts/build-payload.js` are written and tested
-- `push-webhook.js` and `trmnl-update.yml` not yet written
+- All pipeline scripts written and tested (`fetch-data.js`, `build-payload.js`, `push-webhook.js`)
+- GitHub Actions workflow written (`trmnl-update.yml`)
+- Race weekend `template.html` written and iterating on layout/rendering
+- 23 circuit map images downloaded to `assets/circuits/` and committed to the repo
+
+---
+
+## Device
+
+**User's device: TRMNL X**
+
+| Spec | Value |
+|---|---|
+| Physical resolution | 1872 × 1404 px |
+| Virtual render size | 1040 × 780 px (pixel-ratio: 1.8) |
+| Display | 10.3" ePaper, landscape |
+| Color depth | 4-bit / 16 grayscale levels |
+| Framework CSS class | `screen--v2` |
+| Full refresh | ≤ 1.2s |
+
+The standard TRMNL OG is 800×480 / 2-bit. The TRMNL X is significantly larger and higher-resolution. 16 grayscale levels means intermediate grays render faithfully — subtle shading and muted text look correct without dithering artefacts.
 
 ---
 
@@ -20,10 +39,9 @@ GitHub Actions workflow → fetches APIs → pushes JSON payload → TRMNL webho
 Private Plugin using **Webhook** strategy (not polling). GitHub Actions pushes data to TRMNL on a schedule.
 
 ### Polling Frequency
-- **Off-weekend:** Every 15 minutes
-- **Race weekend (between sessions):** Every 15 minutes
-- **Live session:** Every 30 seconds via a loop inside a single GitHub Actions job
-- **Live session detection:** Simple — compare current UTC time against `date_start` and `date_end` from OpenF1 sessions endpoint. If `now >= date_start && now <= date_end`, session is live.
+- **Off-weekend:** Every 15 minutes (cron)
+- **Race weekend (between sessions):** Every 15 minutes (cron)
+- **Live session:** Every 15 minutes — a 30-second loop was considered but dropped. TRMNL rate limits pushes to 12/hour (free) or 30/hour (TRMNL+); a 30s loop would require 120/hour.
 
 ---
 
@@ -33,9 +51,9 @@ Private Plugin using **Webhook** strategy (not polling). GitHub Actions pushes d
 Base URL: `https://api.openf1.org/v1/`
 
 Key endpoints:
-- `/meetings?year=2026` — full season calendar, updates daily at midnight UTC
-- `/sessions?meeting_key=latest` — all sessions for a meeting with `date_start`, `date_end`, `session_name`, `session_type`, `gmt_offset`
-- `/weather?session_key=latest` — live weather, updates every minute. Fields: `air_temperature`, `track_temperature`, `rainfall`, `humidity`, `wind_speed`, `wind_direction`
+- `/meetings?year={year}` — full season calendar, updates daily at midnight UTC
+- `/sessions?meeting_key={key}` — all sessions for a meeting with `date_start`, `date_end`, `session_name`, `session_type`, `gmt_offset`
+- `/weather?session_key={key}` — live weather, updates every minute. Fields: `air_temperature`, `track_temperature`, `rainfall`, `humidity`, `wind_speed`, `wind_direction`
 - `/championship_drivers?session_key=latest` — driver standings, race sessions only. Fields: `driver_number`, `points_current`, `points_start`, `position_current`, `position_start`
 - `/championship_teams?session_key=latest` — **DO NOT USE for 2026**: returns `team_name: null` for all entries. Derive constructor standings from `/championship_drivers` instead (group `points_current` by team using the static `DRIVER_MAP` in `fetch-data.js`)
 - `/session_result?session_key=latest` — final results after session. Fields: `position`, `driver_number`, `duration`, `gap_to_leader`, `dnf`, `dns`, `dsq`
@@ -58,16 +76,16 @@ Shows upcoming races. Not yet designed in detail — focus has been on the race 
 
 ### 2. Race Weekend View (during a GP weekend)
 **Left column:** Session list for the weekend
-- Completed sessions: greyed out, no weather shown
-- Upcoming sessions: bold, show weather inline
-- Live session: normal weight + **LIVE pill badge** (black filled, white text, `rounded--full`)
+- Completed sessions: greyed out (`text--muted`), no weather shown
+- Upcoming sessions: bold (`font--bold`), show weather inline
+- Live session: bold + **LIVE pill badge** (`label label--small label--filled rounded--full`)
 - Weather format: `21°C · ☁ 20%` using Tabler Icons via CDN, dot separator between fields
 
 **Right column:** Two sub-columns
-- Left: Constructor standings (team short form + points)
-- Right: Driver standings (abbreviated name + points)
+- Left: Constructor standings (full team name + points), top 5
+- Right: Driver standings (first initial + surname + points), top 5
 
-**Header:** Track map image + Race name + Location with Round number + Date range (Image 2 layout — track map beside title, not floating top-right). Format: `Montréal, Canada (Round 7)`
+**Header:** Track map image + Race name + Location with Round number + Date range. Circuit map to the LEFT of the title block. Format: `Montréal, Canada (Round 7)`
 
 ### 3. Post-Race View
 TBD — likely reverts to calendar view with a small last-race summary. Not designed yet.
@@ -78,51 +96,68 @@ TBD — likely reverts to calendar view with a small last-race summary. Not desi
 ---
 
 ## TRMNL Framework Rules (v3.1)
-Always use framework classes — never raw inline CSS or hardcoded hex values.
 
-**Structure:**
+### Layout structure
 ```html
-<div class="layout">
+<div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xxlarge);">
   <!-- content here -->
 </div>
 <!-- title_bar is OPTIONAL — we are NOT using it to maximise screen space -->
 ```
 
-**Typography classes:**
-- `text--small` (12px), `text--base` (16px), `text--large` (21px), `text--xlarge` (26px+)
+**Critical:** `.layout` is `display: flex; flex-direction: row` by default — always add `layout--col` for a top-to-bottom column layout. `layout--justify-start` stacks children from the top. `layout--stretch-x` makes children fill the full width.
+
+**Avoid `flex--row` and `flex--col` utilities for structural containers** — they add `justify-content: center` and `align-items: center` respectively, which causes unwanted centering. Use inline `style="display: flex; flex-direction: row/column; ..."` for structural flex containers inside the layout, and reserve `flex--row`/`flex--col` for simple leaf-level alignment where centering is intentional.
+
+**Gap CSS variables (use these in inline styles, not hardcoded px):**
+- `var(--gap-xsmall)` — 5px
+- `var(--gap-small)` — 7px
+- `var(--gap)` — 10px
+- `var(--gap-medium)` — 16px
+- `var(--gap-large)` — 20px
+- `var(--gap-xlarge)` — 30px
+- `var(--gap-xxlarge)` — 40px
+
+**Layout modifier classes:**
+- `layout--col` / `layout--row` — flex direction
+- `layout--justify-start` / `layout--justify-center` / `layout--justify-end` — main axis alignment
+- `layout--align-start` / `layout--align-center` / `layout--align-end` — cross axis alignment
+- `layout--stretch-x` — all direct children stretch to full width (column layouts)
+- `layout--stretch-y` — all direct children stretch to full height (row layouts)
+
+### Typography classes
+- `text--small` (12px), `text--base` (16px), `text--large` (21px), `text--xlarge` (26px+), `text--xxlarge` (38px)
 - `font--bold` for bold weight
-- `title`, `title--small`, `title--large` for headings
+- `text--muted` for secondary/muted text
 - `label`, `label--small`, `label--filled`, `label--outline`, `label--underline` for labels
-- `description` for secondary text
 
-**Item component:**
-```html
-<div class="item item--emphasis-3">
-  <div class="meta"></div>
-  <div class="content">...</div>
-</div>
-```
-Emphasis levels 1–3 progressively darken the left meta bar.
+### Rounded
+`rounded--full` (pill), `rounded--small` (7px), `rounded` (10px), `rounded--large` (20px)
 
-**Layout utilities:** `flex`, `flex--row`, `flex--col`, `flex--between`, `flex--center-y`, `gap--small`, `gap--xsmall`, `columns`, `column`
+### Colours
+The TRMNL X supports **4-bit / 16 grayscale levels**. Use framework CSS variables, not hardcoded hex:
+- `var(--light-grey)` — dividers, borders
+- `var(--mid-grey)` — secondary elements
+- `text--muted` class — muted/secondary text
 
-**Rounded:** `rounded--full` (pill), `rounded--small` (7px), `rounded` (10px), `rounded--large` (20px)
+Do not hardcode `#CCCCCC`, `#888888`, etc. — always use the CSS variable equivalents.
 
-**Background:** Use framework background utilities, not raw CSS colours.
-
-**Colours (2-bit greyscale only):**
-- `#FFFFFF` — background
-- `#000000` — foreground, borders, filled elements
-- `#888888` — secondary/muted text
-- `#CCCCCC` — dividers
-
-**Icons:** Tabler Icons via CDN (not bundled in framework):
+### Icons
+Tabler Icons via CDN (not bundled in framework):
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <i class="ti ti-cloud-rain"></i>
 ```
 
-**Font note:** TRMNL pixel fonts (TRMNL12/16/21) render on the physical device. Use framework text size classes, not raw font-size CSS.
+### Font note
+TRMNL pixel fonts (TRMNL12/16/21) render on the physical device. Use framework text size classes, not raw font-size CSS.
+
+---
+
+## Circuit Images
+Circuit map PNGs are hosted in the GitHub repo at `assets/circuits/`. The `build-payload.js` constructs GitHub raw URLs (`https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits/{name}.png`) and includes them in the payload. Images must be committed to the repo for the URLs to resolve.
+
+`scripts/download-circuits.js` is a one-time utility to download images from OpenF1 for a new season. Re-run it when new circuits are added.
 
 ---
 
@@ -143,23 +178,24 @@ All session times in the webhook payload must be converted to the user's timezon
   workflows/
     trmnl-update.yml    # Cron schedule + orchestration
 scripts/
-  fetch-data.js         # Fetches OpenF1 + Open-Meteo
-  build-payload.js      # Transforms data into TRMNL webhook payload
+  fetch-data.js         # Fetches OpenF1 + Open-Meteo, writes JSON to stdout
+  build-payload.js      # Transforms raw JSON into TRMNL webhook payload
   push-webhook.js       # POSTs to TRMNL webhook URL
+  download-circuits.js  # One-time utility: downloads circuit images from OpenF1
+assets/
+  circuits/             # 23 circuit map PNGs (committed to repo)
 ```
 
 **Secrets required (stored in GitHub repo secrets):**
 - `TRMNL_WEBHOOK_URL`
 - `USER_TIMEZONE` (e.g. `America/Toronto`)
 
-**Cron schedule:**
-```yaml
-on:
-  schedule:
-    - cron: '*/15 * * * *'
+**Run command:**
+```bash
+node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js
 ```
 
-During live sessions, loop inside the job at 30-second intervals instead of relying on cron.
+**Cron schedule:** `*/15 * * * *` (every 15 minutes)
 
 ---
 
@@ -183,10 +219,10 @@ See CONTEXT.md for full mapping table.
 - No title_bar — maximise screen real estate
 - Track map always to the LEFT of the header title block (consistent across all views)
 - Round number always shown in the location line: `Montréal, Canada (Round 7)`
-- Completed sessions greyed out, no weather
-- Live = LIVE badge only, no separate view
+- Completed sessions greyed out (`text--muted`), no weather
+- Live = LIVE badge only, no separate view, no live loop
 - Dot separator (·) between weather fields
-- Constructor standings left, driver standings right
+- Constructor standings left, driver standings right, top 5 each
 - Constructor standings full team names (e.g. "Mercedes", not "MER")
 - Driver standings abbreviated: first initial + surname (e.g. "K. Antonelli")
 - Post-race view not yet designed
@@ -195,16 +231,21 @@ See CONTEXT.md for full mapping table.
 - Live session weather format: `21°C · icon · Wet/Dry` (same template fields as forecast, `rainfall` boolean → "Wet"/"Dry")
 - All times converted to user timezone in `build-payload.js` (timezone travels in the JSON from `fetch-data.js`)
 - Pure Node.js — no npm dependencies. Uses native `fetch` (Node 18+) and `Intl` for timezone formatting
+- Circuit images hosted in GitHub repo (`assets/circuits/`), referenced via raw GitHub URLs
 
 ## What's Not Built Yet
-- [ ] GitHub Actions workflow (`trmnl-update.yml`)
-- [x] Data fetching scripts (`scripts/fetch-data.js`)
-- [x] Webhook payload builder (`scripts/build-payload.js`)
-- [ ] Webhook pusher (`scripts/push-webhook.js`)
-- [ ] Liquid template (all view states)
-- [ ] Calendar view design
-- [ ] Post-race view design
+- [ ] Calendar view design + template
+- [ ] Post-race view design + template
 - [ ] Circuit static data (lap record, corners, DRS zones, length) — to be added to CSV
+
+## What's Built
+- [x] `scripts/fetch-data.js` — fetches OpenF1 + Open-Meteo
+- [x] `scripts/build-payload.js` — transforms data into TRMNL payload
+- [x] `scripts/push-webhook.js` — POSTs to TRMNL webhook
+- [x] `scripts/download-circuits.js` — one-time circuit image downloader
+- [x] `.github/workflows/trmnl-update.yml` — 15-minute cron pipeline
+- [x] `template.html` — race weekend view (iterating on layout)
+- [x] `assets/circuits/` — 23 circuit PNGs
 
 ## Role
 Think like a software engineer and ux designer. Ask questions if you have them.
