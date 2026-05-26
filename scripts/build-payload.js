@@ -121,7 +121,7 @@ function buildDateRange(sessions, timezone) {
   const first = localDates[0];
   const last = localDates[localDates.length - 1];
   if (first.monthName === last.monthName) {
-    return `${first.monthName} ${Math.min(...days)}–${Math.max(...days)}`;
+    return `${first.monthName} ${Math.min(...days)} – ${Math.max(...days)}`;
   }
   return `${first.monthName} ${first.day} – ${last.monthName} ${last.day}`;
 }
