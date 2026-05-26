@@ -187,6 +187,52 @@ function main() {
     const timezone = data.timezone || process.env.USER_TIMEZONE || 'UTC';
     const { meeting, sessions, weather, forecasts, standings, last_session, qualifying_results, next_meeting } = data;
 
+    if (!meeting) {
+      const year = new Date().getFullYear();
+      const drivers = [...(standings.drivers ?? [])].sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99));
+      const constructors = standings.constructors ?? [];
+      const wdc = drivers[0];
+      const wcc = constructors[0];
+
+      const payload = {
+        view: 'off_season',
+        season: { year },
+        champions: {
+          driver: {
+            name: wdc?.full_name ?? DRIVER_DISPLAY[wdc?.driver_number] ?? '',
+            team: TEAM_NAMES[wdc?.team] ?? '',
+            points: wdc?.points_current ?? 0,
+            portrait_url: wdc?.portrait_url?.replace('/1col/', '/2col/') ?? null,
+          },
+          constructor: {
+            name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',
+            points: wcc?.points ?? 0,
+          },
+        },
+        standings: {
+          drivers_col1: drivers.slice(0, 11).map(d => ({
+            position: d.position_current,
+            name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
+            points: d.points_current ?? 0,
+            portrait_url: d.portrait_url ?? null,
+          })),
+          drivers_col2: drivers.slice(11).map(d => ({
+            position: d.position_current,
+            name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
+            points: d.points_current ?? 0,
+            portrait_url: d.portrait_url ?? null,
+          })),
+          constructors: constructors.map(c => ({
+            position: c.position,
+            name: TEAM_NAMES[c.team] ?? c.team,
+            points: c.points,
+          })),
+        },
+      };
+      process.stdout.write(JSON.stringify(payload, null, 2) + '\n');
+      return;
+    }
+
     const view = determineView(sessions);
 
     const payload = {

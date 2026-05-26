@@ -224,6 +224,21 @@ async function main() {
       .slice(0, 3);
   }
 
+  if (!meeting) {
+    output.mode = 'off_season';
+    try {
+      output.standings = await getStandings();
+      const driverInfo = await getDriverInfo('latest');
+      output.standings.drivers = output.standings.drivers.map(d => ({
+        ...d,
+        portrait_url: driverInfo[d.driver_number]?.headshot_url ?? null,
+        full_name: driverInfo[d.driver_number]?.full_name ?? null,
+      }));
+    } catch (err) {
+      process.stderr.write(`Off-season data fetch failed (skipping): ${err.message}\n`);
+    }
+  }
+
   if (meeting) {
     const rawSessions = await getSessions(meeting.meeting_key);
     output.sessions = classifySessions(rawSessions);
