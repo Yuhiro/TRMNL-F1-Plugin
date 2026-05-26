@@ -97,6 +97,11 @@ TBD — likely reverts to calendar view with a small last-race summary. Not desi
 
 ## TRMNL Framework Rules (v3.1)
 
+### Figma fidelity
+Implement exactly what Figma shows — nothing more. Never add styles (border-radius, shadows, opacity, padding, margins, colours, font weights) that are not present on the specific Figma node being implemented. When in doubt, read the node's properties directly rather than inferring from context or convention.
+
+When a Figma node has `justify-content: center` on a flex-col, check whether the node also needs `align-self: stretch` to fill its parent's height — without it, the div shrinks to content height and `justify-content: center` has no effect.
+
 ### Layout structure
 ```html
 <div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xxlarge);">

@@ -154,9 +154,28 @@ function sessionWeather(session, liveWeather, forecasts) {
   };
 }
 
+function formatLapTime(seconds) {
+  if (seconds == null) return '';
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const sWhole = Math.floor(seconds % 60);
+  const ms = Math.round((seconds - Math.floor(seconds)) * 1000);
+  const sStr = String(sWhole).padStart(2, '0');
+  const msStr = String(ms).padStart(3, '0');
+  if (h > 0) return `${h}:${String(m).padStart(2, '0')}:${sStr}.${msStr}`;
+  return `${m}:${sStr}.${msStr}`;
+}
+
+function formatGap(gap) {
+  if (gap == null) return '';
+  if (typeof gap === 'string') return gap.startsWith('+') ? gap : `+${gap}`;
+  return `+${gap.toFixed(3)}s`;
+}
+
 function determineView(sessions) {
-  if (sessions.some(s => s.status === 'live'))      return 'live';
-  if (sessions.some(s => s.status === 'completed')) return 'race_weekend';
+  if (sessions.some(s => s.status === 'live'))                                        return 'live';
+  if (sessions.some(s => s.session_name === 'Race' && s.status === 'completed'))      return 'post_race';
+  if (sessions.some(s => s.status === 'completed'))                                   return 'race_weekend';
   return 'pre_weekend';
 }
 
@@ -166,7 +185,7 @@ function main() {
   process.stdin.on('end', () => {
     const data = JSON.parse(raw);
     const timezone = data.timezone || process.env.USER_TIMEZONE || 'UTC';
-    const { meeting, sessions, weather, forecasts, standings } = data;
+    const { meeting, sessions, weather, forecasts, standings, last_session, qualifying_results, next_meeting } = data;
 
     const view = determineView(sessions);
 
@@ -191,7 +210,7 @@ function main() {
       })),
       standings: {
         constructors: standings.constructors
-          .slice(0, 5)
+          .slice(0, 6)
           .map(c => ({
             position: c.position,
             name: TEAM_NAMES[c.team] ?? c.team,
@@ -199,7 +218,7 @@ function main() {
           })),
         drivers: standings.drivers
           .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
-          .slice(0, 5)
+          .slice(0, 6)
           .map(d => ({
             position: d.position_current ?? 0,
             name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
@@ -207,6 +226,45 @@ function main() {
           })),
       },
     };
+
+    if (last_session?.results?.length) {
+      payload.last_session = {
+        name: `${last_session.session_name} Results`,
+        results: last_session.results.map(r => ({
+          position: r.position,
+          name: DRIVER_DISPLAY[r.driver_number] ?? `#${r.driver_number}`,
+          portrait_url: r.portrait_url,
+          compounds: r.compounds,
+          time: r.position === 1 ? formatLapTime(r.duration) : formatGap(r.gap_to_leader),
+        })),
+      };
+    }
+
+    if (view === 'post_race' && last_session?.results?.length) {
+      const p1 = last_session.results[0];
+      const gridResult = qualifying_results?.find(r => r.driver_number === p1.driver_number);
+      payload.winner = {
+        name: p1.full_name ?? DRIVER_DISPLAY[p1.driver_number] ?? `#${p1.driver_number}`,
+        team: TEAM_NAMES[DRIVER_MAP[p1.driver_number]?.team] ?? '',
+        portrait_url: p1.portrait_url?.replace('/1col/', '/2col/') ?? null,
+        grid_position: gridResult ? `P${gridResult.position}` : null,
+        finish_position: 'P1',
+      };
+    }
+
+    if (next_meeting) {
+      payload.next_race = {
+        name: next_meeting.meeting_name,
+        location: `${next_meeting.location}, ${next_meeting.country_name}`,
+        round: next_meeting.round_number,
+        date_range: buildDateRange(next_meeting.sessions, timezone),
+        weather: next_meeting.race_forecast ? {
+          temp: `${Math.round(next_meeting.race_forecast.temp_max)}°C`,
+          icon: weathercodeIcon(next_meeting.race_forecast.weathercode),
+          precip: `${next_meeting.race_forecast.precip_probability}%`,
+        } : null,
+      };
+    }
 
     process.stdout.write(JSON.stringify(payload, null, 2) + '\n');
   });

@@ -81,9 +81,8 @@ function assignRoundNumbers(meetings) {
 }
 
 // Returns the meeting currently in progress, or the next upcoming one.
-function findCurrentMeeting(meetings) {
+function findCurrentMeeting(meetings, rounds) {
   const n = new Date();
-  const rounds = assignRoundNumbers(meetings);
 
   for (const m of meetings) {
     const start = new Date(m.date_start);
@@ -128,6 +127,28 @@ async function getLiveWeather(sessionKey) {
   const data = await fetchJSON(`${OPENF1_BASE}/weather?session_key=${sessionKey}`);
   // API returns an array sorted by time; take the most recent entry
   return Array.isArray(data) && data.length ? data[data.length - 1] : null;
+}
+
+async function getSessionResult(sessionKey) {
+  return fetchJSON(`${OPENF1_BASE}/session_result?session_key=${sessionKey}`);
+}
+
+async function getStints(sessionKey) {
+  return fetchJSON(`${OPENF1_BASE}/stints?session_key=${sessionKey}`);
+}
+
+async function getDriverInfo(sessionKey) {
+  const drivers = await fetchJSON(`${OPENF1_BASE}/drivers?session_key=${sessionKey}`);
+  const map = {};
+  for (const d of drivers) {
+    if (d.driver_number != null) {
+      map[d.driver_number] = {
+        headshot_url: d.headshot_url ?? null,
+        full_name: d.full_name ?? null,
+      };
+    }
+  }
+  return map;
 }
 
 async function getStandings() {
@@ -181,7 +202,8 @@ async function getWeatherForecast(location, sessionDateISO) {
 
 async function main() {
   const meetings = await getMeetings();
-  const { meeting, mode } = findCurrentMeeting(meetings);
+  const rounds = assignRoundNumbers(meetings);
+  const { meeting, mode } = findCurrentMeeting(meetings, rounds);
 
   const output = {
     mode,
@@ -233,6 +255,92 @@ async function main() {
     }
 
     output.standings = await getStandings();
+
+    const lastCompleted = output.sessions.filter(s => s.status === 'completed').at(-1);
+    if (lastCompleted) {
+      try {
+        const [results, stints, driverInfo] = await Promise.all([
+          getSessionResult(lastCompleted.session_key),
+          getStints(lastCompleted.session_key),
+          getDriverInfo(lastCompleted.session_key),
+        ]);
+
+        const compoundLetter = { SOFT: 'S', MEDIUM: 'M', HARD: 'H', INTERMEDIATE: 'I', WET: 'W' };
+        const driverCompounds = {};
+        for (const stint of stints) {
+          const dn = stint.driver_number;
+          if (!driverCompounds[dn]) driverCompounds[dn] = [];
+          const letter = compoundLetter[stint.compound] ?? stint.compound?.[0] ?? '?';
+          if (!driverCompounds[dn].includes(letter)) driverCompounds[dn].push(letter);
+        }
+
+        const top6 = results
+          .filter(r => r.position != null)
+          .sort((a, b) => a.position - b.position)
+          .slice(0, 6);
+
+        output.last_session = {
+          session_key: lastCompleted.session_key,
+          session_name: lastCompleted.session_name,
+          results: top6.map(r => ({
+            position: r.position,
+            driver_number: r.driver_number,
+            full_name: driverInfo[r.driver_number]?.full_name ?? null,
+            portrait_url: driverInfo[r.driver_number]?.headshot_url ?? null,
+            compounds: driverCompounds[r.driver_number] ?? [],
+            duration: r.duration ?? null,
+            gap_to_leader: r.gap_to_leader ?? null,
+            dnf: r.dnf ?? false,
+            dns: r.dns ?? false,
+            dsq: r.dsq ?? false,
+          })),
+        };
+
+        if (lastCompleted.session_name === 'Race') {
+          const qualiSession = output.sessions.find(s => s.session_name === 'Qualifying');
+          if (qualiSession) {
+            try {
+              const qualiResults = await getSessionResult(qualiSession.session_key);
+              output.qualifying_results = qualiResults
+                .filter(r => r.position != null)
+                .map(r => ({ driver_number: r.driver_number, position: r.position }));
+            } catch (err) {
+              process.stderr.write(`Qualifying results fetch failed (skipping): ${err.message}\n`);
+            }
+          }
+        }
+      } catch (err) {
+        process.stderr.write(`Session result fetch failed (skipping): ${err.message}\n`);
+      }
+    }
+
+    // Fetch next upcoming meeting for post-race "Up Next" display
+    const nextMeet = meetings
+      .filter(m => !m.is_cancelled && new Date(m.date_start) > new Date(meeting.date_end))
+      .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))[0];
+
+    if (nextMeet) {
+      try {
+        const nextSessions = await getSessions(nextMeet.meeting_key);
+        const raceSession = nextSessions.find(s => s.session_name === 'Race');
+        let raceForecast = null;
+        if (raceSession) {
+          try {
+            raceForecast = await getWeatherForecast(nextMeet.location, raceSession.date_start);
+          } catch (err) {
+            process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
+          }
+        }
+        output.next_meeting = {
+          ...nextMeet,
+          round_number: rounds.get(nextMeet.meeting_key),
+          sessions: nextSessions,
+          race_forecast: raceForecast,
+        };
+      } catch (err) {
+        process.stderr.write(`Next meeting fetch failed (skipping): ${err.message}\n`);
+      }
+    }
   }
 
   process.stdout.write(JSON.stringify(output, null, 2) + '\n');
