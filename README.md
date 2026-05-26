@@ -1,6 +1,6 @@
-# TRMNL F1 Plugin
+# TRMNL X F1 Plugin
 
-A Formula 1 plugin for the [TRMNL](https://usetrmnl.com) e-ink display. Shows the current race weekend schedule, session timings, and championship standings — updated every 15 minutes via GitHub Actions.
+A Formula 1 plugin for the [TRMNL X](https://usetrmnl.com) e-ink display. Shows the current race weekend schedule, session timings, and championship standings — updated every 15 minutes via GitHub Actions.
 
 ![Race weekend view showing session list, constructor standings, and driver standings](assets/app.png)
 
