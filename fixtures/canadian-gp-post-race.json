@@ -1,0 +1,110 @@
+{
+  "view": "race_weekend",
+  "meeting": {
+    "name": "Canadian Grand Prix",
+    "location": "Montréal, Canada",
+    "round": 9,
+    "circuit_name": "Circuit Gilles Villeneuve",
+    "circuit_image_url": "https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits/Montreal.png",
+    "date_range": "Jun 12 – 14",
+    "circuit_type": "Street"
+  },
+  "sessions": [
+    {
+      "day": "12",
+      "month": "Jun",
+      "name": "Practice 1",
+      "time_range": "13:30 – 14:30",
+      "status": "completed",
+      "weather": null
+    },
+    {
+      "day": "12",
+      "month": "Jun",
+      "name": "Practice 2",
+      "time_range": "17:00 – 18:00",
+      "status": "completed",
+      "weather": null
+    },
+    {
+      "day": "13",
+      "month": "Jun",
+      "name": "Practice 3",
+      "time_range": "12:30 – 13:30",
+      "status": "completed",
+      "weather": null
+    },
+    {
+      "day": "13",
+      "month": "Jun",
+      "name": "Qualifying",
+      "time_range": "16:00 – 17:00",
+      "status": "completed",
+      "weather": null
+    },
+    {
+      "day": "14",
+      "month": "Jun",
+      "name": "Race",
+      "time_range": "14:00 – 16:00",
+      "status": "completed",
+      "weather": null
+    }
+  ],
+  "standings": {
+    "constructors": [
+      {
+        "position": 1,
+        "name": "McLaren",
+        "points": 304
+      },
+      {
+        "position": 2,
+        "name": "Ferrari",
+        "points": 249
+      },
+      {
+        "position": 3,
+        "name": "Mercedes",
+        "points": 215
+      },
+      {
+        "position": 4,
+        "name": "Red Bull",
+        "points": 196
+      },
+      {
+        "position": 5,
+        "name": "Aston Martin",
+        "points": 91
+      }
+    ],
+    "drivers": [
+      {
+        "position": 1,
+        "name": "L. Norris",
+        "points": 181
+      },
+      {
+        "position": 2,
+        "name": "O. Piastri",
+        "points": 123
+      },
+      {
+        "position": 3,
+        "name": "C. Leclerc",
+        "points": 130
+      },
+      {
+        "position": 4,
+        "name": "L. Hamilton",
+        "points": 117
+      },
+      {
+        "position": 5,
+        "name": "G. Russell",
+        "points": 98
+      }
+    ]
+  }
+}

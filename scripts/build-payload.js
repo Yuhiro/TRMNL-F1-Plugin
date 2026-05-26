@@ -4,36 +4,44 @@
 
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits';
 
-// circuit_short_name → filename in assets/circuits/ (only circuits with a downloaded image)
-const CIRCUIT_IMAGES = {
-  'Austin':             'Austin.png',
-  'Baku':               'Baku.png',
-  'Hungaroring':        'Hungaroring.png',
-  'Interlagos':         'Interlagos.png',
-  'Jeddah':             'Jeddah.png',
-  'Las Vegas':          'Las-Vegas.png',
-  'Lusail':             'Lusail.png',
-  'Madring':            'Madring.png',
-  'Melbourne':          'Melbourne.png',
-  'Mexico City':        'Mexico-City.png',
-  'Miami':              'Miami.png',
-  'Monte Carlo':        'Monte-Carlo.png',
-  'Montreal':           'Montreal.png',
-  'Monza':              'Monza.png',
-  'Sakhir':             'Sakhir.png',
-  'Shanghai':           'Shanghai.png',
-  'Silverstone':        'Silverstone.png',
-  'Singapore':          'Singapore.png',
-  'Spa-Francorchamps':  'Spa-Francorchamps.png',
-  'Spielberg':          'Spielberg.png',
-  'Suzuka':             'Suzuka.png',
-  'Yas Marina Circuit': 'Yas-Marina-Circuit.png',
-  'Zandvoort':          'Zandvoort.png',
+// circuit_short_name → { name, type, image }
+const CIRCUIT_INFO = {
+  'Austin':             { name: 'Circuit of the Americas', type: 'Permanent',  image: 'Austin.png' },
+  'Baku':               { name: 'Baku City Circuit',       type: 'Street',     image: 'Baku.png' },
+  'Hungaroring':        { name: 'Hungaroring',             type: 'Permanent',  image: 'Hungaroring.png' },
+  'Interlagos':         { name: 'Interlagos',              type: 'Permanent',  image: 'Interlagos.png' },
+  'Jeddah':             { name: 'Jeddah Corniche Circuit', type: 'Street',     image: 'Jeddah.png' },
+  'Las Vegas':          { name: 'Las Vegas Strip Circuit', type: 'Street',     image: 'Las-Vegas.png' },
+  'Lusail':             { name: 'Lusail International',    type: 'Permanent',  image: 'Lusail.png' },
+  'Madring':            { name: 'Madrid Street Circuit',   type: 'Street',     image: 'Madring.png' },
+  'Melbourne':          { name: 'Albert Park',             type: 'Street',     image: 'Melbourne.png' },
+  'Mexico City':        { name: 'Autódromo Hermanos Rodríguez', type: 'Permanent', image: 'Mexico-City.png' },
+  'Miami':              { name: 'Miami International',     type: 'Street',     image: 'Miami.png' },
+  'Monte Carlo':        { name: 'Circuit de Monaco',       type: 'Street',     image: 'Monte-Carlo.png' },
+  'Montreal':           { name: 'Circuit Gilles Villeneuve', type: 'Street',   image: 'Montreal.png' },
+  'Monza':              { name: 'Autodromo di Monza',      type: 'Permanent',  image: 'Monza.png' },
+  'Sakhir':             { name: 'Bahrain International',   type: 'Permanent',  image: 'Sakhir.png' },
+  'Shanghai':           { name: 'Shanghai International',  type: 'Permanent',  image: 'Shanghai.png' },
+  'Silverstone':        { name: 'Silverstone',             type: 'Permanent',  image: 'Silverstone.png' },
+  'Singapore':          { name: 'Marina Bay Street Circuit', type: 'Street',   image: 'Singapore.png' },
+  'Spa-Francorchamps':  { name: 'Circuit de Spa',          type: 'Permanent',  image: 'Spa-Francorchamps.png' },
+  'Spielberg':          { name: 'Red Bull Ring',           type: 'Permanent',  image: 'Spielberg.png' },
+  'Suzuka':             { name: 'Suzuka International',    type: 'Permanent',  image: 'Suzuka.png' },
+  'Yas Marina Circuit': { name: 'Yas Marina Circuit',      type: 'Permanent',  image: 'Yas-Marina-Circuit.png' },
+  'Zandvoort':          { name: 'Circuit Zandvoort',       type: 'Permanent',  image: 'Zandvoort.png' },
 };
 
 function circuitImageUrl(shortName) {
-  const file = CIRCUIT_IMAGES[shortName];
+  const file = CIRCUIT_INFO[shortName]?.image;
   return file ? `${GITHUB_RAW_BASE}/${file}` : null;
+}
+
+function circuitName(shortName) {
+  return CIRCUIT_INFO[shortName]?.name ?? shortName;
+}
+
+function circuitType(shortName) {
+  return CIRCUIT_INFO[shortName]?.type ?? null;
 }
 
 // driver_number → display name shown in the standings column
@@ -168,7 +176,8 @@ function main() {
         name: meeting.meeting_name,
         location: `${meeting.location}, ${meeting.country_name}`,
         round: meeting.round_number,
-        circuit_name: meeting.circuit_short_name,
+        circuit_name: circuitName(meeting.circuit_short_name),
+        circuit_type: circuitType(meeting.circuit_short_name),
         circuit_image_url: circuitImageUrl(meeting.circuit_short_name),
         date_range: buildDateRange(sessions, timezone),
       },

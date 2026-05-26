@@ -1,0 +1,122 @@
+{
+  "view": "live",
+  "meeting": {
+    "name": "Miami Grand Prix",
+    "location": "Miami, United States",
+    "round": 6,
+    "circuit_name": "Miami International Autodrome",
+    "circuit_image_url": "https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits/Miami.png",
+    "date_range": "May 1 – 3",
+    "circuit_type": "Street"
+  },
+  "sessions": [
+    {
+      "day": "1",
+      "month": "May",
+      "name": "Practice 1",
+      "time_range": "12:30 – 13:30",
+      "status": "completed",
+      "weather": null
+    },
+    {
+      "day": "1",
+      "month": "May",
+      "name": "Sprint Qualifying",
+      "time_range": "16:30 – 17:30",
+      "status": "completed",
+      "weather": null
+    },
+    {
+      "day": "2",
+      "month": "May",
+      "name": "Sprint",
+      "time_range": "13:00 – 14:00",
+      "status": "live",
+      "weather": {
+        "temp": "31°C",
+        "icon": "ti-sun",
+        "precip": "Dry"
+      }
+    },
+    {
+      "day": "2",
+      "month": "May",
+      "name": "Qualifying",
+      "time_range": "17:00 – 18:00",
+      "status": "upcoming",
+      "weather": {
+        "temp": "29°C",
+        "icon": "ti-sun",
+        "precip": "5%"
+      }
+    },
+    {
+      "day": "3",
+      "month": "May",
+      "name": "Race",
+      "time_range": "16:00 – 18:00",
+      "status": "upcoming",
+      "weather": {
+        "temp": "28°C",
+        "icon": "ti-cloud",
+        "precip": "20%"
+      }
+    }
+  ],
+  "standings": {
+    "constructors": [
+      {
+        "position": 1,
+        "name": "McLaren",
+        "points": 196
+      },
+      {
+        "position": 2,
+        "name": "Ferrari",
+        "points": 175
+      },
+      {
+        "position": 3,
+        "name": "Mercedes",
+        "points": 143
+      },
+      {
+        "position": 4,
+        "name": "Red Bull",
+        "points": 138
+      },
+      {
+        "position": 5,
+        "name": "Racing Bulls",
+        "points": 62
+      }
+    ],
+    "drivers": [
+      {
+        "position": 1,
+        "name": "L. Norris",
+        "points": 110
+      },
+      {
+        "position": 2,
+        "name": "C. Leclerc",
+        "points": 96
+      },
+      {
+        "position": 3,
+        "name": "O. Piastri",
+        "points": 86
+      },
+      {
+        "position": 4,
+        "name": "L. Hamilton",
+        "points": 74
+      },
+      {
+        "position": 5,
+        "name": "M. Verstappen",
+        "points": 68
+      }
+    ]
+  }
+}
