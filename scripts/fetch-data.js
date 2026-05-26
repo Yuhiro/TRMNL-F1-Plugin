@@ -3,6 +3,7 @@
 
 const OPENF1_BASE = 'https://api.openf1.org/v1';
 const OPEN_METEO_BASE = 'https://api.open-meteo.com/v1/forecast';
+const CIRCUITS = require('./circuits');
 
 // Static driver data: driver_number → acronym + team short code
 // Used to enrich driver standings and derive constructor standings.
@@ -31,34 +32,6 @@ const DRIVER_MAP = {
   87: { acronym: 'BEA', team: 'HAA' },
 };
 
-// Lat/lon for Open-Meteo forecast lookups, keyed by OpenF1 meeting.location
-const CIRCUIT_COORDS = {
-  'Melbourne':   { lat: -37.8497, lon: 144.9680 },
-  'Shanghai':    { lat:  31.3389, lon: 121.2198 },
-  'Suzuka':      { lat:  34.8431, lon: 136.5413 },
-  'Sakhir':      { lat:  26.0325, lon:  50.5106 },
-  'Jeddah':      { lat:  21.6319, lon:  39.1044 },
-  'Miami':       { lat:  25.9581, lon: -80.2389 },
-  'Montréal':    { lat:  45.5051, lon: -73.5226 },
-  'Monaco':      { lat:  43.7347, lon:   7.4205 },
-  'Monte Carlo': { lat:  43.7347, lon:   7.4205 },
-  'Barcelona':   { lat:  41.5700, lon:   2.2611 },
-  'Spielberg':   { lat:  47.2197, lon:  14.7647 },
-  'Silverstone': { lat:  52.0786, lon:  -1.0169 },
-  'Spa-Francorchamps': { lat: 50.4372, lon: 5.9714 },
-  'Budapest':    { lat:  47.5789, lon:  19.2486 },
-  'Zandvoort':   { lat:  52.3888, lon:   4.5407 },
-  'Monza':       { lat:  45.6156, lon:   9.2811 },
-  'Madrid':      { lat:  40.4168, lon:  -3.7038 },
-  'Baku':        { lat:  40.3697, lon:  49.8533 },
-  'Marina Bay':  { lat:   1.2914, lon: 103.8639 },
-  'Austin':      { lat:  30.1328, lon: -97.6411 },
-  'Mexico City': { lat:  19.4042, lon: -99.0907 },
-  'São Paulo':   { lat: -23.7036, lon: -46.6997 },
-  'Las Vegas':   { lat:  36.1147, lon:-115.1728 },
-  'Lusail':      { lat:  25.4900, lon:  51.4542 },
-  'Yas Island':  { lat:  24.4672, lon:  54.6031 },
-};
 
 async function fetchJSON(url) {
   const res = await fetch(url);
@@ -85,6 +58,7 @@ function findCurrentMeeting(meetings, rounds) {
   const n = new Date();
 
   for (const m of meetings) {
+    if (m.is_cancelled) continue;
     const start = new Date(m.date_start);
     // Add 4h buffer after date_end to keep race-weekend mode through post-race
     const end = new Date(new Date(m.date_end).getTime() + 4 * 60 * 60 * 1000);
@@ -137,18 +111,13 @@ async function getStints(sessionKey) {
   return fetchJSON(`${OPENF1_BASE}/stints?session_key=${sessionKey}`);
 }
 
-async function getDriverInfo(sessionKey) {
-  const drivers = await fetchJSON(`${OPENF1_BASE}/drivers?session_key=${sessionKey}`);
-  const map = {};
-  for (const d of drivers) {
-    if (d.driver_number != null) {
-      map[d.driver_number] = {
-        headshot_url: d.headshot_url ?? null,
-        full_name: d.full_name ?? null,
-      };
-    }
-  }
-  return map;
+function formatBroadcastName(name) {
+  if (!name) return null;
+  const parts = name.trim().split(/\s+/);
+  if (parts.length < 2) return name;
+  const initial = parts[0];
+  const surname = parts.slice(1).map(w => w[0] + w.slice(1).toLowerCase()).join(' ');
+  return `${initial}. ${surname}`;
 }
 
 async function getStandings() {
@@ -165,16 +134,25 @@ async function getStandings() {
     return { drivers: [], constructors: [] };
   }
 
-  // Build live team map from /drivers; fall back to static DRIVER_MAP per entry
+  // Build live team map and driver info from /drivers; fall back to static DRIVER_MAP per entry
   const liveTeamMap = {};
+  const driverInfo = {};
   for (const d of rawDriverInfo) {
-    if (d.driver_number != null && d.team_name) liveTeamMap[d.driver_number] = d.team_name;
+    if (d.driver_number != null) {
+      if (d.team_name) liveTeamMap[d.driver_number] = d.team_name;
+      driverInfo[d.driver_number] = {
+        headshot_url: d.headshot_url ?? null,
+        full_name: d.full_name ?? null,
+        name: formatBroadcastName(d.broadcast_name),
+      };
+    }
   }
 
   const drivers = rawDrivers.map(d => ({
     ...d,
     acronym: DRIVER_MAP[d.driver_number]?.acronym ?? `#${d.driver_number}`,
     team: liveTeamMap[d.driver_number] ?? DRIVER_MAP[d.driver_number]?.team ?? '???',
+    name: driverInfo[d.driver_number]?.name ?? null,
   }));
 
   // Derive constructor standings by summing points_current per team
@@ -188,7 +166,7 @@ async function getStandings() {
     .sort((a, b) => b.points - a.points)
     .map((c, i) => ({ ...c, position: i + 1 }));
 
-  return { drivers, constructors };
+  return { drivers, constructors, driverInfo };
 }
 
 function determineView(mode, sessions) {
@@ -199,10 +177,10 @@ function determineView(mode, sessions) {
   return 'pre_weekend';
 }
 
-async function getWeatherForecast(location, sessionDateISO) {
-  const coords = CIRCUIT_COORDS[location];
+async function getWeatherForecast(circuitShortName, sessionDateISO) {
+  const coords = CIRCUITS[circuitShortName];
   if (!coords) {
-    process.stderr.write(`No coords for location: ${location}\n`);
+    process.stderr.write(`No coords for circuit: ${circuitShortName}\n`);
     return null;
   }
   const dateStr = sessionDateISO.slice(0, 10);
@@ -233,27 +211,21 @@ async function main() {
     weather: null,
     forecasts: {},
     standings: { drivers: [], constructors: [] },
-    upcomingMeetings: [],
   };
-
-  if (mode === 'off_weekend') {
-    const n = new Date();
-    output.upcomingMeetings = meetings
-      .filter(m => new Date(m.date_start) > n)
-      .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))
-      .slice(0, 3);
-  }
 
   if (!meeting) {
     output.mode = 'off_season';
     try {
-      output.standings = await getStandings();
-      const driverInfo = await getDriverInfo('latest');
-      output.standings.drivers = output.standings.drivers.map(d => ({
-        ...d,
-        portrait_url: driverInfo[d.driver_number]?.headshot_url ?? null,
-        full_name: driverInfo[d.driver_number]?.full_name ?? null,
-      }));
+      const { drivers, constructors, driverInfo } = await getStandings();
+      output.standings = {
+        drivers: drivers.map(d => ({
+          ...d,
+          portrait_url: driverInfo[d.driver_number]?.headshot_url ?? null,
+          full_name: driverInfo[d.driver_number]?.full_name ?? null,
+          name: driverInfo[d.driver_number]?.name ?? null,
+        })),
+        constructors,
+      };
     } catch (err) {
       process.stderr.write(`Off-season data fetch failed (skipping): ${err.message}\n`);
     }
@@ -279,12 +251,13 @@ async function main() {
     const [standingsResult, ...forecastResults] = await Promise.all([
       getStandings(),
       ...uniqueDates.map(([dateStr, date_start]) =>
-        getWeatherForecast(meeting.location, date_start)
+        getWeatherForecast(meeting.circuit_short_name, date_start)
           .then(forecast => ({ dateStr, forecast }))
           .catch(err => { process.stderr.write(`Forecast fetch failed for ${dateStr} (skipping): ${err.message}\n`); return null; })
       ),
     ]);
-    output.standings = standingsResult;
+    const { driverInfo, ...standings } = standingsResult;
+    output.standings = standings;
     for (const result of forecastResults) {
       if (result?.forecast) output.forecasts[result.dateStr] = result.forecast;
     }
@@ -292,10 +265,10 @@ async function main() {
     const lastCompleted = output.sessions.filter(s => s.status === 'completed').at(-1);
     if (lastCompleted) {
       try {
-        const [results, stints, driverInfo] = await Promise.all([
+        const showCompounds = ['Race', 'Sprint'].includes(lastCompleted.session_name);
+        const [results, stints] = await Promise.all([
           getSessionResult(lastCompleted.session_key),
-          getStints(lastCompleted.session_key),
-          getDriverInfo(lastCompleted.session_key),
+          showCompounds ? getStints(lastCompleted.session_key) : Promise.resolve([]),
         ]);
 
         const compoundLetter = { SOFT: 'S', MEDIUM: 'M', HARD: 'H', INTERMEDIATE: 'I', WET: 'W' };
@@ -318,6 +291,7 @@ async function main() {
           results: top6.map(r => ({
             position: r.position,
             driver_number: r.driver_number,
+            name: driverInfo[r.driver_number]?.name ?? null,
             full_name: driverInfo[r.driver_number]?.full_name ?? null,
             portrait_url: driverInfo[r.driver_number]?.headshot_url ?? null,
             compounds: driverCompounds[r.driver_number] ?? [],
@@ -359,7 +333,7 @@ async function main() {
         let raceForecast = null;
         if (raceSession) {
           try {
-            raceForecast = await getWeatherForecast(nextMeet.location, raceSession.date_start);
+            raceForecast = await getWeatherForecast(nextMeet.circuit_short_name, raceSession.date_start);
           } catch (err) {
             process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
           }

@@ -12,21 +12,26 @@ async function main() {
   let raw = '';
   process.stdin.on('data', chunk => { raw += chunk; });
   process.stdin.on('end', async () => {
-    const payload = JSON.parse(raw);
+    try {
+      const payload = JSON.parse(raw);
 
-    const res = await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ merge_variables: payload }),
-    });
+      const res = await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ merge_variables: payload }),
+      });
 
-    if (!res.ok) {
-      const body = await res.text();
-      process.stderr.write(`Webhook failed: HTTP ${res.status}\n${body}\n`);
+      if (!res.ok) {
+        const body = await res.text();
+        process.stderr.write(`Webhook failed: HTTP ${res.status}\n${body}\n`);
+        process.exit(1);
+      }
+
+      process.stdout.write(`Webhook delivered (HTTP ${res.status})\n`);
+    } catch (err) {
+      process.stderr.write(`Fatal: ${err.message}\n`);
       process.exit(1);
     }
-
-    process.stdout.write(`Webhook delivered (HTTP ${res.status})\n`);
   });
 }
 

@@ -1,3 +1,10 @@
 # Issues Tracker
 
-No open issues.
+---
+
+## 🔴 Bugs
+
+## 🟡 Logic / Data Issues
+
+## 🔵 Questions / Needs Verification
+

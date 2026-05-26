@@ -1,0 +1,28 @@
+// Single source of truth for circuit data, keyed by OpenF1 circuit_short_name.
+// Each entry covers weather forecast coords (lat/lon) + display info (name, type, image).
+module.exports = {
+  'Austin':             { lat:  30.1328, lon:  -97.6411, name: 'Circuit of the Americas',       type: 'Permanent', image: 'Austin.png' },
+  'Baku':               { lat:  40.3697, lon:   49.8533, name: 'Baku City Circuit',              type: 'Street',    image: 'Baku.png' },
+  'Barcelona':          { lat:  41.5700, lon:    2.2611, name: 'Circuit de Barcelona-Catalunya', type: 'Permanent', image: null },
+  'Hungaroring':        { lat:  47.5789, lon:   19.2486, name: 'Hungaroring',                    type: 'Permanent', image: 'Hungaroring.png' },
+  'Interlagos':         { lat: -23.7036, lon:  -46.6997, name: 'Interlagos',                    type: 'Permanent', image: 'Interlagos.png' },
+  'Jeddah':             { lat:  21.6319, lon:   39.1044, name: 'Jeddah Corniche Circuit',        type: 'Street',    image: 'Jeddah.png' },
+  'Las Vegas':          { lat:  36.1147, lon: -115.1728, name: 'Las Vegas Strip Circuit',        type: 'Street',    image: 'Las-Vegas.png' },
+  'Lusail':             { lat:  25.4900, lon:   51.4542, name: 'Lusail International',           type: 'Permanent', image: 'Lusail.png' },
+  'Madrid':             { lat:  40.4168, lon:   -3.7038, name: 'Madrid Street Circuit',          type: 'Street',    image: 'Madrid.png' },
+  'Melbourne':          { lat: -37.8497, lon:  144.9680, name: 'Albert Park',                   type: 'Street',    image: 'Melbourne.png' },
+  'Mexico City':        { lat:  19.4042, lon:  -99.0907, name: 'Autódromo Hermanos Rodríguez',  type: 'Permanent', image: 'Mexico-City.png' },
+  'Miami':              { lat:  25.9581, lon:  -80.2389, name: 'Miami International',            type: 'Street',    image: 'Miami.png' },
+  'Monte Carlo':        { lat:  43.7347, lon:    7.4205, name: 'Circuit de Monaco',              type: 'Street',    image: 'Monte-Carlo.png' },
+  'Montreal':           { lat:  45.5051, lon:  -73.5226, name: 'Circuit Gilles Villeneuve',      type: 'Street',    image: 'Montreal.png' },
+  'Monza':              { lat:  45.6156, lon:    9.2811, name: 'Autodromo di Monza',             type: 'Permanent', image: 'Monza.png' },
+  'Sakhir':             { lat:  26.0325, lon:   50.5106, name: 'Bahrain International',          type: 'Permanent', image: 'Sakhir.png' },
+  'Shanghai':           { lat:  31.3389, lon:  121.2198, name: 'Shanghai International',         type: 'Permanent', image: 'Shanghai.png' },
+  'Silverstone':        { lat:  52.0786, lon:   -1.0169, name: 'Silverstone',                   type: 'Permanent', image: 'Silverstone.png' },
+  'Singapore':          { lat:   1.2914, lon:  103.8639, name: 'Marina Bay Street Circuit',     type: 'Street',    image: 'Singapore.png' },
+  'Spa-Francorchamps':  { lat:  50.4372, lon:    5.9714, name: 'Circuit de Spa',                type: 'Permanent', image: 'Spa-Francorchamps.png' },
+  'Spielberg':          { lat:  47.2197, lon:   14.7647, name: 'Red Bull Ring',                 type: 'Permanent', image: 'Spielberg.png' },
+  'Suzuka':             { lat:  34.8431, lon:  136.5413, name: 'Suzuka International',           type: 'Permanent', image: 'Suzuka.png' },
+  'Yas Marina Circuit': { lat:  24.4672, lon:   54.6031, name: 'Yas Marina Circuit',            type: 'Permanent', image: 'Yas-Marina-Circuit.png' },
+  'Zandvoort':          { lat:  52.3888, lon:    4.5407, name: 'Circuit Zandvoort',             type: 'Permanent', image: 'Zandvoort.png' },
+};

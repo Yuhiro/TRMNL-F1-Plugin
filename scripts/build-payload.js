@@ -3,72 +3,21 @@
 // Usage: node scripts/fetch-data.js | node scripts/build-payload.js
 
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits';
-
-// circuit_short_name → { name, type, image }
-const CIRCUIT_INFO = {
-  'Austin':             { name: 'Circuit of the Americas', type: 'Permanent',  image: 'Austin.png' },
-  'Baku':               { name: 'Baku City Circuit',       type: 'Street',     image: 'Baku.png' },
-  'Hungaroring':        { name: 'Hungaroring',             type: 'Permanent',  image: 'Hungaroring.png' },
-  'Interlagos':         { name: 'Interlagos',              type: 'Permanent',  image: 'Interlagos.png' },
-  'Jeddah':             { name: 'Jeddah Corniche Circuit', type: 'Street',     image: 'Jeddah.png' },
-  'Las Vegas':          { name: 'Las Vegas Strip Circuit', type: 'Street',     image: 'Las-Vegas.png' },
-  'Lusail':             { name: 'Lusail International',    type: 'Permanent',  image: 'Lusail.png' },
-  'Madring':            { name: 'Madrid Street Circuit',   type: 'Street',     image: 'Madring.png' },
-  'Melbourne':          { name: 'Albert Park',             type: 'Street',     image: 'Melbourne.png' },
-  'Mexico City':        { name: 'Autódromo Hermanos Rodríguez', type: 'Permanent', image: 'Mexico-City.png' },
-  'Miami':              { name: 'Miami International',     type: 'Street',     image: 'Miami.png' },
-  'Monte Carlo':        { name: 'Circuit de Monaco',       type: 'Street',     image: 'Monte-Carlo.png' },
-  'Montreal':           { name: 'Circuit Gilles Villeneuve', type: 'Street',   image: 'Montreal.png' },
-  'Monza':              { name: 'Autodromo di Monza',      type: 'Permanent',  image: 'Monza.png' },
-  'Sakhir':             { name: 'Bahrain International',   type: 'Permanent',  image: 'Sakhir.png' },
-  'Shanghai':           { name: 'Shanghai International',  type: 'Permanent',  image: 'Shanghai.png' },
-  'Silverstone':        { name: 'Silverstone',             type: 'Permanent',  image: 'Silverstone.png' },
-  'Singapore':          { name: 'Marina Bay Street Circuit', type: 'Street',   image: 'Singapore.png' },
-  'Spa-Francorchamps':  { name: 'Circuit de Spa',          type: 'Permanent',  image: 'Spa-Francorchamps.png' },
-  'Spielberg':          { name: 'Red Bull Ring',           type: 'Permanent',  image: 'Spielberg.png' },
-  'Suzuka':             { name: 'Suzuka International',    type: 'Permanent',  image: 'Suzuka.png' },
-  'Yas Marina Circuit': { name: 'Yas Marina Circuit',      type: 'Permanent',  image: 'Yas-Marina-Circuit.png' },
-  'Zandvoort':          { name: 'Circuit Zandvoort',       type: 'Permanent',  image: 'Zandvoort.png' },
-};
+const CIRCUITS = require('./circuits');
 
 function circuitImageUrl(shortName) {
-  const file = CIRCUIT_INFO[shortName]?.image;
+  const file = CIRCUITS[shortName]?.image;
   return file ? `${GITHUB_RAW_BASE}/${file}` : null;
 }
 
 function circuitName(shortName) {
-  return CIRCUIT_INFO[shortName]?.name ?? shortName;
+  return CIRCUITS[shortName]?.name ?? shortName;
 }
 
 function circuitType(shortName) {
-  return CIRCUIT_INFO[shortName]?.type ?? null;
+  return CIRCUITS[shortName]?.type ?? null;
 }
 
-// driver_number → display name shown in the standings column
-const DRIVER_DISPLAY = {
-   1: 'L. Norris',
-   3: 'M. Verstappen',
-   5: 'G. Bortoleto',
-   6: 'I. Hadjar',
-  10: 'P. Gasly',
-  11: 'S. Pérez',
-  12: 'K. Antonelli',
-  14: 'F. Alonso',
-  16: 'C. Leclerc',
-  18: 'L. Stroll',
-  23: 'A. Albon',
-  27: 'N. Hülkenberg',
-  30: 'L. Lawson',
-  31: 'E. Ocon',
-  41: 'A. Lindblad',
-  43: 'F. Colapinto',
-  44: 'L. Hamilton',
-  55: 'C. Sainz',
-  63: 'G. Russell',
-  77: 'V. Bottas',
-  81: 'O. Piastri',
-  87: 'O. Bearman',
-};
 
 // team short code → full display name
 const TEAM_NAMES = {
@@ -193,7 +142,7 @@ function main() {
         season: { year },
         champions: {
           driver: {
-            name: wdc?.full_name ?? DRIVER_DISPLAY[wdc?.driver_number] ?? '',
+            name: wdc?.full_name ?? wdc?.name ?? '',
             team: TEAM_NAMES[wdc?.team] ?? '',
             points: wdc?.points_current ?? 0,
             portrait_url: wdc?.portrait_url?.replace('/1col/', '/2col/') ?? null,
@@ -206,13 +155,13 @@ function main() {
         standings: {
           drivers_col1: drivers.slice(0, 11).map(d => ({
             position: d.position_current,
-            name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
+            name: d.name ?? `#${d.driver_number}`,
             points: d.points_current ?? 0,
             portrait_url: d.portrait_url ?? null,
           })),
           drivers_col2: drivers.slice(11).map(d => ({
             position: d.position_current,
-            name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
+            name: d.name ?? `#${d.driver_number}`,
             points: d.points_current ?? 0,
             portrait_url: d.portrait_url ?? null,
           })),
@@ -264,7 +213,7 @@ function main() {
           .slice(0, 6)
           .map(d => ({
             position: d.position_current ?? 0,
-            name: DRIVER_DISPLAY[d.driver_number] ?? `#${d.driver_number}`,
+            name: d.name ?? `#${d.driver_number}`,
             points: d.points_current ?? 0,
           })),
       },
@@ -275,7 +224,7 @@ function main() {
         name: `${last_session.session_name} Results`,
         results: last_session.results.map(r => ({
           position: r.position,
-          name: DRIVER_DISPLAY[r.driver_number] ?? `#${r.driver_number}`,
+          name: r.name ?? `#${r.driver_number}`,
           portrait_url: r.portrait_url,
           compounds: r.compounds,
           dnf: r.dnf ?? false,
@@ -289,9 +238,10 @@ function main() {
     if (view === 'post_race' && last_session?.results?.length) {
       const p1 = last_session.results[0];
       const gridResult = qualifying_results?.find(r => r.driver_number === p1.driver_number);
+      const p1Standing = standings.drivers?.find(d => d.driver_number === p1.driver_number);
       payload.winner = {
-        name: p1.full_name ?? DRIVER_DISPLAY[p1.driver_number] ?? `#${p1.driver_number}`,
-        team: TEAM_NAMES[DRIVER_MAP[p1.driver_number]?.team] ?? '',
+        name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
+        team: TEAM_NAMES[p1Standing?.team] ?? '',
         portrait_url: p1.portrait_url?.replace('/1col/', '/2col/') ?? null,
         grid_position: gridResult ? `P${gridResult.position}` : null,
         finish_position: 'P1',

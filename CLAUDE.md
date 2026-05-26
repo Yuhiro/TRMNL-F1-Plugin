@@ -82,8 +82,8 @@ Shows upcoming races. Not yet designed in detail — focus has been on the race 
 - Weather format: `21°C · ☁ 20%` using Tabler Icons via CDN, dot separator between fields
 
 **Right column:** Two sub-columns
-- Left: Constructor standings (full team name + points), top 5
-- Right: Driver standings (first initial + surname + points), top 5
+- Left: Constructor standings (full team name + points), top 6
+- Right: Driver standings (first initial + surname + points), top 6
 
 **Header:** Track map image + Race name + Location with Round number + Date range. Circuit map to the LEFT of the title block. Format: `Montréal, Canada (Round 7)`
 
@@ -227,7 +227,7 @@ See CONTEXT.md for full mapping table.
 - Completed sessions greyed out (`text--muted`), no weather
 - Live = LIVE badge only, no separate view, no live loop
 - Dot separator (·) between weather fields
-- Constructor standings left, driver standings right, top 5 each
+- Constructor standings left, driver standings right, top 6 each
 - Constructor standings full team names (e.g. "Mercedes", not "MER")
 - Driver standings abbreviated: first initial + surname (e.g. "K. Antonelli")
 - Post-race view not yet designed
