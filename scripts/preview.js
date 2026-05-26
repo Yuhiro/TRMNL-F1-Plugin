@@ -197,7 +197,7 @@ function wrapPage(renderedContent, fixtureName, fixtures) {
 <head>
   <meta charset="utf-8">
   <title>TRMNL Preview — ${fixtureName}</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
   <style>${TRMNL_CSS}</style>
   <style>
     .toolbar {

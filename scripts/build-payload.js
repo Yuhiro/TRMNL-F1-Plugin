@@ -121,7 +121,6 @@ function buildDateRange(sessions, timezone) {
   const localDates = sessions.map(s => {
     const d = new Date(s.date_start);
     return {
-      month: d.getMonth(),                                              // UTC month (close enough for range)
       day: parseInt(d.toLocaleDateString('en-CA', { day: 'numeric', timeZone: timezone })),
       monthName: d.toLocaleDateString('en-CA', { month: 'short', timeZone: timezone }),
     };
@@ -173,12 +172,6 @@ function formatGap(gap) {
   return `+${gap.toFixed(3)}s`;
 }
 
-function determineView(sessions) {
-  if (sessions.some(s => s.status === 'live'))                                        return 'live';
-  if (sessions.some(s => s.session_name === 'Race' && s.status === 'completed'))      return 'post_race';
-  if (sessions.some(s => s.status === 'completed'))                                   return 'race_weekend';
-  return 'pre_weekend';
-}
 
 function main() {
   let raw = '';
@@ -234,7 +227,7 @@ function main() {
       return;
     }
 
-    const view = determineView(sessions);
+    const view = data.view;
 
     const payload = {
       view,
@@ -247,14 +240,17 @@ function main() {
         circuit_image_url: circuitImageUrl(meeting.circuit_short_name),
         date_range: buildDateRange(sessions, timezone),
       },
-      sessions: sessions.map(s => ({
-        day: sessionDateParts(s.date_start, timezone).day,
-        month: sessionDateParts(s.date_start, timezone).month,
-        name: s.session_name,
-        time_range: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
-        status: s.status,
-        weather: sessionWeather(s, weather, forecasts),
-      })),
+      sessions: sessions.map(s => {
+        const { day, month } = sessionDateParts(s.date_start, timezone);
+        return {
+          day,
+          month,
+          name: s.session_name,
+          time_range: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
+          status: s.status,
+          weather: sessionWeather(s, weather, forecasts),
+        };
+      }),
       standings: {
         constructors: standings.constructors
           .slice(0, 6)

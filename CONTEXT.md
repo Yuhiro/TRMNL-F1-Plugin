@@ -262,7 +262,7 @@ Uses `air_temperature` (rounded) for temp. `rainfall` is an integer (0 or 1) —
 ## TRMNL Framework — Icon Usage
 Tabler Icons are not bundled in the framework. Load via CDN at the top of your markup:
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
 ```
 Usage:
 ```html

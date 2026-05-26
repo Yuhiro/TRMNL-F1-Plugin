@@ -152,17 +152,29 @@ async function getDriverInfo(sessionKey) {
 }
 
 async function getStandings() {
-  let rawDrivers = [];
+  let rawDrivers, rawDriverInfo;
   try {
-    rawDrivers = await fetchJSON(`${OPENF1_BASE}/championship_drivers?session_key=latest`);
+    [rawDrivers, rawDriverInfo] = await Promise.all([
+      fetchJSON(`${OPENF1_BASE}/championship_drivers?session_key=latest`),
+      fetchJSON(`${OPENF1_BASE}/drivers?session_key=latest`).catch(err => {
+        process.stderr.write(`Driver team fetch failed, falling back to static map: ${err.message}\n`);
+        return [];
+      }),
+    ]);
   } catch {
     return { drivers: [], constructors: [] };
   }
 
-  // Enrich each driver entry with acronym + team from static map
+  // Build live team map from /drivers; fall back to static DRIVER_MAP per entry
+  const liveTeamMap = {};
+  for (const d of rawDriverInfo) {
+    if (d.driver_number != null && d.team_name) liveTeamMap[d.driver_number] = d.team_name;
+  }
+
   const drivers = rawDrivers.map(d => ({
     ...d,
-    ...(DRIVER_MAP[d.driver_number] ?? { acronym: `#${d.driver_number}`, team: '???' }),
+    acronym: DRIVER_MAP[d.driver_number]?.acronym ?? `#${d.driver_number}`,
+    team: liveTeamMap[d.driver_number] ?? DRIVER_MAP[d.driver_number]?.team ?? '???',
   }));
 
   // Derive constructor standings by summing points_current per team
@@ -177,6 +189,14 @@ async function getStandings() {
     .map((c, i) => ({ ...c, position: i + 1 }));
 
   return { drivers, constructors };
+}
+
+function determineView(mode, sessions) {
+  if (mode === 'off_season') return 'off_season';
+  if (sessions.some(s => s.status === 'live')) return 'live';
+  if (sessions.some(s => s.session_name === 'Race' && s.status === 'completed')) return 'post_race';
+  if (sessions.some(s => s.status === 'completed')) return 'race_weekend';
+  return 'pre_weekend';
 }
 
 async function getWeatherForecast(location, sessionDateISO) {
@@ -254,22 +274,20 @@ async function main() {
       }
     }
 
-    // Fetch one Open-Meteo forecast per unique date among upcoming sessions
-    const seenDates = new Set();
-    for (const s of upcomingSessions) {
-      const dateStr = s.date_start.slice(0, 10);
-      if (!seenDates.has(dateStr)) {
-        seenDates.add(dateStr);
-        try {
-          const forecast = await getWeatherForecast(meeting.location, s.date_start);
-          if (forecast) output.forecasts[dateStr] = forecast;
-        } catch (err) {
-          process.stderr.write(`Forecast fetch failed for ${dateStr} (skipping): ${err.message}\n`);
-        }
-      }
+    // Fetch one Open-Meteo forecast per unique date among upcoming sessions, in parallel with standings
+    const uniqueDates = [...new Map(upcomingSessions.map(s => [s.date_start.slice(0, 10), s.date_start])).entries()];
+    const [standingsResult, ...forecastResults] = await Promise.all([
+      getStandings(),
+      ...uniqueDates.map(([dateStr, date_start]) =>
+        getWeatherForecast(meeting.location, date_start)
+          .then(forecast => ({ dateStr, forecast }))
+          .catch(err => { process.stderr.write(`Forecast fetch failed for ${dateStr} (skipping): ${err.message}\n`); return null; })
+      ),
+    ]);
+    output.standings = standingsResult;
+    for (const result of forecastResults) {
+      if (result?.forecast) output.forecasts[result.dateStr] = result.forecast;
     }
-
-    output.standings = await getStandings();
 
     const lastCompleted = output.sessions.filter(s => s.status === 'completed').at(-1);
     if (lastCompleted) {
@@ -358,6 +376,7 @@ async function main() {
     }
   }
 
+  output.view = determineView(output.mode, output.sessions);
   process.stdout.write(JSON.stringify(output, null, 2) + '\n');
 }
 

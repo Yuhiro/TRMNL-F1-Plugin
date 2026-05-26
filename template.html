@@ -1,4 +1,4 @@
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
 <style>
   .standings-row { border-bottom: 1px solid var(--light-grey, #ccc); }
   .standings-row:last-child { border-bottom: none; }
@@ -34,7 +34,7 @@
       </div>
 
       <!-- Driver standings (bottom): two equal sub-columns -->
-      <div style="display: flex; flex-direction: row; gap: 48px;">
+      <div style="display: flex; flex-direction: row; gap: var(--gap-xxlarge);">
 
         <div style="flex: 1;">
           {% for d in standings.drivers_col1 %}
@@ -162,7 +162,7 @@
 
       <!-- Sessions -->
 
-      <div style="display: flex; flex-direction: column; gap: 24px;">
+      <div style="display: flex; flex-direction: column; gap: var(--gap-large);">
         {% for session in sessions %}
 
           {% if session.status == 'live' %}
@@ -175,7 +175,7 @@
             <div style="display: flex; flex-direction: column; gap: var(--gap-small);">
               <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
                 <span class="text--xlarge">{{ session.name }}</span>
-                <span class="label label--filled text--xlarge" style="border-radius: 4px; padding: 2px 8px; align-self: center;">LIVE</span>
+                <span class="label label--filled text--xlarge rounded--small" style="padding: 2px 8px; align-self: center;">LIVE</span>
               </div>
               <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
                 <span class="text--large">{{ session.time_range }}</span>
@@ -234,7 +234,7 @@
     </div>
 
     <!-- Right: session results (or circuit map) + standings -->
-    <div style="width: 530px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 48px;">
+    <div style="width: 530px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: var(--gap-xxlarge);">
 
       {% if last_session %}
       <!-- Previous session results -->
@@ -250,7 +250,7 @@
             <div style="width: 25px; height: 25px; flex-shrink: 0;"></div>
             {% endif %}
             <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ result.name }}</span>
-            <div style="display: flex; flex-direction: row; gap: 4px; align-items: center; flex-shrink: 0;">
+            <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center; flex-shrink: 0;">
               {% for compound in result.compounds %}
               <div style="width: 24px; height: 24px; border-radius: 50%; border: 4px solid var(--light-grey, #CCC); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <span class="text--small">{{ compound }}</span>

@@ -55,7 +55,7 @@ Key endpoints:
 - `/sessions?meeting_key={key}` — all sessions for a meeting with `date_start`, `date_end`, `session_name`, `session_type`, `gmt_offset`
 - `/weather?session_key={key}` — live weather, updates every minute. Fields: `air_temperature`, `track_temperature`, `rainfall`, `humidity`, `wind_speed`, `wind_direction`
 - `/championship_drivers?session_key=latest` — driver standings, race sessions only. Fields: `driver_number`, `points_current`, `points_start`, `position_current`, `position_start`
-- `/championship_teams?session_key=latest` — **DO NOT USE for 2026**: returns `team_name: null` for all entries. Derive constructor standings from `/championship_drivers` instead (group `points_current` by team using the static `DRIVER_MAP` in `fetch-data.js`)
+- `/drivers?session_key=latest` — used to get live `team_name` per driver for constructor standings. Fetched in parallel with `/championship_drivers` inside `getStandings()`. Falls back to static `DRIVER_MAP` per driver if the fetch fails.
 - `/session_result?session_key=latest` — final results after session. Fields: `position`, `driver_number`, `duration`, `gap_to_leader`, `dnf`, `dns`, `dsq`
 
 **Important:** Real-time data requires a paid OpenF1 subscription. Historical data (2023+) is free. Plan accordingly.
@@ -131,7 +131,7 @@ When a Figma node has `justify-content: center` on a flex-col, check whether the
 - `layout--stretch-y` — all direct children stretch to full height (row layouts)
 
 ### Typography classes
-- `text--small` (12px), `text--base` (16px), `text--large` (21px), `text--xlarge` (26px+), `text--xxlarge` (38px)
+- `text--small` (12px), `text--base` (16px), `text--large` (21px), `text--xlarge` (26px+), `text--xxlarge` (38px), `text--xxxlarge` (confirmed rendering on device)
 - `font--bold` for bold weight
 - `text--muted` for secondary/muted text
 - `label`, `label--small`, `label--filled`, `label--outline`, `label--underline` for labels
@@ -150,7 +150,7 @@ Do not hardcode `#CCCCCC`, `#888888`, etc. — always use the CSS variable equiv
 ### Icons
 Tabler Icons via CDN (not bundled in framework):
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
 <i class="ti ti-cloud-rain"></i>
 ```
 
