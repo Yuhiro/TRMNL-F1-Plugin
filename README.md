@@ -16,6 +16,10 @@ A Formula 1 plugin for the [TRMNL X](https://usetrmnl.com) e-ink display. Shows 
 - Driver standings (top 5)
 - Circuit map, race name, location, and round number
 
+**Post-race view** (shown after the race until the next weekend):
+- Race winner with portrait, team, and grid-to-finish position
+- "Up Next" block with the next race name, location, date range, and race-day weather forecast
+
 **Off-weekend:** Calendar view showing upcoming races (in progress).
 
 ---
@@ -59,7 +63,12 @@ Timezone strings follow the [IANA tz database](https://en.wikipedia.org/wiki/Lis
 
 GitHub disables Actions on forks by default. Go to **Actions** in your repo and enable them.
 
-The workflow runs automatically every 15 minutes. You can also trigger it manually from the Actions tab.
+The workflow runs on a smart schedule to stay within GitHub Actions free tier limits:
+- **Friday–Sunday:** every 15 minutes (race weekend)
+- **Monday:** once at noon UTC (post-race standings update)
+- **Tuesday–Thursday:** not scheduled (off-weekend)
+
+You can also trigger it manually from the Actions tab at any time.
 
 ---
 

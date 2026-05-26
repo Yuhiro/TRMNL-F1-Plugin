@@ -136,13 +136,13 @@ const TRMNL_CSS = `
   :root {
     --gap-xsmall: 5px; --gap-small: 7px; --gap: 10px;
     --gap-medium: 16px; --gap-large: 20px; --gap-xlarge: 30px; --gap-xxlarge: 40px;
-    --light-grey: #ccc; --mid-grey: #888;
+    --light-grey: #B0B7B6; --mid-grey: #5D5F5E;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: #d8d8d8; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #111; }
+  body { background: #b8bfbf; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; color: #1F201F; }
 
   .trmnl-screen {
-    width: 1040px; height: 780px; background: white; overflow: hidden;
+    width: 1040px; height: 780px; background: #D3DCDC; overflow: hidden;
     position: relative; margin: 20px auto;
     border: 2px solid #555; box-shadow: 0 4px 24px rgba(0,0,0,0.25);
     display: flex; flex-direction: column;
@@ -167,11 +167,11 @@ const TRMNL_CSS = `
   .text--xxlarge  { font-size: 38px; line-height: 1.1; }
   .text--xxxlarge { font-size: 52px; line-height: 1.0; font-weight: bold; }
   .font--bold { font-weight: bold; }
-  .text--muted { color: #888; }
+  .text--muted { color: #5D5F5E; }
 
   .label { display: inline-flex; align-items: center; padding: 2px 8px; border: 1px solid currentColor; font-size: 16px; line-height: 1.3; }
   .label--small  { font-size: 12px; padding: 1px 5px; }
-  .label--filled { background: #111; color: white; border-color: #111; }
+  .label--filled { background: #1F201F; color: #D3DCDC; border-color: #1F201F; }
   .label--outline { border: 1px solid currentColor; }
   .label--underline { text-decoration: underline; border: none; }
 
