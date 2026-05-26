@@ -210,7 +210,11 @@ async function main() {
     const upcomingSessions = output.sessions.filter(s => s.status === 'upcoming');
 
     if (liveSession) {
-      output.weather = await getLiveWeather(liveSession.session_key);
+      try {
+        output.weather = await getLiveWeather(liveSession.session_key);
+      } catch (err) {
+        process.stderr.write(`Live weather fetch failed (skipping): ${err.message}\n`);
+      }
     }
 
     // Fetch one Open-Meteo forecast per unique date among upcoming sessions
@@ -219,8 +223,12 @@ async function main() {
       const dateStr = s.date_start.slice(0, 10);
       if (!seenDates.has(dateStr)) {
         seenDates.add(dateStr);
-        const forecast = await getWeatherForecast(meeting.location, s.date_start);
-        if (forecast) output.forecasts[dateStr] = forecast;
+        try {
+          const forecast = await getWeatherForecast(meeting.location, s.date_start);
+          if (forecast) output.forecasts[dateStr] = forecast;
+        } catch (err) {
+          process.stderr.write(`Forecast fetch failed for ${dateStr} (skipping): ${err.message}\n`);
+        }
       }
     }
 
