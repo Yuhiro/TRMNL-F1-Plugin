@@ -2,7 +2,7 @@
 
 A Formula 1 plugin for the [TRMNL](https://usetrmnl.com) e-ink display. Shows the current race weekend schedule, session timings, and championship standings — updated every 15 minutes via GitHub Actions.
 
-![Race weekend view showing session list, constructor standings, and driver standings](assets/circuits/Melbourne.png)
+![Race weekend view showing session list, constructor standings, and driver standings](assets/app.png)
 
 ---
 

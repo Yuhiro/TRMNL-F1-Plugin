@@ -51,8 +51,8 @@
           </div>
 
           {% elsif session.status == 'completed' %}
-          <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: flex-start;">
-            <div style="display: flex; flex-direction: column; justify-content: space-between; align-items: center; align-self: stretch; flex-shrink: 0; text-align: center;">
+          <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: center;">
+            <div style="display: flex; flex-direction: column; align-items: center; flex-shrink: 0; text-align: center; gap: var(--gap-small);">
               <div class="text--xlarge text--muted">{{ session.day }}</div>
               <div class="text--large text--muted">{{ session.month }}</div>
             </div>
