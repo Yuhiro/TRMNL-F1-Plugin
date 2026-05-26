@@ -257,7 +257,7 @@
               </div>
               {% endfor %}
             </div>
-            <span class="text--large" style="min-width: 94px; text-align: right; flex-shrink: 0;">{{ result.time }}</span>
+            <span class="text--large" style="min-width: 94px; text-align: right; flex-shrink: 0;">{% if result.dnf %}DNF{% elsif result.dns %}DNS{% elsif result.dsq %}DSQ{% else %}{{ result.time }}{% endif %}</span>
           </div>
           {% endfor %}
         </div>

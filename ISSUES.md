@@ -6,7 +6,7 @@
 
 - [x] **#2 [HIGH] Weathercode icon wrong for WMO codes 1–2** — `build-payload.js:90` maps `code <= 2` to `ti-sun` (clear sky). CONTEXT.md specifies codes 1–2 are "Partly cloudy" → `ti-cloud-sun`. Fix: `code === 0` → `ti-sun`, `code <= 2` → `ti-cloud-sun`.
 
-- [ ] **#3 [MEDIUM] `dnf`/`dns`/`dsq` flags silently dropped** — `fetch-data.js` fetches these per result but `build-payload.js` strips them when mapping `last_session.results`. Retired drivers show a blank `time` field instead of "DNF".
+- [x] **#3 [MEDIUM] `dnf`/`dns`/`dsq` flags silently dropped** — `fetch-data.js` fetches these per result but `build-payload.js` strips them when mapping `last_session.results`. Retired drivers show a blank `time` field instead of "DNF".
 
 - [ ] **#4 [LOW] `sessionDateParts` called twice per session** — `build-payload.js:204–205` constructs `new Date()` twice per session in the map loop. Destructure from a single call: `const { day, month } = sessionDateParts(...)`.
 

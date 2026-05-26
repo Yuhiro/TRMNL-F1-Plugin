@@ -282,6 +282,9 @@ function main() {
           name: DRIVER_DISPLAY[r.driver_number] ?? `#${r.driver_number}`,
           portrait_url: r.portrait_url,
           compounds: r.compounds,
+          dnf: r.dnf ?? false,
+          dns: r.dns ?? false,
+          dsq: r.dsq ?? false,
           time: r.position === 1 ? formatLapTime(r.duration) : formatGap(r.gap_to_leader),
         })),
       };
