@@ -4,7 +4,7 @@
 
 - [x] **#1 [HIGH] `build-payload.js` crashes at end of season** — `meeting` can be `null` when `off_weekend` and the season is over. `meeting.meeting_name` throws immediately at `build-payload.js:195`. Needs null guard at top of `main()`.
 
-- [ ] **#2 [HIGH] Weathercode icon wrong for WMO codes 1–2** — `build-payload.js:90` maps `code <= 2` to `ti-sun` (clear sky). CONTEXT.md specifies codes 1–2 are "Partly cloudy" → `ti-cloud-sun`. Fix: `code === 0` → `ti-sun`, `code <= 2` → `ti-cloud-sun`.
+- [x] **#2 [HIGH] Weathercode icon wrong for WMO codes 1–2** — `build-payload.js:90` maps `code <= 2` to `ti-sun` (clear sky). CONTEXT.md specifies codes 1–2 are "Partly cloudy" → `ti-cloud-sun`. Fix: `code === 0` → `ti-sun`, `code <= 2` → `ti-cloud-sun`.
 
 - [ ] **#3 [MEDIUM] `dnf`/`dns`/`dsq` flags silently dropped** — `fetch-data.js` fetches these per result but `build-payload.js` strips them when mapping `last_session.results`. Retired drivers show a blank `time` field instead of "DNF".
 
