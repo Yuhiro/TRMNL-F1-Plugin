@@ -101,9 +101,9 @@
 <div class="layout layout--col" style="padding: var(--gap-xxlarge); justify-content: space-between;">
 
   <!-- Top Content: logo + race name -->
-  <div style="display: flex; flex-direction: column; gap: var(--gap-small); width: 100%; flex-shrink: 0;">
+  <div style="display: flex; flex-direction: column; gap: var(--gap-large); width: 100%; flex-shrink: 0;">
     {% if logo_url %}
-    <img src="{{ logo_url }}" style="height: 20px; width: auto;" alt="">
+    <img src="{{ logo_url }}" style="height: 20px; width: auto; align-self: flex-start;" alt="">
     {% endif %}
     <div class="text--xxxlarge" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ meeting.name }}</div>
   </div>
@@ -225,7 +225,7 @@
     </div>
 
     <!-- Right: session results (or circuit map) + standings -->
-    <div style="width: 530px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: var(--gap-xxlarge);">
+    <div style="width: 530px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: flex-end; gap: var(--gap-xlarge);">
 
       {% if last_session %}
       <!-- Previous session results -->
