@@ -1,15 +1,17 @@
 # TRMNL F1 Plugin — Claude Code Project Instructions
 
+@.claude/rules/dev-conventions.md
+
 ## What We're Building
 A TRMNL e-ink display plugin for Formula 1 fans. It shows the current race weekend schedule, session timings with weather, and championship standings. A GitHub Actions workflow fetches data from multiple APIs and pushes it to TRMNL via webhook.
 
 ## Current Status
 - Design is in Figma (three view states designed: pre-weekend, between sessions, live)
 - Architecture and data sources decided
-- All pipeline scripts written and tested (`fetch-data.js`, `build-payload.js`, `push-webhook.js`)
+- All pipeline scripts written, hardened, and tested (`fetch-data.js`, `build-payload.js`, `push-webhook.js`)
 - GitHub Actions workflow written (`trmnl-update.yml`)
-- Race weekend `template.html` written and iterating on layout/rendering
-- 23 circuit map images downloaded to `assets/circuits/` and committed to the repo
+- `template.html` complete for race-weekend, off-weekend, off-season, and post-race views
+- Circuit images committed to repo in two subdirectories: `assets/circuits/official/` (F1 CDN) and `assets/circuits/openf1/`
 
 ---
 
@@ -65,33 +67,49 @@ Base URL: `https://api.open-meteo.com/v1/forecast`
 No API key required. Use for forecasting qualifying and race day weather before the weekend starts.
 Example: `?latitude=45.5&longitude=-73.52&daily=temperature_2m_max,precipitation_probability_max,weathercode&timezone=America/Toronto`
 
-Map `weathercode` to Tabler Icons for display (see CONTEXT.md).
+Map `weathercode` to Tabler Icons for display (see docs/CONTEXT.md).
 
 ---
 
 ## View States
 
-### 1. Calendar View (default, off-weekend)
-Shows upcoming races. Not yet designed in detail — focus has been on the race weekend view.
+`output.view` is the single routing field in the JSON payload. The template branches on it.
 
-### 2. Race Weekend View (during a GP weekend)
+| `view` value | When | Template branch |
+|---|---|---|
+| `pre_weekend` | Off-weekend — next GP is upcoming, no sessions started | `{% else %}` (race-weekend template) |
+| `race_weekend` | Some sessions completed, race not yet run | `{% else %}` |
+| `live` | A session is currently in progress | `{% else %}` |
+| `post_race` | Race session completed | `{% else %}` with inner `{% if view == 'post_race' %}` |
+| `off_season` | No meetings found for current/next year | `{% if view == 'off_season' %}` |
+
+### Off-Weekend View
+**No separate template.** During an off-weekend, `findCurrentMeeting` returns the next upcoming GP and `determineView` returns `pre_weekend`. The race-weekend template renders with all sessions showing as "upcoming" with forecasts. This is exactly the right UX — the user sees the next race's schedule.
+
+### Race Weekend View (during a GP weekend)
 **Left column:** Session list for the weekend
 - Completed sessions: greyed out (`text--muted`), no weather shown
-- Upcoming sessions: bold (`font--bold`), show weather inline
-- Live session: bold + **LIVE pill badge** (`label label--small label--filled rounded--full`)
-- Weather format: `21°C · ☁ 20%` using Tabler Icons via CDN, dot separator between fields
+- Upcoming sessions: show weather inline
+- Live session: bold + **LIVE pill badge** (`label label--filled rounded--small`)
+- Weather format: `21°C · icon · 20%` using Tabler Icons via CDN, dot separator between fields
 
 **Right column:** Two sub-columns
 - Left: Constructor standings (full team name + points), top 6
 - Right: Driver standings (first initial + surname + points), top 6
 
-**Header:** Track map image + Race name + Location with Round number + Date range. Circuit map to the LEFT of the title block. Format: `Montréal, Canada (Round 7)`
+**Header:** Race name (full) + Location with Round number + Date range. Format: `Montréal, Canada (Round 7)`
 
-### 3. Post-Race View
-TBD — likely reverts to calendar view with a small last-race summary. Not designed yet.
+### Post-Race View
+Built. Shows:
+- **Winner block:** portrait, name, team, grid → finish position (e.g. P3 → P1)
+- **Up Next block:** next GP name, location, date range, race-day weather forecast
+- Right column: standings as normal
 
-### 4. Live Session View
-**Kept simple for now.** No separate live view. Just mark the active session row with a LIVE badge. No special data fetching or live timing display during sessions for this version.
+### Off-Season View
+Shows the current season's final championship standings (WDC + WCC winners at top, full standings below). Separate template branch (`{% if view == 'off_season' %}`).
+
+### Live Session View
+**Kept simple.** No separate live view. Just mark the active session row with a LIVE badge. No special data fetching or live timing display during sessions for this version.
 
 ---
 
@@ -160,9 +178,18 @@ TRMNL pixel fonts (TRMNL12/16/21) render on the physical device. Use framework t
 ---
 
 ## Circuit Images
-Circuit map PNGs are hosted in the GitHub repo at `assets/circuits/`. The `build-payload.js` constructs GitHub raw URLs (`https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits/{name}.png`) and includes them in the payload. Images must be committed to the repo for the URLs to resolve.
+Circuit map images are hosted in the GitHub repo and served via raw GitHub URLs. Two sources are supported, controlled by the `CIRCUIT_IMAGE_SOURCE` repository variable (Settings → Secrets and variables → Variables):
 
-`scripts/download-circuits.js` is a one-time utility to download images from OpenF1 for a new season. Re-run it when new circuits are added.
+| Value | Path | Format | Notes |
+|---|---|---|---|
+| `openf1` (default) | `assets/circuits/openf1/` | PNG | Downloaded from OpenF1 CDN |
+| `official` | `assets/circuits/official/` | WebP | Downloaded from F1 official CDN |
+
+`build-payload.js` constructs the URL via `circuitImageUrl(circuit_short_name)`, which reads `CIRCUIT_IMAGE_SOURCE` and falls back to `openf1` if no variable is set or if `official` has no slug for a circuit.
+
+Images must be committed to the repo for the URLs to resolve.
+
+`scripts/download-circuits.js` is a one-time utility to download OpenF1 circuit images for a new season. Re-run it when new circuits are added.
 
 ---
 
@@ -184,11 +211,15 @@ All session times in the webhook payload must be converted to the user's timezon
     trmnl-update.yml    # Cron schedule + orchestration
 scripts/
   fetch-data.js         # Fetches OpenF1 + Open-Meteo, writes JSON to stdout
-  build-payload.js      # Transforms raw JSON into TRMNL webhook payload
+  build-payload.js      # Transforms data into TRMNL webhook payload
   push-webhook.js       # POSTs to TRMNL webhook URL
+  circuits.js           # Circuit metadata: coords, images, names, F1 slugs, types
   download-circuits.js  # One-time utility: downloads circuit images from OpenF1
+  preview.js            # Local dev preview server
 assets/
-  circuits/             # 23 circuit map PNGs (committed to repo)
+  circuits/
+    official/           # F1 CDN circuit images (WebP) — used when CIRCUIT_IMAGE_SOURCE=official
+    openf1/             # OpenF1 circuit images (PNG) — default
 ```
 
 **Secrets required (stored in GitHub repo secrets):**
@@ -216,41 +247,46 @@ MCL, MER, FER, RBR, AMR, ALP, AUD, WIL, RBU, HAA, CAD
 `Practice 1`, `Practice 2`, `Practice 3`, `Sprint Qualifying`, `Sprint`, `Qualifying`, `Race`
 
 ### Weather icon mapping (Open-Meteo weathercode → Tabler Icon)
-See CONTEXT.md for full mapping table.
+See docs/CONTEXT.md for full mapping table.
 
 ---
 
 ## Key Design Decisions Made
 - No title_bar — maximise screen real estate
-- Track map always to the LEFT of the header title block (consistent across all views)
+- Off-weekend view = race-weekend template showing next GP sessions (all "upcoming") — no separate calendar view needed
+- `output.view` is the single routing field; `output.mode` was removed as it was never read downstream
 - Round number always shown in the location line: `Montréal, Canada (Round 7)`
 - Completed sessions greyed out (`text--muted`), no weather
 - Live = LIVE badge only, no separate view, no live loop
 - Dot separator (·) between weather fields
 - Constructor standings left, driver standings right, top 6 each
 - Constructor standings full team names (e.g. "Mercedes", not "MER")
-- Driver standings abbreviated: first initial + surname (e.g. "K. Antonelli")
-- Post-race view not yet designed
-- Tabler Icons for weather (loaded via CDN)
+- Driver standings abbreviated: first initial + surname (e.g. "K. Antonelli"), sourced from OpenF1 `broadcast_name` field (format: `"INITIAL SURNAME"`, e.g. `"M VERSTAPPEN"`)
+- Post-race view: winner block (portrait, name, team, grid→finish) + "Up Next" next GP block
+- Tabler Icons for weather (loaded via CDN) — always use framework text size classes, not hardcoded `font-size`
 - Open-Meteo for pre-weekend forecasts, OpenF1 `air_temperature` + `rainfall` during live sessions
-- Live session weather format: `21°C · icon · Wet/Dry` (same template fields as forecast, `rainfall` boolean → "Wet"/"Dry")
+- Live session weather format: `21°C · icon · Wet/Dry` (`rainfall` boolean → "Wet"/"Dry")
+- Weather forecasts fetched in a single batched Open-Meteo request for the full weekend date range
 - All times converted to user timezone in `build-payload.js` (timezone travels in the JSON from `fetch-data.js`)
 - Pure Node.js — no npm dependencies. Uses native `fetch` (Node 18+) and `Intl` for timezone formatting
-- Circuit images hosted in GitHub repo (`assets/circuits/`), referenced via raw GitHub URLs
+- Circuit images in `assets/circuits/official/` (WebP) and `assets/circuits/openf1/` (PNG); source controlled by `CIRCUIT_IMAGE_SOURCE` repo variable
+- OpenF1 portrait URLs contain `/1col/` (small); upgraded to `/2col/` via `upgradePortraitUrl()` in `build-payload.js`
+
 
 ## What's Not Built Yet
-- [ ] Calendar view design + template
-- [ ] Post-race view design + template
-- [ ] Circuit static data (lap record, corners, DRS zones, length) — to be added to CSV
+- [ ] Circuit static data (lap record, corners, DRS zones, length) — to be added to `circuits.js`
 
 ## What's Built
-- [x] `scripts/fetch-data.js` — fetches OpenF1 + Open-Meteo
-- [x] `scripts/build-payload.js` — transforms data into TRMNL payload
+- [x] `scripts/fetch-data.js` — fetches OpenF1 + Open-Meteo, outputs JSON to stdout
+- [x] `scripts/build-payload.js` — transforms data into TRMNL webhook payload
 - [x] `scripts/push-webhook.js` — POSTs to TRMNL webhook
-- [x] `scripts/download-circuits.js` — one-time circuit image downloader
-- [x] `.github/workflows/trmnl-update.yml` — 15-minute cron pipeline
-- [x] `template.html` — race weekend view (iterating on layout)
-- [x] `assets/circuits/` — 23 circuit PNGs
+- [x] `scripts/download-circuits.js` — one-time circuit image downloader (OpenF1)
+- [x] `scripts/circuits.js` — circuit metadata (coords, image filenames, F1 slugs, names, types)
+- [x] `scripts/preview.js` — local preview server for template iteration
+- [x] `.github/workflows/trmnl-update.yml` — cron pipeline (15-min during weekends, once daily off-weekend)
+- [x] `template.html` — all view states: off-season, pre-weekend, race-weekend, live, post-race
+- [x] `assets/circuits/official/` — F1 CDN circuit images (WebP)
+- [x] `assets/circuits/openf1/` — OpenF1 circuit images (PNG)
 
 ## Role
 Think like a software engineer and ux designer. Ask questions if you have them.
