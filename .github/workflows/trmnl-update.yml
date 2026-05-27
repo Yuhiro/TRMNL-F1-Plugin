@@ -23,5 +23,8 @@ jobs:
         env:
           TRMNL_WEBHOOK_URL: ${{ secrets.TRMNL_WEBHOOK_URL }}
           USER_TIMEZONE: ${{ secrets.USER_TIMEZONE }}
+          # CIRCUIT_IMAGE_SOURCE: set to 'official' in repo Variables to use F1 CDN images.
+          # Leave unset (or set to 'openf1') to use OpenF1 images (default).
+          CIRCUIT_IMAGE_SOURCE: ${{ vars.CIRCUIT_IMAGE_SOURCE || 'openf1' }}
         shell: bash
         run: set -o pipefail && node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js

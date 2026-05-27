@@ -48,9 +48,11 @@ cd TRMNL-F1-Plugin
 3. Copy the **Webhook URL** — you'll need it in the next step
 4. Paste the contents of `template.html` into the template editor
 
-### 3. Add GitHub Secrets
+### 3. Add GitHub Secrets and Variables
 
-In your forked repo, go to **Settings → Secrets and variables → Actions** and add:
+In your forked repo, go to **Settings → Secrets and variables → Actions**.
+
+**Secrets** (encrypted):
 
 | Secret | Value |
 |--------|-------|
@@ -59,14 +61,24 @@ In your forked repo, go to **Settings → Secrets and variables → Actions** an
 
 Timezone strings follow the [IANA tz database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) format. All session times in the display will be converted to this timezone.
 
+**Variables** (optional, plain text):
+
+| Variable | Values | Default |
+|----------|--------|---------|
+| `CIRCUIT_IMAGE_SOURCE` | `openf1` or `official` | `openf1` |
+
+Set `CIRCUIT_IMAGE_SOURCE` to `official` to use high-resolution F1 CDN circuit images instead of OpenF1 images. Both sets are committed to the repo — no re-download needed to switch.
+
 ### 4. Enable GitHub Actions
 
 GitHub disables Actions on forks by default. Go to **Actions** in your repo and enable them.
 
 The workflow runs on a smart schedule to stay within GitHub Actions free tier limits:
-- **Friday–Sunday:** every 15 minutes (race weekend)
+- **Friday–Sunday:** every 30 minutes (race weekend)
 - **Monday:** once at noon UTC (post-race standings update)
-- **Tuesday–Thursday:** not scheduled (off-weekend)
+- **Wednesday:** once at noon UTC (picks up penalty/DSQ point adjustments)
+- **Thursday:** once at noon UTC (sprint weekend Thursday sessions)
+- **Tuesday:** not scheduled
 
 You can also trigger it manually from the Actions tab at any time.
 
@@ -104,12 +116,21 @@ Set `TRMNL_WEBHOOK_URL` and `USER_TIMEZONE` as environment variables before runn
 
 ## Circuit images
 
-23 circuit map PNGs live in `assets/circuits/` and are committed to the repo. `build-payload.js` constructs GitHub raw content URLs pointing to these files, so they must be committed and pushed before they'll appear on the device.
+Two sets of circuit images are committed to the repo and served via GitHub raw content URLs:
 
-To refresh images for a new season:
+| Folder | Source | Format |
+|--------|--------|--------|
+| `assets/circuits/openf1/` | OpenF1 API | PNG |
+| `assets/circuits/official/` | F1 CDN | WebP (higher resolution) |
+
+Which set is used is controlled by the `CIRCUIT_IMAGE_SOURCE` repository variable (see Setup). The default is `openf1`.
+
+To re-download images for a new season (run locally, then commit):
 
 ```bash
-node scripts/download-circuits.js
+node scripts/download-circuits.js                  # openf1 only (default)
+node scripts/download-circuits.js --source official # F1 CDN only
+node scripts/download-circuits.js --source both    # both sources
 ```
 
 ---
@@ -124,8 +145,13 @@ scripts/
   fetch-data.js           # Fetches OpenF1 + Open-Meteo, writes JSON to stdout
   build-payload.js        # Transforms raw JSON into TRMNL webhook payload
   push-webhook.js         # POSTs to TRMNL webhook URL
-  download-circuits.js    # One-time utility: downloads circuit images
+  circuits.js             # Circuit data: coords, names, image filenames, F1 slugs
+  download-circuits.js    # One-time utility: downloads circuit images (--source openf1|official|both)
+  preview.js              # Local preview server for template.html with fixture data
 assets/
-  circuits/               # 23 circuit map PNGs
+  circuits/
+    openf1/               # Circuit map PNGs from OpenF1
+    official/             # Circuit map WebPs from F1 CDN
+  fixtures/               # Sample JSON payloads for local preview
 template.html             # Liquid template rendered on the TRMNL device
 ```

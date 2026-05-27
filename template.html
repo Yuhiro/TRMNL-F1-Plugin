@@ -80,6 +80,9 @@
       </div>
 
       <!-- Constructor standings (bottom) -->
+      <!-- NOTE: standings.constructors is unsliced (up to 11 teams). At text--large +
+           padding: var(--gap-small) per row this risks vertical overflow on the TRMNL X.
+           Acceptable for now — revisit if the off-season view is ever formally designed. -->
       <div>
         {% for c in standings.constructors %}
         <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
@@ -101,7 +104,7 @@
 <div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xxlarge); gap: var(--gap-large);">
 
   <!-- Full-width: race name only -->
-  <div class="text--xxxlarge">{{ meeting.name }}</div>
+  <div class="text--xxxlarge" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ meeting.name }}</div>
 
   <!-- Body: two full-height columns -->
   <div style="display: flex; flex-direction: row; flex: 1; min-height: 0; gap: var(--gap-xxlarge);">
@@ -120,7 +123,7 @@
       <!-- Winner block -->
       <div style="display: flex; flex-direction: column; align-items: flex-start;">
         <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
-          <i class="ti ti-trophy" style="font-size: 26px; line-height: 1;"></i>
+          <i class="ti ti-trophy text--xlarge" style="line-height: 1;"></i>
           <span class="text--xlarge">Winner!</span>
         </div>
         <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: center; width: 100%;">
@@ -135,7 +138,7 @@
             {% if winner.grid_position %}
             <div style="display: flex; flex-direction: row; align-items: flex-start;">
               <span class="text--base">{{ winner.grid_position }}</span>
-              <i class="ti ti-arrow-narrow-right-dashed" style="font-size: 21px; line-height: 1;"></i>
+              <i class="ti ti-arrow-narrow-right-dashed text--large" style="line-height: 1;"></i>
               <span class="text--base">{{ winner.finish_position }}</span>
             </div>
             {% endif %}
@@ -154,7 +157,7 @@
           <span class="text--small text--muted">·</span>
           <span class="text--large">{{ next_race.weather.temp }}</span>
           <span class="text--small text--muted">·</span>
-          <i class="ti {{ next_race.weather.icon }}" style="font-size: 20px; line-height: 1;"></i>
+          <i class="ti {{ next_race.weather.icon }} text--large" style="line-height: 1;"></i>
           <span class="text--large">{{ next_race.weather.precip }}</span>
           {% endif %}
         </div>
@@ -200,7 +203,7 @@
                 <span class="text--large text--muted">·</span>
                 <span class="text--large">{{ session.weather.temp }}</span>
                 <span class="text--large text--muted">·</span>
-                <i class="ti {{ session.weather.icon }}" style="font-size: 20px; line-height: 1;"></i>
+                <i class="ti {{ session.weather.icon }} text--large" style="line-height: 1;"></i>
                 <span class="text--large">{{ session.weather.precip }}</span>
                 {% endif %}
               </div>
@@ -234,7 +237,7 @@
             <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ result.name }}</span>
             <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center; flex-shrink: 0;">
               {% for compound in result.compounds %}
-              <div style="width: 24px; height: 24px; border-radius: 50%; border: 4px solid var(--light-grey, #CCC); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <div class="rounded--full" style="width: 24px; height: 24px; border: 4px solid var(--light-grey, #CCC); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                 <span class="text--small">{{ compound }}</span>
               </div>
               {% endfor %}

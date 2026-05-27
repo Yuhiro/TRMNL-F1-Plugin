@@ -236,11 +236,17 @@ function serve() {
   const server = http.createServer((req, res) => {
     const url = new URL(req.url, `http://localhost:${PORT}`);
 
-    // Serve local circuit images
+    // Serve local circuit images (openf1/ and official/ subfolders)
     if (url.pathname.startsWith('/assets/')) {
-      const filePath = path.join(ROOT, url.pathname);
+      const assetsRoot = path.resolve(ROOT, 'assets');
+      const filePath = path.resolve(ROOT, url.pathname.slice(1));
+      if (!filePath.startsWith(assetsRoot)) {
+        res.writeHead(403); res.end('Forbidden'); return;
+      }
       if (fs.existsSync(filePath)) {
-        res.writeHead(200, { 'Content-Type': 'image/png' });
+        const ext = path.extname(filePath).toLowerCase();
+        const contentType = ext === '.webp' ? 'image/webp' : ext === '.png' ? 'image/png' : 'image/jpeg';
+        res.writeHead(200, { 'Content-Type': contentType });
         fs.createReadStream(filePath).pipe(res);
         return;
       }
@@ -267,10 +273,11 @@ function serve() {
       const template = fs.readFileSync(TEMPLATE_PATH, 'utf8');
       const data = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 
-      // Rewrite GitHub raw image URLs to local paths so images load without a network request
+      // Rewrite GitHub raw image URLs to local paths so images load without a network request.
+      // Handles both assets/circuits/openf1/ and assets/circuits/official/ subfolders.
       if (data.meeting?.circuit_image_url) {
-        const filename = data.meeting.circuit_image_url.split('/').pop();
-        data.meeting.circuit_image_url = `/assets/circuits/${filename}`;
+        const match = data.meeting.circuit_image_url.match(/assets\/circuits\/.+$/);
+        if (match) data.meeting.circuit_image_url = `/${match[0]}`;
       }
 
       const rendered = renderTemplate(template, data);

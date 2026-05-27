@@ -5,9 +5,23 @@
 const GITHUB_RAW_BASE = 'https://raw.githubusercontent.com/yuhiro/TRMNL-F1-Plugin/main/assets/circuits';
 const CIRCUITS = require('./circuits');
 
+// CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
+// Set via GitHub Actions repository variable (Settings → Secrets and variables → Variables).
+// Values: 'official' (F1 CDN images) or 'openf1' (OpenF1 images).
+// Default: 'openf1' — no variable needed for the default behaviour.
+const CIRCUIT_IMAGE_SOURCE = process.env.CIRCUIT_IMAGE_SOURCE || 'openf1';
+
 function circuitImageUrl(shortName) {
-  const file = CIRCUITS[shortName]?.image;
-  return file ? `${GITHUB_RAW_BASE}/${file}` : null;
+  const circuit = CIRCUITS[shortName];
+  if (!circuit) return null;
+
+  // Official F1 CDN images — fall back to OpenF1 if no slug exists for this circuit.
+  if (CIRCUIT_IMAGE_SOURCE === 'official' && circuit.f1_slug) {
+    return `${GITHUB_RAW_BASE}/official/${circuit.f1_slug}.webp`;
+  }
+
+  // OpenF1 images (default).
+  return circuit.image ? `${GITHUB_RAW_BASE}/openf1/${circuit.image}` : null;
 }
 
 function circuitName(shortName) {
@@ -18,6 +32,18 @@ function circuitType(shortName) {
   return CIRCUITS[shortName]?.type ?? null;
 }
 
+// OpenF1's driver endpoint returns portrait URLs with a '/1col/' path segment (smaller size).
+// Replacing it with '/2col/' fetches the larger variant, which renders better on the TRMNL X.
+// If the CDN URL structure ever changes and '/1col/' is absent, the replace becomes a no-op
+// and we get the original (smaller) image — log a warning so the regression is visible in CI.
+function upgradePortraitUrl(url) {
+  if (!url) return null;
+  if (!url.includes('/1col/')) {
+    process.stderr.write(`Warning: portrait_url missing expected '/1col/' segment — CDN path may have changed: ${url}\n`);
+    return url;
+  }
+  return url.replace('/1col/', '/2col/');
+}
 
 // team short code → full display name
 const TEAM_NAMES = {
@@ -127,6 +153,7 @@ function main() {
   let raw = '';
   process.stdin.on('data', chunk => { raw += chunk; });
   process.stdin.on('end', () => {
+    try {
     const data = JSON.parse(raw);
     const timezone = data.timezone || process.env.USER_TIMEZONE || 'UTC';
     const { meeting, sessions, weather, forecasts, standings, last_session, qualifying_results, next_meeting } = data;
@@ -146,7 +173,7 @@ function main() {
             name: wdc?.full_name ?? wdc?.name ?? '',
             team: TEAM_NAMES[wdc?.team] ?? '',
             points: wdc?.points_current ?? 0,
-            portrait_url: wdc?.portrait_url?.replace('/1col/', '/2col/') ?? null,
+            portrait_url: upgradePortraitUrl(wdc?.portrait_url),
           },
           constructor: {
             name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',
@@ -243,7 +270,7 @@ function main() {
       payload.winner = {
         name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
         team: TEAM_NAMES[p1Standing?.team] ?? '',
-        portrait_url: p1.portrait_url?.replace('/1col/', '/2col/') ?? null,
+        portrait_url: upgradePortraitUrl(p1.portrait_url),
         grid_position: gridResult ? `P${gridResult.position}` : null,
         finish_position: 'P1',
       };
@@ -264,6 +291,10 @@ function main() {
     }
 
     process.stdout.write(JSON.stringify(payload, null, 2) + '\n');
+    } catch (err) {
+      process.stderr.write(`Fatal: ${err.message}\n`);
+      process.exit(1);
+    }
   });
 }
 

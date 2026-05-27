@@ -40,7 +40,16 @@ async function fetchJSON(url) {
 }
 
 async function getMeetings() {
-  return fetchJSON(`${OPENF1_BASE}/meetings?year=${new Date().getFullYear()}`);
+  const year = new Date().getFullYear();
+  const meetings = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year}`);
+  // If every meeting in the current year is in the past, the new season calendar
+  // may not be published yet — try next year as a fallback.
+  const allPast = meetings.length > 0 && meetings.every(m => new Date(m.date_end) < new Date());
+  if (allPast) {
+    const next = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year + 1}`).catch(() => []);
+    if (next.length > 0) return next;
+  }
+  return meetings;
 }
 
 // Assigns 1-based round numbers to non-cancelled meetings sorted by date.
@@ -63,7 +72,7 @@ function findCurrentMeeting(meetings, rounds) {
     // Add 4h buffer after date_end to keep race-weekend mode through post-race
     const end = new Date(new Date(m.date_end).getTime() + 4 * 60 * 60 * 1000);
     if (n >= start && n <= end) {
-      return { meeting: { ...m, round_number: rounds.get(m.meeting_key) }, mode: 'race_weekend' };
+      return { meeting: { ...m, round_number: rounds.get(m.meeting_key) } };
     }
   }
 
@@ -74,7 +83,6 @@ function findCurrentMeeting(meetings, rounds) {
   const next = upcoming[0] ?? null;
   return {
     meeting: next ? { ...next, round_number: rounds.get(next.meeting_key) } : null,
-    mode: 'off_weekend',
   };
 }
 
@@ -119,6 +127,14 @@ async function getStints(sessionKey) {
   return fetchJSON(`${OPENF1_BASE}/stints?session_key=${sessionKey}`);
 }
 
+// Converts an OpenF1 broadcast_name to a short display form.
+// OpenF1 format: "INITIAL SURNAME" — always a single uppercase letter followed by the
+// surname in all-caps (e.g. "M VERSTAPPEN", "C LECLERC", "G RUSSELL").
+// Multi-word surnames (e.g. "M DE VRIES") are handled correctly: each word is
+// title-cased and joined, producing "M. De Vries".
+// If broadcast_name deviates from this pattern (full first name, or reversed
+// "SURNAME GIVEN" order), the first token is treated as the initial and the result
+// will look wrong — that would be an OpenF1 API change worth investigating.
 function formatBroadcastName(name) {
   if (!name) return null;
   const parts = name.trim().split(/\s+/);
@@ -193,35 +209,40 @@ function determineView(sessions) {
   return 'pre_weekend';
 }
 
-async function getWeatherForecast(circuitShortName, sessionDateISO) {
+// Fetches forecasts for all given dates in a single Open-Meteo request.
+// Returns a { [dateStr]: { temp_max, precip_probability, weathercode } } map.
+async function getWeatherForecasts(circuitShortName, datestrs) {
   const coords = CIRCUITS[circuitShortName];
   if (!coords) {
     process.stderr.write(`No coords for circuit: ${circuitShortName}\n`);
-    return null;
+    return {};
   }
-  const dateStr = sessionDateISO.slice(0, 10);
+  const sorted = [...datestrs].sort();
   const url =
     `${OPEN_METEO_BASE}` +
     `?latitude=${coords.lat}&longitude=${coords.lon}` +
     `&daily=temperature_2m_max,precipitation_probability_max,weathercode` +
-    `&timezone=UTC&start_date=${dateStr}&end_date=${dateStr}`;
+    `&timezone=UTC&start_date=${sorted[0]}&end_date=${sorted[sorted.length - 1]}`;
   const data = await fetchJSON(url);
-  if (!data.daily?.time?.length) return null;
-  return {
-    temp_max: data.daily.temperature_2m_max[0],
-    precip_probability: data.daily.precipitation_probability_max[0],
-    weathercode: data.daily.weathercode[0],
-  };
+  if (!data.daily?.time?.length) return {};
+  const result = {};
+  for (let i = 0; i < data.daily.time.length; i++) {
+    result[data.daily.time[i]] = {
+      temp_max: data.daily.temperature_2m_max[i],
+      precip_probability: data.daily.precipitation_probability_max[i],
+      weathercode: data.daily.weathercode[i],
+    };
+  }
+  return result;
 }
 
 async function main() {
   const meetings = await getMeetings();
   const rounds = assignRoundNumbers(meetings);
-  const { meeting, mode } = findCurrentMeeting(meetings, rounds);
+  const { meeting } = findCurrentMeeting(meetings, rounds);
 
   let view;
   const output = {
-    mode,
     timezone: process.env.USER_TIMEZONE || 'UTC',
     meeting,
     sessions: [],
@@ -231,7 +252,6 @@ async function main() {
   };
 
   if (!meeting) {
-    output.mode = 'off_season';
     const { drivers, constructors } = await getStandings();
     output.standings = { drivers, constructors };
   }
@@ -244,8 +264,8 @@ async function main() {
     const upcomingSessions = output.sessions.filter(s => s.status === 'upcoming');
 
     // Fetch standings, live weather, and forecasts all in parallel
-    const uniqueDates = [...new Map(upcomingSessions.map(s => [s.date_start.slice(0, 10), s.date_start])).entries()];
-    const [standingsResult, liveWeather, ...forecastResults] = await Promise.all([
+    const uniqueDates = [...new Set(upcomingSessions.map(s => s.date_start.slice(0, 10)))];
+    const [standingsResult, liveWeather, forecasts] = await Promise.all([
       getStandings(),
       liveSession
         ? getLiveWeather(liveSession.session_key).catch(err => {
@@ -253,18 +273,17 @@ async function main() {
             return null;
           })
         : Promise.resolve(null),
-      ...uniqueDates.map(([dateStr, date_start]) =>
-        getWeatherForecast(meeting.circuit_short_name, date_start)
-          .then(forecast => ({ dateStr, forecast }))
-          .catch(err => { process.stderr.write(`Forecast fetch failed for ${dateStr} (skipping): ${err.message}\n`); return null; })
-      ),
+      uniqueDates.length
+        ? getWeatherForecasts(meeting.circuit_short_name, uniqueDates).catch(err => {
+            process.stderr.write(`Forecast fetch failed (skipping): ${err.message}\n`);
+            return {};
+          })
+        : Promise.resolve({}),
     ]);
     output.standings = standingsResult;
     const driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
     output.weather = liveWeather;
-    for (const result of forecastResults) {
-      if (result?.forecast) output.forecasts[result.dateStr] = result.forecast;
-    }
+    output.forecasts = forecasts;
 
     // Determine view early so we only fetch nextMeet when it will actually be used
     view = determineView(output.sessions);
@@ -348,7 +367,9 @@ async function main() {
         let raceForecast = null;
         if (raceSession) {
           try {
-            raceForecast = await getWeatherForecast(nextMeet.circuit_short_name, raceSession.date_start);
+            const dateStr = raceSession.date_start.slice(0, 10);
+            const map = await getWeatherForecasts(nextMeet.circuit_short_name, [dateStr]);
+            raceForecast = map[dateStr] ?? null;
           } catch (err) {
             process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
           }
@@ -356,7 +377,7 @@ async function main() {
         output.next_meeting = {
           ...nextMeet,
           round_number: rounds.get(nextMeet.meeting_key),
-          sessions: nextSessions,
+          sessions: nextSessions.slice().sort((a, b) => new Date(a.date_start) - new Date(b.date_start)),
           race_forecast: raceForecast,
         };
       }

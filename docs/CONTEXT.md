@@ -173,9 +173,20 @@ GET https://api.openf1.org/v1/meetings?year=2026&country_name=Singapore
 Note: `circuit_image` URLs are hosted on F1's CDN and may have referrer restrictions. `circuit_info_url` points to MultiViewer's circuit geometry data — useful for generating track map SVGs but requires additional processing.
 
 **API quirks discovered in 2026 data:**
-- `meeting.location` for Monaco is `"Monte Carlo"` (not `"Monaco"`) — use this key in `CIRCUIT_COORDS`
+- `meeting.location` for Monaco is `"Monte Carlo"` (not `"Monaco"`) — use this key in `circuits.js`
+- `circuit_short_name` for the Circuit de Barcelona-Catalunya is `"Madring"` (not `"Barcelona"`) — all `circuits.js` lookups must use `"Madring"` as the key
 - `championship_teams` endpoint returns `team_name: null` for all 2026 entries — do not use it. Derive constructor standings by summing `points_current` from `championship_drivers`, grouped by team via the static `DRIVER_MAP`
 - Round numbers are not provided by the API. Derive by sorting non-cancelled meetings chronologically and using 1-based index. Bahrain and Saudi Arabia are NOT flagged `is_cancelled` in the API, so the full 24-round sequence is used
+
+### Drivers endpoint
+```
+GET https://api.openf1.org/v1/drivers?session_key=latest
+```
+Key fields used:
+- `broadcast_name` — always `"INITIAL SURNAME"` format (e.g. `"M VERSTAPPEN"`, `"C LECLERC"`). Formatted to `"M. Verstappen"` by `formatBroadcastName()`. Multi-word surnames (e.g. `"M DE VRIES"`) are handled correctly.
+- `portrait_url` — OpenF1 returns the `/1col/` (small) variant. Replace `/1col/` with `/2col/` for the larger display version. Done via `upgradePortraitUrl()` in `build-payload.js`. If the CDN path ever changes and `/1col/` is absent, a stderr warning is emitted and the original URL is used as fallback.
+- `team_name` — live team name per driver; used to derive constructor standings when `championship_teams` is unreliable (see quirks above)
+- `name_acronym` — also available directly (e.g. `"VER"`) — no need to hardcode if fetching live
 
 ### Weather endpoint
 ```
@@ -327,17 +338,36 @@ Final agreed layout (Image 2) has:
 
 ## Webhook Payload Schema
 
-`build-payload.js` outputs this structure (consumed by the Liquid template via TRMNL `merge_variables`):
+`build-payload.js` outputs one of two shapes depending on `view`.
 
+### `off_season` view
 ```json
 {
-  "view": "pre_weekend | race_weekend | live",
+  "view": "off_season",
+  "season": { "year": 2026 },
+  "champions": {
+    "driver":      { "name": "Kimi Antonelli", "team": "Mercedes", "points": 131, "portrait_url": "https://..." },
+    "constructor": { "name": "Mercedes", "points": 219 }
+  },
+  "standings": {
+    "drivers_col1":  [{ "position": 1, "name": "K. Antonelli", "points": 131, "portrait_url": "https://..." }],
+    "drivers_col2":  [{ "position": 12, "name": "...", "points": 0, "portrait_url": null }],
+    "constructors":  [{ "position": 1, "name": "Mercedes", "points": 219 }]
+  }
+}
+```
+
+### `pre_weekend` / `race_weekend` / `live` / `post_race` views
+```json
+{
+  "view": "pre_weekend | race_weekend | live | post_race",
   "meeting": {
     "name": "Monaco Grand Prix",
     "location": "Monte Carlo, Monaco",
     "round": 8,
     "circuit_name": "Monte Carlo",
-    "circuit_image_url": "https://...",
+    "circuit_type": "Temporary - Street",
+    "circuit_image_url": "https://raw.githubusercontent.com/.../openf1/Monte-Carlo.png",
     "date_range": "Jun 5–7"
   },
   "sessions": [
@@ -353,17 +383,47 @@ Final agreed layout (Image 2) has:
   "standings": {
     "constructors": [{ "position": 1, "name": "Mercedes", "points": 219 }],
     "drivers":      [{ "position": 1, "name": "K. Antonelli", "points": 131 }]
+  },
+  "last_session": {
+    "name": "Qualifying Results",
+    "results": [
+      {
+        "position": 1,
+        "name": "K. Antonelli",
+        "portrait_url": "https://...",
+        "compounds": ["S", "M"],
+        "time": "1:10.543",
+        "dnf": false, "dns": false, "dsq": false
+      }
+    ]
+  },
+  "winner": {
+    "name": "Kimi Antonelli",
+    "team": "Mercedes",
+    "portrait_url": "https://...",
+    "grid_position": "P3",
+    "finish_position": "P1"
+  },
+  "next_race": {
+    "name": "Spanish Grand Prix",
+    "location": "Barcelona, Spain",
+    "round": 9,
+    "date_range": "Jun 12–14",
+    "weather": { "temp": "28°C", "icon": "ti-sun", "precip": "5%" }
   }
 }
 ```
 
-`weather` is `null` for completed sessions. `precip` is a percentage string for forecasts ("17%") and "Wet"/"Dry" for live sessions.
+**Notes:**
+- `session.weather` is `null` for completed sessions
+- `precip` is a percentage string for forecasts (`"17%"`) and `"Wet"`/`"Dry"` for live sessions (`rainfall` integer → boolean)
+- `last_session` is omitted if no sessions have completed yet
+- `winner` is only present when `view == "post_race"` and race results exist
+- `next_race` is only present when `view == "post_race"` and a next meeting exists
+- `standings` in race views is top 6 only; in `off_season` view it is all drivers/constructors (split across two columns)
 
 ---
 
 ## Things Not Yet Decided / Built
-- Circuit static data (lap record, corner count, DRS zones, circuit length) — to be added to calendar CSV later
-- Post-race view design
-- Calendar view design (off-weekend)
-- Whether to show a "last race" summary row anywhere
+- Circuit static data (lap record, corner count, DRS zones, circuit length) — to be added to `circuits.js` when the template has a place to display it
 - Whether to pursue OpenF1 paid subscription for real-time data
