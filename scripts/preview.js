@@ -279,6 +279,10 @@ function serve() {
         const match = data.meeting.circuit_image_url.match(/assets\/circuits\/.+$/);
         if (match) data.meeting.circuit_image_url = `/${match[0]}`;
       }
+      if (data.logo_url) {
+        const match = data.logo_url.match(/assets\/f1-logo\..+$/);
+        if (match) data.logo_url = `/${match[0]}`;
+      }
 
       const rendered = renderTemplate(template, data);
       const page = wrapPage(rendered, fixtureName, fixtures);

@@ -68,7 +68,7 @@ async function getMeetings() {
 // Assigns 1-based round numbers to non-cancelled meetings sorted by date.
 function assignRoundNumbers(meetings) {
   const sorted = meetings
-    .filter(m => !m.is_cancelled)
+    .filter(m => !m.is_cancelled && !/test/i.test(m.meeting_official_name ?? ''))
     .sort((a, b) => new Date(a.date_start) - new Date(b.date_start));
   const rounds = new Map();
   sorted.forEach((m, i) => rounds.set(m.meeting_key, i + 1));

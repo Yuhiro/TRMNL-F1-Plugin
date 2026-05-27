@@ -31,13 +31,13 @@ if (!['openf1', 'official', 'both'].includes(source)) {
 }
 
 async function fetchJSON(url) {
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
   return res.json();
 }
 
 async function downloadImage(url, filepath) {
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(30_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
   const buffer = Buffer.from(await res.arrayBuffer());
   writeFileSync(filepath, buffer);

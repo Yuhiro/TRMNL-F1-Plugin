@@ -1,6 +1,8 @@
 {
   "view": "off_season",
-  "season": { "year": 2026 },
+  "season": {
+    "year": 2026
+  },
   "champions": {
     "driver": {
       "name": "Andrea Kimi Antonelli",
@@ -15,43 +17,198 @@
   },
   "standings": {
     "drivers_col1": [
-      { "position": 1,  "name": "K. Antonelli", "points": 285, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/1col/image.png" },
-      { "position": 2,  "name": "G. Russell",   "points": 280, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png" },
-      { "position": 3,  "name": "L. Norris",    "points": 262, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png" },
-      { "position": 4,  "name": "O. Piastri",   "points": 248, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png" },
-      { "position": 5,  "name": "C. Leclerc",   "points": 215, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CHALEC01_Charles_Leclerc/chalec01.png.transform/1col/image.png" },
-      { "position": 6,  "name": "L. Hamilton",  "points": 198, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png" },
-      { "position": 7,  "name": "M. Verstappen","points": 175, "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png" },
-      { "position": 8,  "name": "I. Hadjar",    "points": 142, "portrait_url": null },
-      { "position": 9,  "name": "P. Gasly",     "points": 89,  "portrait_url": null },
-      { "position": 10, "name": "F. Colapinto", "points": 76,  "portrait_url": null },
-      { "position": 11, "name": "F. Alonso",    "points": 58,  "portrait_url": null }
+      {
+        "position": 1,
+        "name": "K. Antonelli",
+        "points": 285,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/1col/image.png"
+      },
+      {
+        "position": 2,
+        "name": "G. Russell",
+        "points": 280,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png"
+      },
+      {
+        "position": 3,
+        "name": "L. Norris",
+        "points": 262,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png"
+      },
+      {
+        "position": 4,
+        "name": "O. Piastri",
+        "points": 248,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png"
+      },
+      {
+        "position": 5,
+        "name": "C. Leclerc",
+        "points": 215,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CHALEC01_Charles_Leclerc/chalec01.png.transform/1col/image.png"
+      },
+      {
+        "position": 6,
+        "name": "L. Hamilton",
+        "points": 198,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png"
+      },
+      {
+        "position": 7,
+        "name": "M. Verstappen",
+        "points": 175,
+        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/M/MAXVER01_Max_Verstappen/maxver01.png.transform/1col/image.png"
+      },
+      {
+        "position": 8,
+        "name": "I. Hadjar",
+        "points": 142,
+        "portrait_url": null
+      },
+      {
+        "position": 9,
+        "name": "P. Gasly",
+        "points": 89,
+        "portrait_url": null
+      },
+      {
+        "position": 10,
+        "name": "F. Colapinto",
+        "points": 76,
+        "portrait_url": null
+      },
+      {
+        "position": 11,
+        "name": "F. Alonso",
+        "points": 58,
+        "portrait_url": null
+      }
     ],
     "drivers_col2": [
-      { "position": 12, "name": "L. Stroll",    "points": 42, "portrait_url": null },
-      { "position": 13, "name": "C. Sainz",     "points": 38, "portrait_url": null },
-      { "position": 14, "name": "A. Albon",     "points": 31, "portrait_url": null },
-      { "position": 15, "name": "N. Hülkenberg","points": 27, "portrait_url": null },
-      { "position": 16, "name": "G. Bortoleto", "points": 19, "portrait_url": null },
-      { "position": 17, "name": "O. Bearman",   "points": 14, "portrait_url": null },
-      { "position": 18, "name": "E. Ocon",      "points": 11, "portrait_url": null },
-      { "position": 19, "name": "L. Lawson",    "points": 8,  "portrait_url": null },
-      { "position": 20, "name": "A. Lindblad",  "points": 5,  "portrait_url": null },
-      { "position": 21, "name": "V. Bottas",    "points": 2,  "portrait_url": null },
-      { "position": 22, "name": "S. Pérez",     "points": 1,  "portrait_url": null }
+      {
+        "position": 12,
+        "name": "L. Stroll",
+        "points": 42,
+        "portrait_url": null
+      },
+      {
+        "position": 13,
+        "name": "C. Sainz",
+        "points": 38,
+        "portrait_url": null
+      },
+      {
+        "position": 14,
+        "name": "A. Albon",
+        "points": 31,
+        "portrait_url": null
+      },
+      {
+        "position": 15,
+        "name": "N. Hülkenberg",
+        "points": 27,
+        "portrait_url": null
+      },
+      {
+        "position": 16,
+        "name": "G. Bortoleto",
+        "points": 19,
+        "portrait_url": null
+      },
+      {
+        "position": 17,
+        "name": "O. Bearman",
+        "points": 14,
+        "portrait_url": null
+      },
+      {
+        "position": 18,
+        "name": "E. Ocon",
+        "points": 11,
+        "portrait_url": null
+      },
+      {
+        "position": 19,
+        "name": "L. Lawson",
+        "points": 8,
+        "portrait_url": null
+      },
+      {
+        "position": 20,
+        "name": "A. Lindblad",
+        "points": 5,
+        "portrait_url": null
+      },
+      {
+        "position": 21,
+        "name": "V. Bottas",
+        "points": 2,
+        "portrait_url": null
+      },
+      {
+        "position": 22,
+        "name": "S. Pérez",
+        "points": 1,
+        "portrait_url": null
+      }
     ],
     "constructors": [
-      { "position": 1,  "name": "Mercedes",      "points": 565 },
-      { "position": 2,  "name": "McLaren",        "points": 510 },
-      { "position": 3,  "name": "Ferrari",        "points": 413 },
-      { "position": 4,  "name": "Red Bull",       "points": 317 },
-      { "position": 5,  "name": "Alpine",         "points": 165 },
-      { "position": 6,  "name": "Aston Martin",   "points": 100 },
-      { "position": 7,  "name": "Williams",       "points": 69  },
-      { "position": 8,  "name": "Audi",           "points": 46  },
-      { "position": 9,  "name": "Haas",           "points": 25  },
-      { "position": 10, "name": "Racing Bulls",   "points": 13  },
-      { "position": 11, "name": "Cadillac",       "points": 3   }
+      {
+        "position": 1,
+        "name": "Mercedes",
+        "points": 565
+      },
+      {
+        "position": 2,
+        "name": "McLaren",
+        "points": 510
+      },
+      {
+        "position": 3,
+        "name": "Ferrari",
+        "points": 413
+      },
+      {
+        "position": 4,
+        "name": "Red Bull",
+        "points": 317
+      },
+      {
+        "position": 5,
+        "name": "Alpine",
+        "points": 165
+      },
+      {
+        "position": 6,
+        "name": "Aston Martin",
+        "points": 100
+      },
+      {
+        "position": 7,
+        "name": "Williams",
+        "points": 69
+      },
+      {
+        "position": 8,
+        "name": "Audi",
+        "points": 46
+      },
+      {
+        "position": 9,
+        "name": "Haas",
+        "points": 25
+      },
+      {
+        "position": 10,
+        "name": "Racing Bulls",
+        "points": 13
+      },
+      {
+        "position": 11,
+        "name": "Cadillac",
+        "points": 3
+      }
     ]
-  }
+  },
+  "logo_url": "/assets/f1-logo.png"
 }

@@ -6,7 +6,7 @@
 A TRMNL e-ink display plugin for Formula 1 fans. It shows the current race weekend schedule, session timings with weather, and championship standings. A GitHub Actions workflow fetches data from multiple APIs and pushes it to TRMNL via webhook.
 
 ## Current Status
-- Design is in Figma (three view states designed: pre-weekend, between sessions, live)
+- Design is in Figma; all five view states built (off-season, pre-weekend, race-weekend, live, post-race)
 - Architecture and data sources decided
 - All pipeline scripts written, hardened, and tested (`fetch-data.js`, `build-payload.js`, `push-webhook.js`)
 - GitHub Actions workflow written (`trmnl-update.yml`)
@@ -41,7 +41,7 @@ GitHub Actions workflow → fetches APIs → pushes JSON payload → TRMNL webho
 Private Plugin using **Webhook** strategy (not polling). GitHub Actions pushes data to TRMNL on a schedule.
 
 ### Polling Frequency
-- **Mon/Wed/Thu (off-weekend):** Once at noon UTC
+- **Mon/Wed (off-weekend):** Once at noon UTC
 - **Fri–Sun (race weekend):** Every 30 minutes (cron)
 - **Live session:** No special live loop — just the 30-minute weekend cadence. A 30-second loop was considered but dropped. TRMNL rate limits pushes to 12/hour (free) or 30/hour (TRMNL+); a 30s loop would require 120/hour.
 

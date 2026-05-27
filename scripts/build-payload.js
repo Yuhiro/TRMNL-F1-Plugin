@@ -6,9 +6,11 @@
 // For local pipeline runs, set it in your shell: export GITHUB_REPOSITORY=owner/repo
 // preview.js rewrites these URLs to local paths, so circuit images work in preview without this.
 if (!process.env.GITHUB_REPOSITORY) {
-  process.stderr.write('Warning: GITHUB_REPOSITORY not set — circuit image URLs will not resolve\n');
+  process.stderr.write('Warning: GITHUB_REPOSITORY not set — asset URLs will not resolve\n');
 }
-const GITHUB_RAW_BASE = `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY ?? ''}/main/assets/circuits`;
+const GITHUB_ASSETS_BASE = `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY ?? ''}/main/assets`;
+const GITHUB_RAW_BASE = `${GITHUB_ASSETS_BASE}/circuits`;
+const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1-logo.png`;
 const CIRCUITS = require('./circuits');
 
 // CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
@@ -178,6 +180,7 @@ function main() {
 
         const payload = {
           view: data.view,
+          logo_url: LOGO_URL,
           season: { year },
           champions: {
             driver: {
@@ -219,6 +222,7 @@ function main() {
 
       const payload = {
         view,
+        logo_url: LOGO_URL,
         meeting: {
           name: meeting.meeting_name,
           location: `${meeting.location}, ${meeting.country_name}`,
@@ -248,7 +252,6 @@ function main() {
               points: c.points,
             })),
           drivers: standings.drivers
-            .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
             .slice(0, 6)
             .map(d => ({
               position: d.position_current ?? 0,
