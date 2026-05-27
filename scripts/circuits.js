@@ -7,7 +7,7 @@
 module.exports = {
   'Austin':             { lat:  30.1328, lon:  -97.6411, name: 'Circuit of the Americas',       type: 'Permanent', image: 'Austin.png',              f1_slug: 'austin' },
   'Baku':               { lat:  40.3697, lon:   49.8533, name: 'Baku City Circuit',              type: 'Street',    image: 'Baku.png',                f1_slug: 'baku' },
-  'Madring':            { lat:  41.5700, lon:    2.2611, name: 'Circuit de Barcelona-Catalunya', type: 'Permanent', image: 'Madring.png',             f1_slug: 'catalunya' },
+  'Catalunya':          { lat:  41.5700, lon:    2.2611, name: 'Circuit de Barcelona-Catalunya', type: 'Permanent', image: 'Catalunya.png',           f1_slug: 'catalunya' },
   'Hungaroring':        { lat:  47.5789, lon:   19.2486, name: 'Hungaroring',                    type: 'Permanent', image: 'Hungaroring.png',          f1_slug: 'hungaroring' },
   'Interlagos':         { lat: -23.7036, lon:  -46.6997, name: 'Interlagos',                     type: 'Permanent', image: 'Interlagos.png',           f1_slug: 'interlagos' },
   'Jeddah':             { lat:  21.6319, lon:   39.1044, name: 'Jeddah Corniche Circuit',        type: 'Street',    image: 'Jeddah.png',               f1_slug: 'jeddah' },

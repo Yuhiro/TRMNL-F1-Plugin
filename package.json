@@ -1,0 +1,14 @@
+{
+  "name": "trmnl-f1-plugin",
+  "version": "1.0.0",
+  "description": "TRMNL F1 Plugin — GitHub Actions data pipeline",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "preview": "node scripts/preview.js",
+    "validate": "node scripts/validate-fixtures.js",
+    "pipeline": "node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js"
+  }
+}

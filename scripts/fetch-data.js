@@ -33,18 +33,31 @@ const DRIVER_MAP = {
 };
 
 
-async function fetchJSON(url) {
-  const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
-  if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
-  return res.json();
+// One retry with 2 s backoff — a single transient OpenF1 500 or network blip would
+// otherwise exit the pipeline and leave the display stale until the next run.
+async function fetchJSON(url, retries = 1) {
+  try {
+    const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+    if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
+    return res.json();
+  } catch (err) {
+    if (retries > 0) {
+      process.stderr.write(`Fetch failed, retrying in 2s: ${err.message}\n`);
+      await new Promise(resolve => setTimeout(resolve, 2_000));
+      return fetchJSON(url, retries - 1);
+    }
+    throw err;
+  }
 }
 
 async function getMeetings() {
   const year = new Date().getFullYear();
   const meetings = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year}`);
-  // If every meeting in the current year is in the past, the new season calendar
-  // may not be published yet — try next year as a fallback.
-  const allPast = meetings.length > 0 && meetings.every(m => new Date(m.date_end) < new Date());
+  // If every non-cancelled meeting in the current year is in the past, the new season
+  // calendar may not be published yet — try next year as a fallback.
+  // Cancelled meetings can have future dates, so they must be excluded from this check
+  // or a cancelled end-of-season entry would block the year rollover indefinitely.
+  const allPast = meetings.length > 0 && meetings.filter(m => !m.is_cancelled).every(m => new Date(m.date_end) < new Date());
   if (allPast) {
     const next = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year + 1}`).catch(() => []);
     if (next.length > 0) return next;
@@ -281,7 +294,6 @@ async function main() {
         : Promise.resolve({}),
     ]);
     output.standings = standingsResult;
-    const driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
     output.weather = liveWeather;
     output.forecasts = forecasts;
 
@@ -300,8 +312,26 @@ async function main() {
       return null;
     }) : Promise.resolve(null);
 
+    // Chain the race-day forecast directly off the sessions promise — raceSession.date_start
+    // is available as soon as sessions resolve, so the forecast fetch starts concurrently
+    // with the lastCompleted block below rather than sequentially after it (~200–400 ms saved).
+    const nextForecastPromise = nextMeet ? nextSessionsPromise.then(sessions => {
+      if (!sessions) return null;
+      const raceSession = sessions.find(s => s.session_name === 'Race');
+      if (!raceSession) return null;
+      const dateStr = raceSession.date_start.slice(0, 10);
+      return getWeatherForecasts(nextMeet.circuit_short_name, [dateStr])
+        .then(map => map[dateStr] ?? null)
+        .catch(err => {
+          process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
+          return null;
+        });
+    }) : Promise.resolve(null);
+
     const lastCompleted = output.sessions.filter(s => s.status === 'completed').at(-1);
     if (lastCompleted) {
+      // Only built when needed: maps driver_number → enriched driver for result rows
+      const driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
       try {
         const showCompounds = ['Race', 'Sprint'].includes(lastCompleted.session_name);
         const qualiSession = lastCompleted.session_name === 'Race'
@@ -361,19 +391,8 @@ async function main() {
     }
 
     if (nextMeet) {
-      const nextSessions = await nextSessionsPromise;
+      const [nextSessions, raceForecast] = await Promise.all([nextSessionsPromise, nextForecastPromise]);
       if (nextSessions) {
-        const raceSession = nextSessions.find(s => s.session_name === 'Race');
-        let raceForecast = null;
-        if (raceSession) {
-          try {
-            const dateStr = raceSession.date_start.slice(0, 10);
-            const map = await getWeatherForecasts(nextMeet.circuit_short_name, [dateStr]);
-            raceForecast = map[dateStr] ?? null;
-          } catch (err) {
-            process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
-          }
-        }
         output.next_meeting = {
           ...nextMeet,
           round_number: rounds.get(nextMeet.meeting_key),

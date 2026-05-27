@@ -146,6 +146,7 @@
         </div>
       </div>
 
+      {% if next_race %}
       <!-- Up Next block -->
       <div style="display: flex; flex-direction: column; gap: var(--gap-small); align-items: flex-start;">
         <span class="text--base">Next Up</span>
@@ -162,6 +163,7 @@
           {% endif %}
         </div>
       </div>
+      {% endif %}
 
       {% else %}
 
@@ -187,24 +189,24 @@
           <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: flex-start;">
             <div style="display: flex; flex-direction: column; gap: var(--gap-small); align-items: center; align-self: stretch; flex-shrink: 0; text-align: center;">
               <div class="text--xlarge">{{ session.day }}</div>
-              <div class="text--large text--muted">{{ session.month }}</div>
+              <div class="text--base text--muted">{{ session.month }}</div>
             </div>
             <div style="width: 1px; align-self: stretch; flex-shrink: 0; background-color: var(--light-grey, #ccc);"></div>
             <div style="display: flex; flex-direction: column; gap: var(--gap-small);">
               <div style="display: flex; flex-direction: row; gap: var(--gap-small); align-items: center;">
                 <span class="text--xlarge">{{ session.name }}</span>
                 {% if session.status == 'live' %}
-                <span class="label label--filled text--xlarge rounded--small" style="padding: 2px 8px; align-self: center;">LIVE</span>
+                <span class="label label--filled rounded--small" style="align-self: center;">LIVE</span>
                 {% endif %}
               </div>
               <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
-                <span class="text--large">{{ session.time_range }}</span>
+                <span class="text--base">{{ session.time_range }}</span>
                 {% if session.weather %}
                 <span class="text--large text--muted">·</span>
-                <span class="text--large">{{ session.weather.temp }}</span>
+                <span class="text--base">{{ session.weather.temp }}</span>
                 <span class="text--large text--muted">·</span>
                 <i class="ti {{ session.weather.icon }} text--large" style="line-height: 1;"></i>
-                <span class="text--large">{{ session.weather.precip }}</span>
+                <span class="text--base">{{ session.weather.precip }}</span>
                 {% endif %}
               </div>
             </div>
@@ -262,7 +264,7 @@
         <div style="flex: 1;">
           {% for c in standings.constructors %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--large text--muted" style="min-width: 20px; text-align: center;">{{ c.position }}</span>
+            <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ c.position }}</span>
             <span class="text--large" style="flex: 1;">{{ c.name }}</span>
             <span class="text--large" style="min-width: 36px; text-align: right;">{{ c.points }}</span>
           </div>
@@ -273,7 +275,7 @@
         <div style="flex: 1;">
           {% for d in standings.drivers %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--large text--muted" style="min-width: 20px; text-align: center;">{{ d.position }}</span>
+            <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ d.position }}</span>
             <span class="text--large" style="flex: 1;">{{ d.name }}</span>
             <span class="text--large" style="min-width: 36px; text-align: right;">{{ d.points }}</span>
           </div>

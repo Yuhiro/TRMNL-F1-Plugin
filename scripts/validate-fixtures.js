@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+// Validates that all fixture files in fixtures/ match the current payload schema.
+// Run after any field rename in build-payload.js to catch drift before preview breaks silently.
+// Usage: node scripts/validate-fixtures.js
+
+const fs = require('fs');
+const path = require('path');
+
+const FIXTURES_DIR = path.join(__dirname, '..', 'fixtures');
+
+// Keys that must be present at the top level for each view family.
+// Add to these when new required fields are introduced in build-payload.js.
+const REQUIRED_KEYS = {
+  off_season:    ['view', 'season', 'champions', 'standings'],
+  race_weekend:  ['view', 'meeting', 'sessions', 'standings'],
+};
+
+function requiredFor(view) {
+  return view === 'off_season' ? REQUIRED_KEYS.off_season : REQUIRED_KEYS.race_weekend;
+}
+
+// Sub-key checks for commonly renamed fields
+const REQUIRED_MEETING_KEYS  = ['name', 'location', 'date_range'];
+const REQUIRED_STANDING_KEYS = { race: ['constructors', 'drivers'], off_season: ['constructors', 'drivers_col1', 'drivers_col2'] };
+
+let passed = 0;
+let failed = 0;
+
+for (const file of fs.readdirSync(FIXTURES_DIR).filter(f => f.endsWith('.json')).sort()) {
+  const fpath = path.join(FIXTURES_DIR, file);
+  let data;
+  try {
+    data = JSON.parse(fs.readFileSync(fpath, 'utf8'));
+  } catch (err) {
+    process.stderr.write(`FAIL  ${file}: invalid JSON — ${err.message}\n`);
+    failed++;
+    continue;
+  }
+
+  const errors = [];
+
+  // Top-level required keys
+  const required = requiredFor(data.view);
+  for (const k of required) {
+    if (!(k in data)) errors.push(`missing top-level key '${k}'`);
+  }
+
+  // meeting sub-keys (race views only)
+  if (data.view !== 'off_season' && data.meeting) {
+    for (const k of REQUIRED_MEETING_KEYS) {
+      if (!(k in data.meeting)) errors.push(`missing meeting.${k}`);
+    }
+  }
+
+  // standings sub-keys
+  if (data.standings) {
+    const keys = data.view === 'off_season' ? REQUIRED_STANDING_KEYS.off_season : REQUIRED_STANDING_KEYS.race;
+    for (const k of keys) {
+      if (!(k in data.standings)) errors.push(`missing standings.${k}`);
+    }
+  }
+
+  if (errors.length) {
+    process.stderr.write(`FAIL  ${file} (view=${data.view ?? 'unknown'}):\n`);
+    for (const e of errors) process.stderr.write(`        ${e}\n`);
+    failed++;
+  } else {
+    process.stdout.write(`ok    ${file}\n`);
+    passed++;
+  }
+}
+
+process.stdout.write(`\n${passed} passed, ${failed} failed\n`);
+if (failed) process.exit(1);

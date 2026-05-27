@@ -11,7 +11,8 @@ Start by reading every source file:
 7. Read `.github/workflows/trmnl-update.yml`
 8. Read `template.html`
 9. Read `CLAUDE.md` for architecture context
-10. Run `git log --oneline -10` for recent change history
+10. Read `issues.md` — note the highest existing number per prefix (B, I, D, Q, T, M) so new issues continue the sequence without collision
+11. Run `git log --oneline -10` for recent change history
 
 Then review the full codebase across these dimensions and report your findings:
 
@@ -30,7 +31,7 @@ Label every issue with a short code based on its category and sequence number wi
 | `T` | Template |
 | `M` | Missing / Recommendation |
 
-Examples: `B1`, `B2`, `I1`, `I3`, `T2`, `M1`.
+Number new issues starting from the next available number per prefix (e.g. if B7 already exists, the first new bug is B8).
 
 Use a checkbox to indicate resolution status:
 - `[ ]` — open
@@ -69,3 +70,24 @@ Based on the codebase and the "What's Not Built Yet" section in CLAUDE.md, sugge
 After your findings, ask targeted questions about every area where you need more context to give better recommendations — things like intended edge cases, undocumented constraints, or trade-offs the developer may have already considered. Ask as many as are genuinely useful; don't pad and don't truncate.
 
 Format your output with clear `##` section headers. Be direct and opinionated — say what should change and why, not just that something "could" be improved.
+
+---
+
+## Writing findings to issues.md
+
+After presenting your findings, do the following:
+
+1. **Ask:** "Before I add these to issues.md — do you want to remove completed (`[x]`) issues first to keep the file tidy, or keep them for history?"
+
+2. Wait for the answer. Then:
+   - If clearing: rewrite `issues.md` keeping only open (`[ ]`) issues plus the legend table, then append the new round's findings as a new `## Round N findings` section (where N is one more than the current highest round number in the file).
+   - If keeping: append only the new round's findings as a new `## Round N findings` section.
+
+3. Only include issues that are **not already tracked** in `issues.md` (same title or same file:line). Do not duplicate existing open issues.
+
+4. Use the same bullet-point format as the existing entries in `issues.md`:
+   ```
+   - [ ] CODE 🔴 — Short title
+     `file:line` — Description.
+     **Fix:** What to do.
+   ```

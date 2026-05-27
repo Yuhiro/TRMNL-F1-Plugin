@@ -4,7 +4,7 @@ on:
   schedule:
     - cron: '0 12 * * 1'       # Mon: once at noon UTC (post-race standings update)
     - cron: '0 12 * * 3'       # Wed: once at noon UTC (pick up penalty/DSQ point adjustments)
-    - cron: '0 12 * * 4'       # Thu: once at noon UTC (sprint weekend Thursday sessions)
+    - cron: '0 12,18 * * 4'    # Thu: noon + 18:00 UTC — noon covers morning sessions, 18:00 catches Sprint Qualifying at 15:00+ local time
     - cron: '*/30 * * * 5,6,0' # Fri–Sun: every 30 min (weekend)
   workflow_dispatch: # allows manual trigger from GitHub UI
 
@@ -22,7 +22,7 @@ jobs:
       - name: Fetch, build, and push to TRMNL
         env:
           TRMNL_WEBHOOK_URL: ${{ secrets.TRMNL_WEBHOOK_URL }}
-          USER_TIMEZONE: ${{ secrets.USER_TIMEZONE }}
+          USER_TIMEZONE: ${{ vars.USER_TIMEZONE }}
           # CIRCUIT_IMAGE_SOURCE: set to 'official' in repo Variables to use F1 CDN images.
           # Leave unset (or set to 'openf1') to use OpenF1 images (default).
           CIRCUIT_IMAGE_SOURCE: ${{ vars.CIRCUIT_IMAGE_SOURCE || 'openf1' }}

@@ -224,7 +224,10 @@ assets/
 
 **Secrets required (stored in GitHub repo secrets):**
 - `TRMNL_WEBHOOK_URL`
-- `USER_TIMEZONE` (e.g. `America/Toronto`)
+
+**Repository variables (Settings → Secrets and variables → Variables):**
+- `USER_TIMEZONE` (e.g. `America/Toronto`) — not sensitive; stored as a variable, not a secret. Falls back to UTC if unset.
+- `CIRCUIT_IMAGE_SOURCE` — `'official'` for F1 CDN images; leave unset for OpenF1 (default)
 
 **Run command:**
 ```bash
@@ -273,9 +276,6 @@ See docs/CONTEXT.md for full mapping table.
 - OpenF1 portrait URLs contain `/1col/` (small); upgraded to `/2col/` via `upgradePortraitUrl()` in `build-payload.js`
 
 
-## What's Not Built Yet
-- [ ] Circuit static data (lap record, corners, DRS zones, length) — to be added to `circuits.js`
-
 ## What's Built
 - [x] `scripts/fetch-data.js` — fetches OpenF1 + Open-Meteo, outputs JSON to stdout
 - [x] `scripts/build-payload.js` — transforms data into TRMNL webhook payload
@@ -283,6 +283,7 @@ See docs/CONTEXT.md for full mapping table.
 - [x] `scripts/download-circuits.js` — one-time circuit image downloader (OpenF1)
 - [x] `scripts/circuits.js` — circuit metadata (coords, image filenames, F1 slugs, names, types)
 - [x] `scripts/preview.js` — local preview server for template iteration
+- [x] `scripts/validate-fixtures.js` — checks all fixture files match the current payload schema (`npm run validate`)
 - [x] `.github/workflows/trmnl-update.yml` — cron pipeline (15-min during weekends, once daily off-weekend)
 - [x] `template.html` — all view states: off-season, pre-weekend, race-weekend, live, post-race
 - [x] `assets/circuits/official/` — F1 CDN circuit images (WebP)
@@ -313,6 +314,12 @@ meetings.filter(m => !m.is_cancelled && ...)
 
 ### Gate view-specific fetches on `view`
 Compute `view` early (immediately after the main `Promise.all`) so it can gate subsequent fetches. `next_meeting` sessions and the next-race forecast are only needed for `post_race` — fetching them unconditionally is wasted work every other run.
+
+### Run `npm run validate` after renaming payload fields
+After any field rename in `build-payload.js`, run `node scripts/validate-fixtures.js` (or `npm run validate`). Fixtures won't error at render time — a stale key just produces blank output. The validator catches this immediately.
+
+### `GITHUB_REPOSITORY` is required for circuit image URLs in the pipeline
+`build-payload.js` builds circuit image URLs from `process.env.GITHUB_REPOSITORY` (format: `owner/repo`). In Actions this is injected automatically. For local pipeline runs (`npm run pipeline`), set it in your shell first: `export GITHUB_REPOSITORY=owner/repo`. The `preview.js` server rewrites these URLs to local paths, so preview works without it.
 
 ### `circuits.js` keys come from the OpenF1 API, not common sense
 Always verify the exact `circuit_short_name` value from the `/meetings` response before adding or renaming a key. Do not guess from geography or convention.
