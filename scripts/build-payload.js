@@ -67,6 +67,7 @@ function sessionDateParts(isoStr, timezone) {
 }
 
 function buildDateRange(sessions, timezone) {
+  if (!sessions.length) return '';
   const localDates = sessions.map(s => {
     const d = new Date(s.date_start);
     return {

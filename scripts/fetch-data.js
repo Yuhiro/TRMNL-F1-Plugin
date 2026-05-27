@@ -34,7 +34,7 @@ const DRIVER_MAP = {
 
 
 async function fetchJSON(url) {
-  const res = await fetch(url);
+  const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
   return res.json();
 }
@@ -82,15 +82,23 @@ async function getSessions(meetingKey) {
   return fetchJSON(`${OPENF1_BASE}/sessions?meeting_key=${meetingKey}`);
 }
 
+// Race and Sprint sessions routinely run 5–20 min over their scheduled end time.
+// Without a buffer, the LIVE badge disappears and result fetches fire before the API has data.
+const OVERRUN_BUFFER_MS = 30 * 60 * 1000;
+
 function classifySessions(sessions) {
   const n = new Date();
   return sessions
     .map(s => {
       const start = new Date(s.date_start);
       const end = new Date(s.date_end);
+      // Extend the effective end time for sessions that commonly overrun their schedule
+      const effectiveEnd = ['Race', 'Sprint'].includes(s.session_name)
+        ? new Date(end.getTime() + OVERRUN_BUFFER_MS)
+        : end;
       let status;
-      if (n >= start && n <= end) status = 'live';
-      else if (n > end) status = 'completed';
+      if (n >= start && n <= effectiveEnd) status = 'live';
+      else if (n > effectiveEnd) status = 'completed';
       else status = 'upcoming';
       return { ...s, status };
     })
@@ -148,11 +156,20 @@ async function getStandings() {
     }
   }
 
+  // Normalize API full team names → short codes using DRIVER_MAP as the canonical key
+  const fullNameToCode = {};
+  for (const [driverNumber, fullName] of Object.entries(liveTeamMap)) {
+    const code = DRIVER_MAP[driverNumber]?.team;
+    if (code) fullNameToCode[fullName] = code;
+  }
+
   const drivers = rawDrivers.map(d => ({
     ...d,
     acronym: DRIVER_MAP[d.driver_number]?.acronym ?? `#${d.driver_number}`,
-    team: liveTeamMap[d.driver_number] ?? DRIVER_MAP[d.driver_number]?.team ?? '???',
+    team: fullNameToCode[liveTeamMap[d.driver_number]] ?? DRIVER_MAP[d.driver_number]?.team ?? '???',
     name: driverInfo[d.driver_number]?.name ?? null,
+    full_name: driverInfo[d.driver_number]?.full_name ?? null,
+    portrait_url: driverInfo[d.driver_number]?.headshot_url ?? null,
   }));
 
   // Derive constructor standings by summing points_current per team
@@ -203,6 +220,7 @@ async function main() {
   const rounds = assignRoundNumbers(meetings);
   const { meeting, mode } = findCurrentMeeting(meetings, rounds);
 
+  let view;
   const output = {
     mode,
     timezone: process.env.USER_TIMEZONE || 'UTC',
@@ -216,16 +234,8 @@ async function main() {
   if (!meeting) {
     output.mode = 'off_season';
     try {
-      const { drivers, constructors, driverInfo } = await getStandings();
-      output.standings = {
-        drivers: drivers.map(d => ({
-          ...d,
-          portrait_url: driverInfo[d.driver_number]?.headshot_url ?? null,
-          full_name: driverInfo[d.driver_number]?.full_name ?? null,
-          name: driverInfo[d.driver_number]?.name ?? null,
-        })),
-        constructors,
-      };
+      const { drivers, constructors } = await getStandings();
+      output.standings = { drivers, constructors };
     } catch (err) {
       process.stderr.write(`Off-season data fetch failed (skipping): ${err.message}\n`);
     }
@@ -261,6 +271,21 @@ async function main() {
     for (const result of forecastResults) {
       if (result?.forecast) output.forecasts[result.dateStr] = result.forecast;
     }
+
+    // Determine view early so we only fetch nextMeet when it will actually be used
+    view = determineView(output.mode, output.sessions);
+
+    const nextMeet = view === 'post_race'
+      ? meetings
+          .filter(m => !m.is_cancelled && new Date(m.date_start) > new Date(meeting.date_end))
+          .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))[0]
+      : null;
+
+    // Kick off nextMeet sessions fetch now so it runs in parallel with lastCompleted below
+    const nextSessionsPromise = nextMeet ? getSessions(nextMeet.meeting_key).catch(err => {
+      process.stderr.write(`Next meeting fetch failed (skipping): ${err.message}\n`);
+      return null;
+    }) : Promise.resolve(null);
 
     const lastCompleted = output.sessions.filter(s => s.status === 'completed').at(-1);
     if (lastCompleted) {
@@ -321,36 +346,33 @@ async function main() {
       }
     }
 
-    // Fetch next upcoming meeting for post-race "Up Next" display
-    const nextMeet = meetings
-      .filter(m => !m.is_cancelled && new Date(m.date_start) > new Date(meeting.date_end))
-      .sort((a, b) => new Date(a.date_start) - new Date(b.date_start))[0];
-
     if (nextMeet) {
       try {
-        const nextSessions = await getSessions(nextMeet.meeting_key);
-        const raceSession = nextSessions.find(s => s.session_name === 'Race');
-        let raceForecast = null;
-        if (raceSession) {
-          try {
-            raceForecast = await getWeatherForecast(nextMeet.circuit_short_name, raceSession.date_start);
-          } catch (err) {
-            process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
+        const nextSessions = await nextSessionsPromise;
+        if (nextSessions) {
+          const raceSession = nextSessions.find(s => s.session_name === 'Race');
+          let raceForecast = null;
+          if (raceSession) {
+            try {
+              raceForecast = await getWeatherForecast(nextMeet.circuit_short_name, raceSession.date_start);
+            } catch (err) {
+              process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
+            }
           }
+          output.next_meeting = {
+            ...nextMeet,
+            round_number: rounds.get(nextMeet.meeting_key),
+            sessions: nextSessions,
+            race_forecast: raceForecast,
+          };
         }
-        output.next_meeting = {
-          ...nextMeet,
-          round_number: rounds.get(nextMeet.meeting_key),
-          sessions: nextSessions,
-          race_forecast: raceForecast,
-        };
       } catch (err) {
         process.stderr.write(`Next meeting fetch failed (skipping): ${err.message}\n`);
       }
     }
   }
 
-  output.view = determineView(output.mode, output.sessions);
+  output.view = view ?? 'off_season';
   process.stdout.write(JSON.stringify(output, null, 2) + '\n');
 }
 

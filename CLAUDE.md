@@ -39,9 +39,9 @@ GitHub Actions workflow → fetches APIs → pushes JSON payload → TRMNL webho
 Private Plugin using **Webhook** strategy (not polling). GitHub Actions pushes data to TRMNL on a schedule.
 
 ### Polling Frequency
-- **Off-weekend:** Every 15 minutes (cron)
-- **Race weekend (between sessions):** Every 15 minutes (cron)
-- **Live session:** Every 15 minutes — a 30-second loop was considered but dropped. TRMNL rate limits pushes to 12/hour (free) or 30/hour (TRMNL+); a 30s loop would require 120/hour.
+- **Mon/Wed/Thu (off-weekend):** Once at noon UTC
+- **Fri–Sun (race weekend):** Every 30 minutes (cron)
+- **Live session:** No special live loop — just the 30-minute weekend cadence. A 30-second loop was considered but dropped. TRMNL rate limits pushes to 12/hour (free) or 30/hour (TRMNL+); a 30s loop would require 120/hour.
 
 ---
 
