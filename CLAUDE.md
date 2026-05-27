@@ -288,5 +288,36 @@ See docs/CONTEXT.md for full mapping table.
 - [x] `assets/circuits/official/` — F1 CDN circuit images (WebP)
 - [x] `assets/circuits/openf1/` — OpenF1 circuit images (PNG)
 
+## Common Pitfalls
+
+### Module system: CJS only
+No `package.json` with `"type": "module"` exists. Always use `require()` / `module.exports`. ESM `import` crashes before a single line runs.
+
+### Pipeline scope: each script is a separate process
+`build-payload.js` cannot access anything from `fetch-data.js` — no shared variables, no `DRIVER_MAP`, no functions. Any data it needs must come through the JSON payload, or be defined/imported in `build-payload.js` itself.
+
+### `view` is set in `fetch-data.js` — `build-payload.js` reads it, never recomputes it
+`determineView()` lives in `fetch-data.js`. `build-payload.js` reads `data.view` from stdin.
+
+### Payload mapping: cross-check all fields against `template.html`
+When writing a `.map()` in `build-payload.js`, verify every field the template uses is explicitly included. `...spread` is not enough — Liquid only sees what the payload contains. Example failure: `dnf`/`dns`/`dsq` present in fetch-data output but not passed through → blank cells for retired drivers.
+
+### Always filter `is_cancelled` when iterating meetings
+Cancelled meetings have past dates and surface as "completed" races if not skipped.
+```js
+meetings.filter(m => !m.is_cancelled && ...)
+```
+
+### Race/Sprint sessions overrun their scheduled `date_end`
+`classifySessions` applies `OVERRUN_BUFFER_MS = 30 * 60 * 1000` to Race and Sprint only. Without it the LIVE badge drops mid-race and result fetches fire before the API has data. Do not remove this buffer.
+
+### Gate view-specific fetches on `view`
+Compute `view` early (immediately after the main `Promise.all`) so it can gate subsequent fetches. `next_meeting` sessions and the next-race forecast are only needed for `post_race` — fetching them unconditionally is wasted work every other run.
+
+### `circuits.js` keys come from the OpenF1 API, not common sense
+Always verify the exact `circuit_short_name` value from the `/meetings` response before adding or renaming a key. Do not guess from geography or convention.
+
+---
+
 ## Role
 Think like a software engineer and ux designer. Ask questions if you have them.
