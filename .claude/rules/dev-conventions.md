@@ -151,13 +151,9 @@ The `team` field on driver standings entries must be normalised to the short cod
 Without this, `teamPoints['McLaren'] = 106` accumulates separately from `teamPoints['MCL'] = 0` and standings are wrong.
 
 ### circuits.js: keys must match OpenF1 `circuit_short_name` exactly
-The key is what OpenF1 returns in `circuit_short_name` — not a common name or city name.
-Known non-obvious values:
-- `'Madring'` — Circuit de Barcelona-Catalunya (NOT `'Barcelona'`, NOT `'Madrid'`)
-- `'Las Vegas'` — note the space
-- `'Yas Marina Circuit'` — includes "Circuit"
-
-When adding a new circuit, verify the exact `circuit_short_name` from the OpenF1 `/meetings` response before adding the key.
+The key is what OpenF1 returns in `circuit_short_name` — not a common name, city name, or what you'd expect.
+Always verify the exact value from the OpenF1 `/meetings` response before adding or renaming a key.
+Do not guess based on geography or convention.
 
 ### JSON output format
 ```js
@@ -267,12 +263,15 @@ Every view's root must have all four classes. Do not omit any:
 - Without `layout--justify-start`: content is centred vertically, not stacked from the top
 - Without `layout--stretch-x`: children don't fill the full width
 
-### Pin the Tabler Icons CDN version — never use `@latest`
+### Pin the Tabler Icons CDN to an exact version — never use `@latest`
+`@latest` resolves at request time and can introduce breaking icon renames silently.
+Always use an explicit version number. Check the current pinned version in `template.html` before changing it.
+
 ```html
 <!-- ✅ -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.44.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@{version}/dist/tabler-icons.min.css">
 
-<!-- ❌ — breaks silently when the library updates -->
+<!-- ❌ -->
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 ```
 
