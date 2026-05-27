@@ -19,6 +19,7 @@ async function main() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ merge_variables: payload }),
+        signal: AbortSignal.timeout(15_000),
       });
 
       if (!res.ok) {

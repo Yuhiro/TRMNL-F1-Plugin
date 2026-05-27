@@ -142,14 +142,14 @@ async function getStandings() {
     return { drivers: [], constructors: [] };
   }
 
-  // Build live team map and driver info from /drivers; fall back to static DRIVER_MAP per entry
+  // Build live team map and per-driver meta from /drivers; fall back to static DRIVER_MAP per entry
   const liveTeamMap = {};
-  const driverInfo = {};
+  const driverMeta = {};
   for (const d of rawDriverInfo) {
     if (d.driver_number != null) {
       if (d.team_name) liveTeamMap[d.driver_number] = d.team_name;
-      driverInfo[d.driver_number] = {
-        headshot_url: d.headshot_url ?? null,
+      driverMeta[d.driver_number] = {
+        portrait_url: d.headshot_url ?? null,
         full_name: d.full_name ?? null,
         name: formatBroadcastName(d.broadcast_name),
       };
@@ -167,9 +167,9 @@ async function getStandings() {
     ...d,
     acronym: DRIVER_MAP[d.driver_number]?.acronym ?? `#${d.driver_number}`,
     team: fullNameToCode[liveTeamMap[d.driver_number]] ?? DRIVER_MAP[d.driver_number]?.team ?? '???',
-    name: driverInfo[d.driver_number]?.name ?? null,
-    full_name: driverInfo[d.driver_number]?.full_name ?? null,
-    portrait_url: driverInfo[d.driver_number]?.headshot_url ?? null,
+    name: driverMeta[d.driver_number]?.name ?? null,
+    full_name: driverMeta[d.driver_number]?.full_name ?? null,
+    portrait_url: driverMeta[d.driver_number]?.portrait_url ?? null,
   }));
 
   // Derive constructor standings by summing points_current per team
@@ -183,11 +183,10 @@ async function getStandings() {
     .sort((a, b) => b.points - a.points)
     .map((c, i) => ({ ...c, position: i + 1 }));
 
-  return { drivers, constructors, driverInfo };
+  return { drivers, constructors };
 }
 
-function determineView(mode, sessions) {
-  if (mode === 'off_season') return 'off_season';
+function determineView(sessions) {
   if (sessions.some(s => s.status === 'live')) return 'live';
   if (sessions.some(s => s.session_name === 'Race' && s.status === 'completed')) return 'post_race';
   if (sessions.some(s => s.status === 'completed')) return 'race_weekend';
@@ -233,12 +232,8 @@ async function main() {
 
   if (!meeting) {
     output.mode = 'off_season';
-    try {
-      const { drivers, constructors } = await getStandings();
-      output.standings = { drivers, constructors };
-    } catch (err) {
-      process.stderr.write(`Off-season data fetch failed (skipping): ${err.message}\n`);
-    }
+    const { drivers, constructors } = await getStandings();
+    output.standings = { drivers, constructors };
   }
 
   if (meeting) {
@@ -248,32 +243,31 @@ async function main() {
     const liveSession = output.sessions.find(s => s.status === 'live');
     const upcomingSessions = output.sessions.filter(s => s.status === 'upcoming');
 
-    if (liveSession) {
-      try {
-        output.weather = await getLiveWeather(liveSession.session_key);
-      } catch (err) {
-        process.stderr.write(`Live weather fetch failed (skipping): ${err.message}\n`);
-      }
-    }
-
-    // Fetch one Open-Meteo forecast per unique date among upcoming sessions, in parallel with standings
+    // Fetch standings, live weather, and forecasts all in parallel
     const uniqueDates = [...new Map(upcomingSessions.map(s => [s.date_start.slice(0, 10), s.date_start])).entries()];
-    const [standingsResult, ...forecastResults] = await Promise.all([
+    const [standingsResult, liveWeather, ...forecastResults] = await Promise.all([
       getStandings(),
+      liveSession
+        ? getLiveWeather(liveSession.session_key).catch(err => {
+            process.stderr.write(`Live weather fetch failed (skipping): ${err.message}\n`);
+            return null;
+          })
+        : Promise.resolve(null),
       ...uniqueDates.map(([dateStr, date_start]) =>
         getWeatherForecast(meeting.circuit_short_name, date_start)
           .then(forecast => ({ dateStr, forecast }))
           .catch(err => { process.stderr.write(`Forecast fetch failed for ${dateStr} (skipping): ${err.message}\n`); return null; })
       ),
     ]);
-    const { driverInfo, ...standings } = standingsResult;
-    output.standings = standings;
+    output.standings = standingsResult;
+    const driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
+    output.weather = liveWeather;
     for (const result of forecastResults) {
       if (result?.forecast) output.forecasts[result.dateStr] = result.forecast;
     }
 
     // Determine view early so we only fetch nextMeet when it will actually be used
-    view = determineView(output.mode, output.sessions);
+    view = determineView(output.sessions);
 
     const nextMeet = view === 'post_race'
       ? meetings
@@ -291,17 +285,26 @@ async function main() {
     if (lastCompleted) {
       try {
         const showCompounds = ['Race', 'Sprint'].includes(lastCompleted.session_name);
-        const [results, stints] = await Promise.all([
+        const qualiSession = lastCompleted.session_name === 'Race'
+          ? output.sessions.find(s => s.session_name === 'Qualifying')
+          : null;
+
+        const [results, stints, qualiResults] = await Promise.all([
           getSessionResult(lastCompleted.session_key),
           showCompounds ? getStints(lastCompleted.session_key) : Promise.resolve([]),
+          qualiSession
+            ? getSessionResult(qualiSession.session_key).catch(err => {
+                process.stderr.write(`Qualifying results fetch failed (skipping): ${err.message}\n`);
+                return null;
+              })
+            : Promise.resolve(null),
         ]);
 
-        const compoundLetter = { SOFT: 'S', MEDIUM: 'M', HARD: 'H', INTERMEDIATE: 'I', WET: 'W' };
         const driverCompounds = {};
         for (const stint of stints) {
           const dn = stint.driver_number;
           if (!driverCompounds[dn]) driverCompounds[dn] = [];
-          const letter = compoundLetter[stint.compound] ?? stint.compound?.[0] ?? '?';
+          const letter = stint.compound?.[0] ?? '?';
           if (!driverCompounds[dn].includes(letter)) driverCompounds[dn].push(letter);
         }
 
@@ -316,9 +319,9 @@ async function main() {
           results: top6.map(r => ({
             position: r.position,
             driver_number: r.driver_number,
-            name: driverInfo[r.driver_number]?.name ?? null,
-            full_name: driverInfo[r.driver_number]?.full_name ?? null,
-            portrait_url: driverInfo[r.driver_number]?.headshot_url ?? null,
+            name: driverByNumber[r.driver_number]?.name ?? null,
+            full_name: driverByNumber[r.driver_number]?.full_name ?? null,
+            portrait_url: driverByNumber[r.driver_number]?.portrait_url ?? null,
             compounds: driverCompounds[r.driver_number] ?? [],
             duration: r.duration ?? null,
             gap_to_leader: r.gap_to_leader ?? null,
@@ -328,18 +331,10 @@ async function main() {
           })),
         };
 
-        if (lastCompleted.session_name === 'Race') {
-          const qualiSession = output.sessions.find(s => s.session_name === 'Qualifying');
-          if (qualiSession) {
-            try {
-              const qualiResults = await getSessionResult(qualiSession.session_key);
-              output.qualifying_results = qualiResults
-                .filter(r => r.position != null)
-                .map(r => ({ driver_number: r.driver_number, position: r.position }));
-            } catch (err) {
-              process.stderr.write(`Qualifying results fetch failed (skipping): ${err.message}\n`);
-            }
-          }
+        if (qualiResults) {
+          output.qualifying_results = qualiResults
+            .filter(r => r.position != null)
+            .map(r => ({ driver_number: r.driver_number, position: r.position }));
         }
       } catch (err) {
         process.stderr.write(`Session result fetch failed (skipping): ${err.message}\n`);
@@ -347,27 +342,23 @@ async function main() {
     }
 
     if (nextMeet) {
-      try {
-        const nextSessions = await nextSessionsPromise;
-        if (nextSessions) {
-          const raceSession = nextSessions.find(s => s.session_name === 'Race');
-          let raceForecast = null;
-          if (raceSession) {
-            try {
-              raceForecast = await getWeatherForecast(nextMeet.circuit_short_name, raceSession.date_start);
-            } catch (err) {
-              process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
-            }
+      const nextSessions = await nextSessionsPromise;
+      if (nextSessions) {
+        const raceSession = nextSessions.find(s => s.session_name === 'Race');
+        let raceForecast = null;
+        if (raceSession) {
+          try {
+            raceForecast = await getWeatherForecast(nextMeet.circuit_short_name, raceSession.date_start);
+          } catch (err) {
+            process.stderr.write(`Next race forecast failed (skipping): ${err.message}\n`);
           }
-          output.next_meeting = {
-            ...nextMeet,
-            round_number: rounds.get(nextMeet.meeting_key),
-            sessions: nextSessions,
-            race_forecast: raceForecast,
-          };
         }
-      } catch (err) {
-        process.stderr.write(`Next meeting fetch failed (skipping): ${err.message}\n`);
+        output.next_meeting = {
+          ...nextMeet,
+          round_number: rounds.get(nextMeet.meeting_key),
+          sessions: nextSessions,
+          race_forecast: raceForecast,
+        };
       }
     }
   }
