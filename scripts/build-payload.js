@@ -252,6 +252,7 @@ function main() {
               position_change: (c.position_start ?? c.position) - c.position,
             })),
           drivers: standings.drivers
+            .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
             .slice(0, 6)
             .map(d => ({
               position: d.position_current ?? 0,

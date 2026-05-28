@@ -159,9 +159,9 @@
         <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
           <span class="text--large">{{ next_race.date_range }}{% if next_race.round %} (Round {{ next_race.round }}){% endif %}</span>
           {% if next_race.weather %}
-          <span class="text--small text--muted">·</span>
+          <span class="text--large text--muted">·</span>
           <span class="text--large">{{ next_race.weather.temp }}</span>
-          <span class="text--small text--muted">·</span>
+          <span class="text--large text--muted">·</span>
           <i class="ti {{ next_race.weather.icon }} text--large" style="line-height: 1;"></i>
           <span class="text--large">{{ next_race.weather.precip }}</span>
           {% endif %}
@@ -269,6 +269,7 @@
           {% for c in standings.constructors %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
             <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ c.position }}</span>
+            <span style="width: 14px; flex-shrink: 0; line-height: 1;">{% if c.position_change > 0 %}<i class="ti ti-arrow-narrow-up text--base"></i>{% elsif c.position_change < 0 %}<i class="ti ti-arrow-narrow-down text--base"></i>{% endif %}</span>
             <span class="text--large" style="flex: 1;">{{ c.name }}</span>
             <span class="text--large" style="min-width: 36px; text-align: right;">{{ c.points }}</span>
           </div>
@@ -280,6 +281,7 @@
           {% for d in standings.drivers %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
             <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ d.position }}</span>
+            <span style="width: 14px; flex-shrink: 0; line-height: 1;">{% if d.position_change > 0 %}<i class="ti ti-arrow-narrow-up text--base"></i>{% elsif d.position_change < 0 %}<i class="ti ti-arrow-narrow-down text--base"></i>{% endif %}</span>
             <span class="text--large" style="flex: 1;">{{ d.name }}</span>
             <span class="text--large" style="min-width: 36px; text-align: right;">{{ d.points }}</span>
           </div>

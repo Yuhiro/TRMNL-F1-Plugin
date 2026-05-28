@@ -201,16 +201,22 @@ async function getStandings() {
     portrait_url: driverMeta[d.driver_number]?.portrait_url ?? null,
   }));
 
-  // Derive constructor standings by summing points_current per team
+  // Derive constructor standings by summing points_current and points_start per team
   const teamPoints = {};
+  const teamPointsStart = {};
   for (const d of drivers) {
     if (!teamPoints[d.team]) teamPoints[d.team] = 0;
+    if (!teamPointsStart[d.team]) teamPointsStart[d.team] = 0;
     teamPoints[d.team] += d.points_current ?? 0;
+    teamPointsStart[d.team] += d.points_start ?? 0;
   }
+  const startRanks = Object.entries(teamPointsStart)
+    .sort((a, b) => b[1] - a[1])
+    .reduce((acc, [team], i) => { acc[team] = i + 1; return acc; }, {});
   const constructors = Object.entries(teamPoints)
     .map(([team, points]) => ({ team, points }))
     .sort((a, b) => b.points - a.points)
-    .map((c, i) => ({ ...c, position: i + 1 }));
+    .map((c, i) => ({ ...c, position: i + 1, position_start: startRanks[c.team] ?? i + 1 }));
 
   return { drivers, constructors };
 }

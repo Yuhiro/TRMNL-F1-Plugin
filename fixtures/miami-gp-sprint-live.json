@@ -68,64 +68,76 @@
       {
         "position": 1,
         "name": "McLaren",
-        "points": 196
+        "points": 196,
+        "position_change": 0
       },
       {
         "position": 2,
         "name": "Ferrari",
-        "points": 175
+        "points": 175,
+        "position_change": 0
       },
       {
         "position": 3,
         "name": "Mercedes",
-        "points": 143
+        "points": 143,
+        "position_change": 0
       },
       {
         "position": 4,
         "name": "Red Bull",
-        "points": 138
+        "points": 138,
+        "position_change": 0
       },
       {
         "position": 5,
         "name": "Racing Bulls",
-        "points": 62
+        "points": 62,
+        "position_change": 0
       },
       {
         "position": 6,
         "name": "Aston Martin",
-        "points": 51
+        "points": 51,
+        "position_change": 0
       }
     ],
     "drivers": [
       {
         "position": 1,
         "name": "L. Norris",
-        "points": 110
+        "points": 110,
+        "position_change": 0
       },
       {
         "position": 2,
         "name": "C. Leclerc",
-        "points": 96
+        "points": 96,
+        "position_change": 0
       },
       {
         "position": 3,
         "name": "O. Piastri",
-        "points": 86
+        "points": 86,
+        "position_change": 0
       },
       {
         "position": 4,
         "name": "L. Hamilton",
-        "points": 74
+        "points": 74,
+        "position_change": 0
       },
       {
         "position": 5,
         "name": "M. Verstappen",
-        "points": 68
+        "points": 68,
+        "position_change": 0
       },
       {
         "position": 6,
         "name": "G. Russell",
-        "points": 61
+        "points": 61,
+        "position_change": 0
       }
     ]
   },

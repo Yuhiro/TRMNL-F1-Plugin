@@ -58,6 +58,15 @@ function getVal(expr, ctx) {
 }
 
 function evalCondition(expr, ctx) {
+  const numCmp = expr.match(/^(.+?)\s*(>=|<=|>|<)\s*(-?\d+(?:\.\d+)?)$/);
+  if (numCmp) {
+    const lhs = Number(getVal(numCmp[1].trim(), ctx));
+    const rhs = Number(numCmp[3]);
+    if (numCmp[2] === '>') return lhs > rhs;
+    if (numCmp[2] === '<') return lhs < rhs;
+    if (numCmp[2] === '>=') return lhs >= rhs;
+    if (numCmp[2] === '<=') return lhs <= rhs;
+  }
   const eq = expr.match(/^(.+?)\s*==\s*['"](.+?)['"]$/);
   if (eq) return String(getVal(eq[1].trim(), ctx)) === eq[2];
   const neq = expr.match(/^(.+?)\s*!=\s*['"](.+?)['"]$/);
