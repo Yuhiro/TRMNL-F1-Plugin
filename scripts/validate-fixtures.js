@@ -22,6 +22,8 @@ function requiredFor(view) {
 // Sub-key checks for commonly renamed fields
 const REQUIRED_MEETING_KEYS  = ['name', 'location', 'date_range'];
 const REQUIRED_STANDING_KEYS = { race: ['constructors', 'drivers'], off_season: ['constructors', 'drivers_col1', 'drivers_col2'] };
+const REQUIRED_WINNER_KEYS   = ['name', 'team', 'grid_position', 'finish_position'];
+const REQUIRED_NEXT_RACE_KEYS = ['name', 'location', 'date_range', 'round'];
 
 let passed = 0;
 let failed = 0;
@@ -57,6 +59,29 @@ for (const file of fs.readdirSync(FIXTURES_DIR).filter(f => f.endsWith('.json'))
     const keys = data.view === 'off_season' ? REQUIRED_STANDING_KEYS.off_season : REQUIRED_STANDING_KEYS.race;
     for (const k of keys) {
       if (!(k in data.standings)) errors.push(`missing standings.${k}`);
+    }
+  }
+
+  // winner sub-keys (post_race only)
+  if (data.view === 'post_race') {
+    if (!data.winner) {
+      errors.push(`missing top-level key 'winner' (required for post_race)`);
+    } else {
+      for (const k of REQUIRED_WINNER_KEYS) {
+        if (!(k in data.winner)) errors.push(`missing winner.${k}`);
+      }
+    }
+  }
+
+  // last_session sub-keys (present when a session has completed)
+  if (data.last_session) {
+    if (!('results' in data.last_session)) errors.push(`missing last_session.results`);
+  }
+
+  // next_race sub-keys (post_race only)
+  if (data.next_race) {
+    for (const k of REQUIRED_NEXT_RACE_KEYS) {
+      if (!(k in data.next_race)) errors.push(`missing next_race.${k}`);
     }
   }
 

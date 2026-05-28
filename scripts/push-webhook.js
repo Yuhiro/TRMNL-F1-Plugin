@@ -47,7 +47,4 @@ async function main() {
   });
 }
 
-main().catch(err => {
-  process.stderr.write(`Fatal: ${err.message}\n`);
-  process.exit(1);
-});
+main();
