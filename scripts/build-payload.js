@@ -74,18 +74,17 @@ const TEAM_NAMES = {
 // Open-Meteo WMO weathercode → Tabler Icon class
 function weathercodeIcon(code) {
   if (code == null)                        return 'ti-cloud';
-  if (code === 0)                           return 'ti-sun';
-  if (code <= 2)                           return 'ti-cloud-sun';
-  if (code === 3)                          return 'ti-cloud';
-  if (code === 45 || code === 48)          return 'ti-mist';
-  if (code >= 51 && code <= 55)            return 'ti-cloud-drizzle';
-  if ((code >= 61 && code <= 65) ||
+  if (code <= 2)                            return 'ti-sun';
+  if (code === 3)                           return 'ti-cloud';
+  if (code === 45 || code === 48)           return 'ti-mist';
+  if (code >= 51 && code <= 57)             return 'ti-cloud-rain';
+  if ((code >= 61 && code <= 67) ||
       (code >= 80 && code <= 82))          return 'ti-cloud-rain';
-  if (code >= 71 && code <= 75)            return 'ti-snowflake';
+  if ((code >= 71 && code <= 75) ||
+      code === 77 ||
+      (code >= 85 && code <= 86))          return 'ti-snowflake';
   if (code === 95)                         return 'ti-cloud-storm';
   if (code === 96 || code === 99)          return 'ti-bolt';
-  // Intentional fallback for unhandled WMO codes — no specific icon available:
-  // 56–57 (freezing drizzle), 66–67 (freezing rain), 77 (snow grains), 85–86 (snow showers)
   return 'ti-cloud';
 }
 
@@ -250,6 +249,7 @@ function main() {
               position: c.position,
               name: TEAM_NAMES[c.team] ?? c.team,
               points: c.points,
+              position_change: (c.position_start ?? c.position) - c.position,
             })),
           drivers: standings.drivers
             .slice(0, 6)
@@ -257,6 +257,7 @@ function main() {
               position: d.position_current ?? 0,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
+              position_change: (d.position_start ?? d.position_current ?? 0) - (d.position_current ?? 0),
             })),
         },
       };
