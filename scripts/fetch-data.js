@@ -266,10 +266,7 @@ async function getWeatherForecasts(circuitShortName, datestrs) {
 async function main() {
   const meetings = await getMeetings();
   const rounds = assignRoundNumbers(meetings);
-  // TEMP: force Canadian GP (meeting_key 1285) for UI testing
-  const meeting = meetings.find(m => m.meeting_key === 1285)
-    ? { ...meetings.find(m => m.meeting_key === 1285), round_number: rounds.get(1285) }
-    : findCurrentMeeting(meetings, rounds).meeting;
+  const { meeting } = findCurrentMeeting(meetings, rounds);
 
   let view;
   const output = {
@@ -315,7 +312,7 @@ async function main() {
     output.forecasts = forecasts;
 
     // Determine view early so we only fetch nextMeet when it will actually be used
-    view = 'post_race'; // TEMP: force post_race for UI testing
+    view = determineView(output.sessions);
 
     const nextMeet = view === 'post_race'
       ? meetings

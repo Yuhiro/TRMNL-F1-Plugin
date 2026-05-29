@@ -74,18 +74,18 @@ const TEAM_NAMES = {
 
 // Open-Meteo WMO weathercode → Tabler Icon suffix (without "ti-" prefix; template prepends it)
 function weathercodeIcon(code) {
-  if (code == null)                        return 'cloud';
-  if (code <= 2)                            return 'sun';
-  if (code === 3)                           return 'cloud';
-  if (code === 45 || code === 48)           return 'mist';
-  if (code >= 51 && code <= 57)             return 'cloud-rain';
+  if (code == null) return 'cloud';
+  if (code <= 2) return 'sun';
+  if (code === 3) return 'cloud';
+  if (code === 45 || code === 48) return 'mist';
+  if (code >= 51 && code <= 57) return 'cloud-rain';
   if ((code >= 61 && code <= 67) ||
-      (code >= 80 && code <= 82))          return 'cloud-rain';
+    (code >= 80 && code <= 82)) return 'cloud-rain';
   if ((code >= 71 && code <= 75) ||
-      code === 77 ||
-      (code >= 85 && code <= 86))          return 'snowflake';
-  if (code === 95)                         return 'cloud-storm';
-  if (code === 96 || code === 99)          return 'bolt';
+    code === 77 ||
+    (code >= 85 && code <= 86)) return 'snowflake';
+  if (code === 95) return 'cloud-storm';
+  if (code === 96 || code === 99) return 'bolt';
   return 'cloud';
 }
 
@@ -286,7 +286,7 @@ function main() {
             p: r.position,
             n: r.name ?? `#${r.driver_number}`,
             img: portraitPath(r.driver_number),
-            cpd: 'S|M|H',
+            cpd: r.compounds?.join('|') ?? '',
             ...(r.dnf && { dnf: true }),
             ...(r.dns && { dns: true }),
             ...(r.dsq && { dsq: true }),
