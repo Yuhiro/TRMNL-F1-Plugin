@@ -194,7 +194,7 @@ function main() {
               name: wdc?.full_name ?? wdc?.name ?? '',
               team: TEAM_NAMES[wdc?.team] ?? '',
               pts: wdc?.points_current ?? 0,
-              portrait: portraitPath(wdc?.driver_number),
+              img: portraitPath(wdc?.driver_number),
             },
             constructor: {
               name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',

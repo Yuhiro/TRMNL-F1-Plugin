@@ -132,7 +132,7 @@
       {
         "pos": 1,
         "name": "L. Norris",
-        "portrait": "portraits/1.png",
+        "img": "portraits/1.png",
         "compounds": [
           "S"
         ],
@@ -144,7 +144,7 @@
       {
         "pos": 2,
         "name": "O. Piastri",
-        "portrait": "portraits/81.png",
+        "img": "portraits/81.png",
         "compounds": [
           "S"
         ],
@@ -156,7 +156,7 @@
       {
         "pos": 3,
         "name": "C. Leclerc",
-        "portrait": "portraits/16.png",
+        "img": "portraits/16.png",
         "compounds": [
           "S"
         ],
@@ -168,7 +168,7 @@
       {
         "pos": 4,
         "name": "K. Antonelli",
-        "portrait": "portraits/12.png",
+        "img": "portraits/12.png",
         "compounds": [
           "S"
         ],
@@ -180,7 +180,7 @@
       {
         "pos": 5,
         "name": "G. Russell",
-        "portrait": "portraits/63.png",
+        "img": "portraits/63.png",
         "compounds": [
           "S"
         ],
@@ -192,7 +192,7 @@
       {
         "pos": 6,
         "name": "L. Hamilton",
-        "portrait": "portraits/44.png",
+        "img": "portraits/44.png",
         "compounds": [
           "S"
         ],

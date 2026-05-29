@@ -10,7 +10,7 @@ Reference for the `merge_variables` JSON pushed to the TRMNL webhook. All keys a
 |---|---|
 | `assets_base` | GitHub raw base URL for all assets. Template constructs full URLs as `{assets_base}/{path}` |
 | `logo` | Logo image path relative to `assets_base`, e.g. `f1.png` |
-| `portrait` | Driver portrait path relative to `assets_base`, e.g. `portraits/44.png` |
+| `img` | Driver portrait path relative to `assets_base`, e.g. `portraits/44.png` (`portrait_url`) |
 | `pos` | Standing position (`position`) |
 | `pts` | Points total (`points`) |
 | `delta` | Position change since last race (`position_change`). Positive = gained places. Only present when non-zero. |
@@ -40,7 +40,7 @@ champions
     name      full display name
     team      full team name
     pts       integer
-    portrait  relative path e.g. "portraits/12.png", or null if no portrait file
+    img       relative path e.g. "portraits/12.png", or null if no portrait file
 
   constructor
     name      full team name
@@ -113,7 +113,7 @@ last_session  present after any session completes
   results[]
     pos       finish position integer
     name      "F. Surname"
-    portrait  relative path e.g. "portraits/44.png", or null
+    img       relative path e.g. "portraits/44.png", or null
     compounds string[], e.g. ["S", "M", "H"]
     dnf       boolean
     dns       boolean

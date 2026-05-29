@@ -50,7 +50,7 @@
   "winner": {
     "name": "Lando Norris",
     "team": "McLaren",
-    "portrait": "portraits/1.png",
+    "img": "portraits/1.png",
     "grid": "P3",
     "finish": "P1"
   },
@@ -139,7 +139,7 @@
       {
         "pos": 1,
         "name": "L. Norris",
-        "portrait": "portraits/1.png",
+        "img": "portraits/1.png",
         "compounds": [
           "M",
           "H"
@@ -152,7 +152,7 @@
       {
         "pos": 2,
         "name": "C. Leclerc",
-        "portrait": "portraits/16.png",
+        "img": "portraits/16.png",
         "compounds": [
           "M",
           "H"
@@ -165,7 +165,7 @@
       {
         "pos": 3,
         "name": "G. Russell",
-        "portrait": "portraits/63.png",
+        "img": "portraits/63.png",
         "compounds": [
           "M",
           "H"
@@ -178,7 +178,7 @@
       {
         "pos": 4,
         "name": "K. Antonelli",
-        "portrait": "portraits/12.png",
+        "img": "portraits/12.png",
         "compounds": [
           "M",
           "H"
@@ -191,7 +191,7 @@
       {
         "pos": 5,
         "name": "O. Piastri",
-        "portrait": "portraits/81.png",
+        "img": "portraits/81.png",
         "compounds": [
           "M",
           "H"
@@ -204,7 +204,7 @@
       {
         "pos": 6,
         "name": "L. Hamilton",
-        "portrait": "portraits/44.png",
+        "img": "portraits/44.png",
         "compounds": [
           "M",
           "H"

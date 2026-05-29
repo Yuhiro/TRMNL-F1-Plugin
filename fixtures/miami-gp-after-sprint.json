@@ -129,7 +129,7 @@
       {
         "pos": 1,
         "name": "L. Norris",
-        "portrait": "portraits/1.png",
+        "img": "portraits/1.png",
         "compounds": [
           "S",
           "M"
@@ -142,7 +142,7 @@
       {
         "pos": 2,
         "name": "O. Piastri",
-        "portrait": "portraits/81.png",
+        "img": "portraits/81.png",
         "compounds": [
           "S",
           "M"
@@ -155,7 +155,7 @@
       {
         "pos": 3,
         "name": "L. Hamilton",
-        "portrait": "portraits/44.png",
+        "img": "portraits/44.png",
         "compounds": [
           "S",
           "M"
@@ -168,7 +168,7 @@
       {
         "pos": 4,
         "name": "C. Leclerc",
-        "portrait": "portraits/16.png",
+        "img": "portraits/16.png",
         "compounds": [
           "S",
           "M"
@@ -181,7 +181,7 @@
       {
         "pos": 5,
         "name": "G. Russell",
-        "portrait": "portraits/63.png",
+        "img": "portraits/63.png",
         "compounds": [
           "S",
           "M"
@@ -194,7 +194,7 @@
       {
         "pos": 6,
         "name": "M. Verstappen",
-        "portrait": "portraits/3.png",
+        "img": "portraits/3.png",
         "compounds": [
           "S",
           "M"
