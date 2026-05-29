@@ -11,6 +11,22 @@
 
 Priority: 🔴 High · 🟡 Medium · 🟢 Low
 
+## Round 3 findings
+
+- [x] B4 🟡 — `precip_probability` null from Open-Meteo renders as `"null%"` in weather display
+  `build-payload.js:141,304` — `${f.precip_probability}%` has no null guard. Open-Meteo documents `precipitation_probability_max` as a best-estimate field that returns `null` beyond roughly the 7-day model horizon and for some climate zones. When null, the template renders the literal string `"null%"` on the device. (`temp_max` is safe: `Math.round(null) === 0`, so worst case is `"0°C"`.)
+  **Fix:** `f.precip_probability != null ? \`${f.precip_probability}%\` : '—'` at both sites.
+
+- [x] T6 🟢 — Hardcoded `gap: 2px` in completed session name/time block is below the CSS variable scale
+  `template.html:186` — Won't fix. The 2px gap is intentional tighter spacing for de-emphasised completed session rows, below the minimum CSS variable scale.
+
+- [x] Q4 🟢 — `preview.js` startup uses `console.log`, violating the project's stdout/stderr convention
+  `preview.js:308–310,317` — Won't fix. `console.log` is preferred for the dev preview server; the stdout/stderr convention applies to pipeline scripts only.
+
+- [x] M6 🟢 — Sprint compound rendering is untested; sprint-live fixture has inaccurate `compounds` for Sprint Qualifying
+  `fixtures/miami-gp-sprint-live.json` and `build-payload.js:342` — `showCompounds` only triggers for `['Race', 'Sprint']`; Sprint Qualifying sessions produce `compounds: []`. But the sprint-live fixture has Sprint Qualifying as `last_session` with `compounds: ['S']` — data the pipeline would never produce. This gives a misleading template preview (tire circles appear for a Qualifying result). Additionally, there is no fixture with Sprint as `last_session`, so the Sprint compound rendering path is never exercised by `npm run validate`.
+  **Fix:** (1) Clear `compounds: []` in the sprint-live fixture's Sprint Qualifying results. (2) Add a `miami-gp-after-sprint.json` fixture with Sprint as `last_session` and `compounds` populated.
+
 ---
 
 ---

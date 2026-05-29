@@ -138,7 +138,7 @@ function sessionWeather(session, liveWeather, forecasts) {
   return {
     temp: `${Math.round(f.temp_max)}°C`,
     icon: weathercodeIcon(f.weathercode),
-    precip: `${f.precip_probability}%`,
+    precip: f.precip_probability != null ? `${f.precip_probability}%` : '—',
   };
 }
 
@@ -301,7 +301,7 @@ function main() {
           weather: next_meeting.race_forecast ? {
             temp: `${Math.round(next_meeting.race_forecast.temp_max)}°C`,
             icon: weathercodeIcon(next_meeting.race_forecast.weathercode),
-            precip: `${next_meeting.race_forecast.precip_probability}%`,
+            precip: next_meeting.race_forecast.precip_probability != null ? `${next_meeting.race_forecast.precip_probability}%` : '—',
           } : null,
         };
       }
