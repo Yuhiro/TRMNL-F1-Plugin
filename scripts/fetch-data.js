@@ -312,7 +312,7 @@ async function main() {
     output.forecasts = forecasts;
 
     // Determine view early so we only fetch nextMeet when it will actually be used
-    view = determineView(output.sessions);
+    view = 'post_race'; // TEMP: force post_race for UI testing
 
     const nextMeet = view === 'post_race'
       ? meetings
