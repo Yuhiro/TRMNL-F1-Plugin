@@ -208,13 +208,11 @@ function main() {
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
-              portrait_url: portraitImageUrl(d.driver_number),
             })),
             drivers_col2: drivers.slice(Math.ceil(driverLimit / 2), driverLimit).map(d => ({
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
-              portrait_url: portraitImageUrl(d.driver_number),
             })),
             constructors: constructors.map(c => ({
               position: c.position,
