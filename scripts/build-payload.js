@@ -177,13 +177,16 @@ function main() {
       const { meeting, sessions, weather, forecasts, standings, last_session, qualifying_results, next_meeting } = data;
 
       if (!meeting) {
-        const year = new Date().getFullYear();
+        // FORCE_SEASON (repo variable): mirrors the value set in fetch-data.js so the season year
+        // displayed in the off_season template header matches the forced season, not the current year.
+        const year = process.env.FORCE_SEASON ? parseInt(process.env.FORCE_SEASON, 10) : new Date().getFullYear();
         const drivers = [...(standings.drivers ?? [])].sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99));
         const constructors = standings.constructors ?? [];
         const wdc = drivers[0];
         const wcc = constructors[0];
-        // Testing: set MAX_STANDINGS_DRIVERS repo variable to cap the off-season driver standings rows.
-        // Splits evenly across both columns. Unset = all drivers shown (normal behaviour).
+        // MAX_STANDINGS_DRIVERS (repo variable): caps the number of drivers shown in the off_season
+        // standings table. Useful for testing layout at different row counts.
+        // Splits the total evenly across both columns. Unset = all drivers shown (normal behaviour).
         const driverLimit = process.env.MAX_STANDINGS_DRIVERS ? parseInt(process.env.MAX_STANDINGS_DRIVERS, 10) : drivers.length;
 
         const payload = {

@@ -51,15 +51,19 @@ async function fetchJSON(url, retries = 1) {
 }
 
 async function getMeetings() {
-  // Testing: set FORCE_SEASON repo variable (e.g. 2025) to fetch a specific season instead of the current year.
-  // Produces off_season view for completed seasons. Remove the variable to restore normal behaviour.
+  // FORCE_SEASON (repo variable, e.g. "2025"): overrides the fetched season year.
+  // Use to test the off_season view against a completed season's data.
+  // When set, the year-rollover check below is also skipped so the forced year's
+  // meetings are returned as-is rather than falling through to the next year.
+  // Note: getStandings() always fetches session_key=latest, so standings will reflect
+  // the current live season, not the forced year — acceptable for layout testing.
+  // Remove FORCE_SEASON to restore normal behaviour.
   const year = process.env.FORCE_SEASON ? parseInt(process.env.FORCE_SEASON, 10) : new Date().getFullYear();
   const meetings = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year}`);
   // If every non-cancelled meeting in the current year is in the past, the new season
   // calendar may not be published yet — try next year as a fallback.
   // Cancelled meetings can have future dates, so they must be excluded from this check
   // or a cancelled end-of-season entry would block the year rollover indefinitely.
-  // Skip rollover when FORCE_SEASON is set — return exactly the requested year's meetings.
   const allPast = !process.env.FORCE_SEASON && meetings.length > 0 && meetings.filter(m => !m.is_cancelled).every(m => new Date(m.date_end) < new Date());
   if (allPast) {
     const next = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year + 1}`).catch(() => []);
