@@ -185,6 +185,8 @@ function main() {
         const constructors = standings.constructors ?? [];
         const wdc = drivers[0];
         const wcc = constructors[0];
+        // DEBUG — remove after confirming portrait URL format in Actions logs
+        process.stderr.write(`Debug portrait raw: ${wdc?.portrait_url ?? 'null'}\nDebug portrait slug: ${portraitSlug(wdc?.portrait_url) ?? 'null'}\n`);
         // MAX_STANDINGS_DRIVERS (repo variable): caps the number of drivers shown in the off_season
         // standings table. Useful for testing layout at different row counts.
         // Splits the total evenly across both columns. Unset = all drivers shown (normal behaviour).
