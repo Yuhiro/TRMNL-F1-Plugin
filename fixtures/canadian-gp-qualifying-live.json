@@ -21,7 +21,7 @@
       "status": "live",
       "weather": {
         "temp": "17°C",
-        "icon": "ti-cloud-rain",
+        "icon": "cloud-rain",
         "precip": "Wet"
       }
     },
@@ -32,7 +32,7 @@
       "time_range": "14:00 – 16:00",
       "weather": {
         "temp": "21°C",
-        "icon": "ti-cloud",
+        "icon": "cloud",
         "precip": "30%"
       }
     }

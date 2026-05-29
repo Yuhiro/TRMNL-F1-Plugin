@@ -24,7 +24,7 @@
       "time_range": "17:00 – 18:00",
       "weather": {
         "temp": "20°C",
-        "icon": "ti-sun",
+        "icon": "sun",
         "precip": "8%"
       }
     },
@@ -35,7 +35,7 @@
       "time_range": "12:30 – 13:30",
       "weather": {
         "temp": "19°C",
-        "icon": "ti-cloud",
+        "icon": "cloud",
         "precip": "25%"
       }
     },
@@ -46,7 +46,7 @@
       "time_range": "16:00 – 17:00",
       "weather": {
         "temp": "18°C",
-        "icon": "ti-cloud-rain",
+        "icon": "cloud-rain",
         "precip": "60%"
       }
     },
@@ -57,7 +57,7 @@
       "time_range": "14:00 – 16:00",
       "weather": {
         "temp": "21°C",
-        "icon": "ti-cloud",
+        "icon": "cloud",
         "precip": "30%"
       }
     }

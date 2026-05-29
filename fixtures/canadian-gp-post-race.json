@@ -30,7 +30,7 @@
     "round": 10,
     "weather": {
       "temp": "28°C",
-      "icon": "ti-sun",
+      "icon": "sun",
       "precip": "5%"
     }
   },

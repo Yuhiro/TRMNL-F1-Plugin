@@ -22,7 +22,7 @@
       "status": "live",
       "weather": {
         "temp": "24°C",
-        "icon": "ti-sun",
+        "icon": "sun",
         "precip": "Dry"
       }
     }

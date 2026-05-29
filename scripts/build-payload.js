@@ -75,21 +75,21 @@ const TEAM_NAMES = {
   CAD: 'Cadillac',
 };
 
-// Open-Meteo WMO weathercode → Tabler Icon class
+// Open-Meteo WMO weathercode → Tabler Icon suffix (without "ti-" prefix; template prepends it)
 function weathercodeIcon(code) {
-  if (code == null)                        return 'ti-cloud';
-  if (code <= 2)                            return 'ti-sun';
-  if (code === 3)                           return 'ti-cloud';
-  if (code === 45 || code === 48)           return 'ti-mist';
-  if (code >= 51 && code <= 57)             return 'ti-cloud-rain';
+  if (code == null)                        return 'cloud';
+  if (code <= 2)                            return 'sun';
+  if (code === 3)                           return 'cloud';
+  if (code === 45 || code === 48)           return 'mist';
+  if (code >= 51 && code <= 57)             return 'cloud-rain';
   if ((code >= 61 && code <= 67) ||
-      (code >= 80 && code <= 82))          return 'ti-cloud-rain';
+      (code >= 80 && code <= 82))          return 'cloud-rain';
   if ((code >= 71 && code <= 75) ||
       code === 77 ||
-      (code >= 85 && code <= 86))          return 'ti-snowflake';
-  if (code === 95)                         return 'ti-cloud-storm';
-  if (code === 96 || code === 99)          return 'ti-bolt';
-  return 'ti-cloud';
+      (code >= 85 && code <= 86))          return 'snowflake';
+  if (code === 95)                         return 'cloud-storm';
+  if (code === 96 || code === 99)          return 'bolt';
+  return 'cloud';
 }
 
 function formatTime(isoStr, timezone) {
@@ -132,7 +132,7 @@ function sessionWeather(session, liveWeather, forecasts) {
   if (session.status === 'live' && liveWeather) {
     return {
       temp: `${Math.round(liveWeather.air_temperature)}°C`,
-      icon: liveWeather.rainfall ? 'ti-cloud-rain' : 'ti-sun',
+      icon: liveWeather.rainfall ? 'cloud-rain' : 'sun',
       precip: liveWeather.rainfall ? 'Wet' : 'Dry',
     };
   }
