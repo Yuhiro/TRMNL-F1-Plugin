@@ -4,7 +4,7 @@
     .standings-row:last-child { border-bottom: none; }
     .timing-row { border-bottom: 1px solid var(--light-grey); }
     .timing-row:last-child { border-bottom: none; }
-    .compound-circle { width: 24px; height: 24px; border: 4px solid #ccc; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
+    .compound-circle { width: 24px; height: 24px; border: 2px solid var(--gray-55); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0; }
   </style>
 
   {% if view == 'off_season' %}
@@ -233,7 +233,7 @@
               <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center; flex-shrink: 0;">
                 {% assign cpds = result.cpd | split: "|" %}
                 {% for compound in cpds %}
-                <span class="compound-circle text--small">{{ compound }}</span>
+                <span class="compound-circle text--small rounded--xxlarge">{{ compound }}</span>
                 {% endfor %}
               </div>
               <span class="text--large" style="min-width: 94px; text-align: right; flex-shrink: 0;">{% if result.dnf %}DNF{% elsif result.dns %}DNS{% elsif result.dsq %}DSQ{% else %}{{ result.time }}{% endif %}</span>
