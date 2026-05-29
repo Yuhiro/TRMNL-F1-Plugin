@@ -13,6 +13,11 @@ const GITHUB_RAW_BASE = `${GITHUB_ASSETS_BASE}/circuits`;
 const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1-logo.png`;
 const CIRCUITS = require('./circuits');
 
+// F1 portrait CDN base. Sent once in the payload; template prepends it to each driver slug.
+// Protocol-relative (//) so it inherits https: from the TRMNL page context.
+const PORTRAIT_CDN_BASE = 'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/';
+const PORTRAIT_BASE = '//' + PORTRAIT_CDN_BASE.slice('https://'.length);
+
 // CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
 // Set via GitHub Actions repository variable (Settings → Secrets and variables → Variables).
 // Values: 'official' (F1 CDN images) or 'openf1' (OpenF1 images).
@@ -43,17 +48,18 @@ function circuitType(shortName) {
   return CIRCUITS[shortName]?.type ?? null;
 }
 
-// OpenF1's driver endpoint returns portrait URLs with a '/1col/' path segment (smaller size).
-// Replacing it with '/2col/' fetches the larger variant, which renders better on the TRMNL X.
-// If the CDN URL structure ever changes and '/1col/' is absent, the replace becomes a no-op
-// and we get the original (smaller) image — log a warning so the regression is visible in CI.
-function upgradePortraitUrl(url) {
+// Strips the shared F1 CDN base from a portrait URL, returning just the driver-specific slug.
+// Also upgrades /1col/ → /2col/ for the larger image variant.
+// The base (PORTRAIT_BASE) is sent once per payload; the template prepends it to reconstruct the URL.
+// Returns null if the URL doesn't match the expected CDN structure.
+function portraitSlug(url) {
   if (!url) return null;
-  if (!url.includes('/1col/')) {
-    process.stderr.write(`Warning: portrait_url missing expected '/1col/' segment — CDN path may have changed: ${url}\n`);
-    return url;
+  const upgraded = url.replace('/2col/', '/1col/');
+  if (!upgraded.startsWith(PORTRAIT_CDN_BASE)) {
+    process.stderr.write(`Warning: unexpected portrait URL structure — CDN path may have changed: ${url}\n`);
+    return null;
   }
-  return url.replace('/1col/', '/2col/');
+  return upgraded.slice(PORTRAIT_CDN_BASE.length);
 }
 
 // team short code → full display name
@@ -179,6 +185,7 @@ function main() {
 
         const payload = {
           view: data.view,
+          portrait_base: PORTRAIT_BASE,
           logo_url: LOGO_URL,
           season: { year },
           champions: {
@@ -186,7 +193,7 @@ function main() {
               name: wdc?.full_name ?? wdc?.name ?? '',
               team: TEAM_NAMES[wdc?.team] ?? '',
               points: wdc?.points_current ?? 0,
-              portrait_url: upgradePortraitUrl(wdc?.portrait_url),
+              portrait_slug: portraitSlug(wdc?.portrait_url),
             },
             constructor: {
               name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',
@@ -198,13 +205,13 @@ function main() {
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
-              portrait_url: d.portrait_url ?? null,
+              portrait_slug: portraitSlug(d.portrait_url),
             })),
             drivers_col2: drivers.slice(11).map(d => ({
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
-              portrait_url: d.portrait_url ?? null,
+              portrait_slug: portraitSlug(d.portrait_url),
             })),
             constructors: constructors.map(c => ({
               position: c.position,
@@ -233,33 +240,40 @@ function main() {
         },
         sessions: sessions.map(s => {
           const { day, month } = sessionDateParts(s.date_start, timezone);
+          const w = sessionWeather(s, weather, forecasts);
           return {
             day,
             month,
             name: s.session_name,
             time_range: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
-            status: s.status,
-            weather: sessionWeather(s, weather, forecasts),
+            ...(s.status !== 'upcoming' && { status: s.status }),
+            ...(w !== null && { weather: w }),
           };
         }),
         standings: {
           constructors: standings.constructors
             .slice(0, 6)
-            .map(c => ({
-              position: c.position,
-              name: TEAM_NAMES[c.team] ?? c.team,
-              points: c.points,
-              position_change: (c.position_start ?? c.position) - c.position,
-            })),
+            .map(c => {
+              const position_change = (c.position_start ?? c.position) - c.position;
+              return {
+                position: c.position,
+                name: TEAM_NAMES[c.team] ?? c.team,
+                points: c.points,
+                ...(position_change !== 0 && { position_change }),
+              };
+            }),
           drivers: standings.drivers
             .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
             .slice(0, 6)
-            .map(d => ({
-              position: d.position_current ?? 0,
-              name: d.name ?? `#${d.driver_number}`,
-              points: d.points_current ?? 0,
-              position_change: (d.position_start ?? d.position_current ?? 0) - (d.position_current ?? 0),
-            })),
+            .map(d => {
+              const position_change = (d.position_start ?? d.position_current ?? 0) - (d.position_current ?? 0);
+              return {
+                position: d.position_current ?? 0,
+                name: d.name ?? `#${d.driver_number}`,
+                points: d.points_current ?? 0,
+                ...(position_change !== 0 && { position_change }),
+              };
+            }),
         },
       };
 
@@ -269,7 +283,7 @@ function main() {
           results: last_session.results.map(r => ({
             position: r.position,
             name: r.name ?? `#${r.driver_number}`,
-            portrait_url: r.portrait_url,
+            portrait_slug: portraitSlug(r.portrait_url),
             compounds: r.compounds,
             dnf: r.dnf ?? false,
             dns: r.dns ?? false,
@@ -286,7 +300,7 @@ function main() {
         payload.winner = {
           name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
           team: TEAM_NAMES[p1Standing?.team] ?? '',
-          portrait_url: upgradePortraitUrl(p1.portrait_url),
+          portrait_slug: portraitSlug(p1.portrait_url),
           grid_position: gridResult ? `P${gridResult.position}` : null,
           finish_position: 'P1',
         };
@@ -304,6 +318,11 @@ function main() {
             precip: next_meeting.race_forecast.precip_probability != null ? `${next_meeting.race_forecast.precip_probability}%` : '—',
           } : null,
         };
+      }
+
+      // Only include portrait_base when the payload actually contains portrait slugs.
+      if (JSON.stringify(payload).includes('"portrait_slug"')) {
+        payload.portrait_base = PORTRAIT_BASE;
       }
 
       process.stdout.write(JSON.stringify(payload, null, 2) + '\n');

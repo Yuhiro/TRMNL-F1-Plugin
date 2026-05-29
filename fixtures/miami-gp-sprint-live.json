@@ -1,5 +1,6 @@
 {
   "view": "live",
+  "portrait_base": "//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/",
   "meeting": {
     "name": "Miami Grand Prix",
     "location": "Miami, United States",
@@ -15,16 +16,14 @@
       "month": "May",
       "name": "Practice 1",
       "time_range": "12:30 – 13:30",
-      "status": "completed",
-      "weather": null
+      "status": "completed"
     },
     {
       "day": "1",
       "month": "May",
       "name": "Sprint Qualifying",
       "time_range": "16:30 – 17:30",
-      "status": "completed",
-      "weather": null
+      "status": "completed"
     },
     {
       "day": "2",
@@ -43,7 +42,6 @@
       "month": "May",
       "name": "Qualifying",
       "time_range": "17:00 – 18:00",
-      "status": "upcoming",
       "weather": {
         "temp": "29°C",
         "icon": "ti-sun",
@@ -55,7 +53,6 @@
       "month": "May",
       "name": "Race",
       "time_range": "16:00 – 18:00",
-      "status": "upcoming",
       "weather": {
         "temp": "28°C",
         "icon": "ti-cloud",
@@ -65,20 +62,68 @@
   ],
   "standings": {
     "constructors": [
-      { "position": 1, "name": "McLaren",      "points": 196, "position_change": 0 },
-      { "position": 2, "name": "Ferrari",      "points": 175, "position_change": 0 },
-      { "position": 3, "name": "Mercedes",     "points": 143, "position_change": 0 },
-      { "position": 4, "name": "Red Bull",     "points": 138, "position_change": 0 },
-      { "position": 5, "name": "Racing Bulls", "points": 62,  "position_change": 0 },
-      { "position": 6, "name": "Aston Martin", "points": 51,  "position_change": 0 }
+      {
+        "position": 1,
+        "name": "McLaren",
+        "points": 196
+      },
+      {
+        "position": 2,
+        "name": "Ferrari",
+        "points": 175
+      },
+      {
+        "position": 3,
+        "name": "Mercedes",
+        "points": 143
+      },
+      {
+        "position": 4,
+        "name": "Red Bull",
+        "points": 138
+      },
+      {
+        "position": 5,
+        "name": "Racing Bulls",
+        "points": 62
+      },
+      {
+        "position": 6,
+        "name": "Aston Martin",
+        "points": 51
+      }
     ],
     "drivers": [
-      { "position": 1, "name": "L. Norris",    "points": 110, "position_change": 0 },
-      { "position": 2, "name": "C. Leclerc",   "points": 96,  "position_change": 0 },
-      { "position": 3, "name": "O. Piastri",   "points": 86,  "position_change": 0 },
-      { "position": 4, "name": "L. Hamilton",  "points": 74,  "position_change": 0 },
-      { "position": 5, "name": "M. Verstappen","points": 68,  "position_change": 0 },
-      { "position": 6, "name": "G. Russell",   "points": 61,  "position_change": 0 }
+      {
+        "position": 1,
+        "name": "L. Norris",
+        "points": 110
+      },
+      {
+        "position": 2,
+        "name": "C. Leclerc",
+        "points": 96
+      },
+      {
+        "position": 3,
+        "name": "O. Piastri",
+        "points": 86
+      },
+      {
+        "position": 4,
+        "name": "L. Hamilton",
+        "points": 74
+      },
+      {
+        "position": 5,
+        "name": "M. Verstappen",
+        "points": 68
+      },
+      {
+        "position": 6,
+        "name": "G. Russell",
+        "points": 61
+      }
     ]
   },
   "last_session": {
@@ -87,7 +132,7 @@
       {
         "position": 1,
         "name": "L. Norris",
-        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LANNOR01_Lando_Norris/lannor01.png.transform/1col/image.png",
+        "portrait_slug": "L/LANNOR01_Lando_Norris/lannor01.png.transform/2col/image.png",
         "compounds": [],
         "dnf": false,
         "dns": false,
@@ -97,7 +142,7 @@
       {
         "position": 2,
         "name": "O. Piastri",
-        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/1col/image.png",
+        "portrait_slug": "O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/2col/image.png",
         "compounds": [],
         "dnf": false,
         "dns": false,
@@ -107,7 +152,7 @@
       {
         "position": 3,
         "name": "C. Leclerc",
-        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/C/CHALEC01_Charles_Leclerc/chalec01.png.transform/1col/image.png",
+        "portrait_slug": "C/CHALEC01_Charles_Leclerc/chalec01.png.transform/2col/image.png",
         "compounds": [],
         "dnf": false,
         "dns": false,
@@ -117,7 +162,7 @@
       {
         "position": 4,
         "name": "K. Antonelli",
-        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/1col/image.png",
+        "portrait_slug": "A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/2col/image.png",
         "compounds": [],
         "dnf": false,
         "dns": false,
@@ -127,7 +172,7 @@
       {
         "position": 5,
         "name": "G. Russell",
-        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/G/GEORUS01_George_Russell/georus01.png.transform/1col/image.png",
+        "portrait_slug": "G/GEORUS01_George_Russell/georus01.png.transform/2col/image.png",
         "compounds": [],
         "dnf": false,
         "dns": false,
@@ -137,7 +182,7 @@
       {
         "position": 6,
         "name": "L. Hamilton",
-        "portrait_url": "https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/1col/image.png",
+        "portrait_slug": "L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/2col/image.png",
         "compounds": [],
         "dnf": false,
         "dns": false,
