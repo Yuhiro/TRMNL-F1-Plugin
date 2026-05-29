@@ -286,7 +286,7 @@ function main() {
             p: r.position,
             n: r.name ?? `#${r.driver_number}`,
             img: portraitPath(r.driver_number),
-            cpd: r.compounds?.join('|') ?? '',
+            cpd: 'S|M|H',
             ...(r.dnf && { dnf: true }),
             ...(r.dns && { dns: true }),
             ...(r.dsq && { dsq: true }),
