@@ -13,10 +13,11 @@ const GITHUB_RAW_BASE = `${GITHUB_ASSETS_BASE}/circuits`;
 const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1-logo.png`;
 const CIRCUITS = require('./circuits');
 
-// F1 portrait CDN base. Sent once in the payload; template prepends it to each driver slug.
-// Protocol-relative (//) so it inherits https: from the TRMNL page context.
+// F1 portrait CDN base — used only to validate and strip incoming OpenF1 URLs.
+// The base URL and col size (1col/2col) are hardcoded in template.html per usage site,
+// so the payload carries only the driver-specific path segment (e.g. "A/ANDANT01_.../andant01.png").
+// This avoids repeating ~90 chars of shared CDN prefix for every driver in the payload.
 const PORTRAIT_CDN_BASE = 'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/';
-const PORTRAIT_BASE = '//' + PORTRAIT_CDN_BASE.slice('https://'.length);
 
 // CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
 // Set via GitHub Actions repository variable (Settings → Secrets and variables → Variables).
@@ -48,18 +49,18 @@ function circuitType(shortName) {
   return CIRCUITS[shortName]?.type ?? null;
 }
 
-// Strips the shared F1 CDN base from a portrait URL, returning just the driver-specific slug.
-// Also upgrades /1col/ → /2col/ for the larger image variant.
-// The base (PORTRAIT_BASE) is sent once per payload; the template prepends it to reconstruct the URL.
+// Extracts the driver-specific path segment from an OpenF1 portrait URL.
+// Strips the shared CDN base and the .transform/Xcol/image.png suffix — the col size
+// (1col for small thumbnails, 2col for large portraits) is chosen per usage site in
+// template.html, so the payload doesn't need to duplicate it for every driver.
 // Returns null if the URL doesn't match the expected CDN structure.
 function portraitSlug(url) {
   if (!url) return null;
-  const upgraded = url.replace('/2col/', '/1col/');
-  if (!upgraded.startsWith(PORTRAIT_CDN_BASE)) {
+  if (!url.startsWith(PORTRAIT_CDN_BASE)) {
     process.stderr.write(`Warning: unexpected portrait URL structure — CDN path may have changed: ${url}\n`);
     return null;
   }
-  return upgraded.slice(PORTRAIT_CDN_BASE.length);
+  return url.slice(PORTRAIT_CDN_BASE.length).split('.transform/')[0];
 }
 
 // team short code → full display name
@@ -191,7 +192,6 @@ function main() {
 
         const payload = {
           view: data.view,
-          portrait_base: PORTRAIT_BASE,
           logo_url: LOGO_URL,
           season: { year },
           champions: {
@@ -324,11 +324,6 @@ function main() {
             precip: next_meeting.race_forecast.precip_probability != null ? `${next_meeting.race_forecast.precip_probability}%` : '—',
           } : null,
         };
-      }
-
-      // Only include portrait_base when the payload actually contains portrait slugs.
-      if (JSON.stringify(payload).includes('"portrait_slug"')) {
-        payload.portrait_base = PORTRAIT_BASE;
       }
 
       process.stdout.write(JSON.stringify(payload, null, 2) + '\n');

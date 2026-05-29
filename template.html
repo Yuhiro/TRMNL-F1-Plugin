@@ -24,7 +24,8 @@
       <!-- WDC winner (top) -->
       <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: center;">
         {% if champions.driver.portrait_slug %}
-        <img src="{{ portrait_base }}{{ champions.driver.portrait_slug }}" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
+        {%- comment -%}CDN base + col size hardcoded here; payload carries only the driver path segment. 2col = larger image, appropriate for the 93px champion portrait.{%- endcomment -%}
+        <img src="//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/{{ champions.driver.portrait_slug }}.transform/2col/image.png" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
         {% else %}
         <div style="width: 93px; height: 93px; flex-shrink: 0;"></div>
         {% endif %}
@@ -43,7 +44,7 @@
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
             <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
             {% if d.portrait_slug %}
-            <img src="{{ portrait_base }}{{ d.portrait_slug }}" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
+            <img src="//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/{{ d.portrait_slug }}.transform/1col/image.png" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
             {% else %}
             <div style="width: 25px; height: 25px; flex-shrink: 0;"></div>
             {% endif %}
@@ -58,7 +59,7 @@
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
             <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
             {% if d.portrait_slug %}
-            <img src="{{ portrait_base }}{{ d.portrait_slug }}" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
+            <img src="//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/{{ d.portrait_slug }}.transform/1col/image.png" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
             {% else %}
             <div style="width: 25px; height: 25px; flex-shrink: 0;"></div>
             {% endif %}
@@ -132,8 +133,9 @@
           <span class="text--xlarge">Winner!</span>
         </div>
         <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: center; width: 100%;">
-          {% if winner.portrait_url %}
-          <img src="{{ winner.portrait_url }}" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
+          {% if winner.portrait_slug %}
+          {%- comment -%}2col = larger image, appropriate for the 93px winner portrait.{%- endcomment -%}
+          <img src="//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/{{ winner.portrait_slug }}.transform/2col/image.png" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
           {% else %}
           <div style="width: 93px; height: 93px; flex-shrink: 0;"></div>
           {% endif %}
@@ -237,8 +239,8 @@
           {% for result in last_session.results %}
           <div class="timing-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
             <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ result.position }}</span>
-            {% if result.portrait_url %}
-            <img src="{{ result.portrait_url }}" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
+            {% if result.portrait_slug %}
+            <img src="//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/{{ result.portrait_slug }}.transform/1col/image.png" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
             {% else %}
             <div style="width: 25px; height: 25px; flex-shrink: 0;"></div>
             {% endif %}
