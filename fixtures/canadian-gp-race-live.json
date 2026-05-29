@@ -124,73 +124,55 @@
       {
         "pos": 1,
         "name": "G. Russell",
-        "img": "portraits/63.png",
+        "img": "driver/63.png",
         "compounds": [
           "S"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "1:10.087"
       },
       {
         "pos": 2,
         "name": "K. Antonelli",
-        "img": "portraits/12.png",
+        "img": "driver/12.png",
         "compounds": [
           "S"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+0.034s"
       },
       {
         "pos": 3,
         "name": "L. Norris",
-        "img": "portraits/1.png",
+        "img": "driver/1.png",
         "compounds": [
           "S"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+0.218s"
       },
       {
         "pos": 4,
         "name": "C. Leclerc",
-        "img": "portraits/16.png",
+        "img": "driver/16.png",
         "compounds": [
           "S"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+0.291s"
       },
       {
         "pos": 5,
         "name": "O. Piastri",
-        "img": "portraits/81.png",
+        "img": "driver/81.png",
         "compounds": [
           "S"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+0.374s"
       },
       {
         "pos": 6,
         "name": "L. Hamilton",
-        "img": "portraits/44.png",
+        "img": "driver/44.png",
         "compounds": [
           "S"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+0.456s"
       }
     ]

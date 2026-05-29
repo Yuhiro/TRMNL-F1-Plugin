@@ -16,7 +16,7 @@ const CIRCUITS = require('./circuits');
 // Portrait images are self-hosted in assets/portraits/{driver_number}.png (downloaded via
 // download-assets.js). Serving from GitHub raw avoids F1 CDN hotlink protection which
 // caused intermittent broken images when TRMNL's server fetched directly from formula1.com.
-const PORTRAITS_DIR = join(__dirname, '../assets/portraits');
+const PORTRAITS_DIR = join(__dirname, '../assets/driver');
 
 // CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
 // Set via GitHub Actions repository variable (Settings → Secrets and variables → Variables).
@@ -54,7 +54,7 @@ function circuitType(shortName) {
 function portraitPath(driverNumber) {
   if (!driverNumber) return null;
   if (!existsSync(join(PORTRAITS_DIR, `${driverNumber}.png`))) return null;
-  return `portraits/${driverNumber}.png`;
+  return `driver/${driverNumber}.png`;
 }
 
 // team short code → full display name
@@ -283,11 +283,11 @@ function main() {
           results: last_session.results.map(r => ({
             pos: r.position,
             name: r.name ?? `#${r.driver_number}`,
-            portrait: portraitPath(r.driver_number),
+            img: portraitPath(r.driver_number),
             compounds: r.compounds,
-            dnf: r.dnf ?? false,
-            dns: r.dns ?? false,
-            dsq: r.dsq ?? false,
+            ...(r.dnf && { dnf: true }),
+            ...(r.dns && { dns: true }),
+            ...(r.dsq && { dsq: true }),
             time: r.position === 1 ? formatLapTime(r.duration) : formatGap(r.gap_to_leader),
           })),
         };

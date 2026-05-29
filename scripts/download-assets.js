@@ -21,7 +21,7 @@ const PORTRAIT_CDN_BASE = 'https://media.formula1.com/d_driver_fallback_image.pn
 
 const OUT_OPENF1   = join(__dirname, '../assets/circuits/openf1');
 const OUT_OFFICIAL = join(__dirname, '../assets/circuits/official');
-const OUT_PORTRAITS = join(__dirname, '../assets/portraits');
+const OUT_PORTRAITS = join(__dirname, '../assets/driver');
 
 const year = (() => {
   const arg = process.argv.slice(2).find(a => /^\d{4}$/.test(a));

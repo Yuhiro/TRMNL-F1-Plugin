@@ -10,7 +10,7 @@ Reference for the `merge_variables` JSON pushed to the TRMNL webhook. All keys a
 |---|---|
 | `assets_base` | GitHub raw base URL for all assets. Template constructs full URLs as `{assets_base}/{path}` |
 | `logo` | Logo image path relative to `assets_base`, e.g. `f1.png` |
-| `img` | Driver portrait path relative to `assets_base`, e.g. `portraits/44.png` (`portrait_url`) |
+| `img` | Driver portrait path relative to `assets_base`, e.g. `driver/44.png` (`portrait_url`) |
 | `pos` | Standing position (`position`) |
 | `pts` | Points total (`points`) |
 | `delta` | Position change since last race (`position_change`). Positive = gained places. Only present when non-zero. |
@@ -40,7 +40,7 @@ champions
     name      full display name
     team      full team name
     pts       integer
-    img       relative path e.g. "portraits/12.png", or null if no portrait file
+    img       relative path e.g. "driver/12.png", or null if no portrait file
 
   constructor
     name      full team name
@@ -63,7 +63,7 @@ standings
     pts       integer
 ```
 
-**Size:** ~1,720 bytes (328 bytes under the 2 KB free-tier limit as of 2026 season).
+**Size:** ~1,662 bytes (~386 bytes under the 2 KB free-tier limit as of 2026 season).
 
 ---
 
@@ -113,7 +113,7 @@ last_session  present after any session completes
   results[]
     pos       finish position integer
     name      "F. Surname"
-    img       relative path e.g. "portraits/44.png", or null
+    img       relative path e.g. "driver/44.png", or null
     compounds string[], e.g. ["S", "M", "H"]
     dnf       boolean
     dns       boolean
@@ -131,7 +131,7 @@ All race_weekend fields above, plus:
 winner
   name      full name
   team      full team name
-  portrait  GitHub raw URL, or null
+  img       relative path e.g. "driver/44.png", or null
   grid      qualifying position, e.g. "P3", or null if unknown
   finish    always "P1"
 
@@ -153,9 +153,9 @@ next_race   present when a subsequent GP exists in the calendar
 assets_base:  https://raw.githubusercontent.com/{owner}/{repo}/main/assets
 
 logo:     f1.png
-portrait: portraits/{driver_number}.png
+img:      driver/{driver_number}.png
 map:      circuits/openf1/{image}             (default)
           circuits/official/{f1_slug}.webp    (CIRCUIT_IMAGE_SOURCE=official)
 ```
 
-Portrait files only exist if previously downloaded via `scripts/download-assets.js`. If the file is absent, `portrait` is `null` and the template renders a placeholder div.
+Driver image files only exist if previously downloaded via `scripts/download-assets.js`. If the file is absent, `img` is `null` and the template renders a placeholder div.

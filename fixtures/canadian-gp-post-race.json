@@ -50,7 +50,7 @@
   "winner": {
     "name": "Lando Norris",
     "team": "McLaren",
-    "img": "portraits/1.png",
+    "img": "driver/1.png",
     "grid": "P3",
     "finish": "P1"
   },
@@ -139,79 +139,61 @@
       {
         "pos": 1,
         "name": "L. Norris",
-        "img": "portraits/1.png",
+        "img": "driver/1.png",
         "compounds": [
           "M",
           "H"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "1:32:14.456"
       },
       {
         "pos": 2,
         "name": "C. Leclerc",
-        "img": "portraits/16.png",
+        "img": "driver/16.png",
         "compounds": [
           "M",
           "H"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+3.412s"
       },
       {
         "pos": 3,
         "name": "G. Russell",
-        "img": "portraits/63.png",
+        "img": "driver/63.png",
         "compounds": [
           "M",
           "H"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+8.761s"
       },
       {
         "pos": 4,
         "name": "K. Antonelli",
-        "img": "portraits/12.png",
+        "img": "driver/12.png",
         "compounds": [
           "M",
           "H"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+12.334s"
       },
       {
         "pos": 5,
         "name": "O. Piastri",
-        "img": "portraits/81.png",
+        "img": "driver/81.png",
         "compounds": [
           "M",
           "H"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+19.087s"
       },
       {
         "pos": 6,
         "name": "L. Hamilton",
-        "img": "portraits/44.png",
+        "img": "driver/44.png",
         "compounds": [
           "M",
           "H"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+24.512s"
       }
     ]

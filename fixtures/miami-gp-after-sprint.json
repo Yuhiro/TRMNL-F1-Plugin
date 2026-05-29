@@ -129,79 +129,61 @@
       {
         "pos": 1,
         "name": "L. Norris",
-        "img": "portraits/1.png",
+        "img": "driver/1.png",
         "compounds": [
           "S",
           "M"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "24:51.402"
       },
       {
         "pos": 2,
         "name": "O. Piastri",
-        "img": "portraits/81.png",
+        "img": "driver/81.png",
         "compounds": [
           "S",
           "M"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+3.241s"
       },
       {
         "pos": 3,
         "name": "L. Hamilton",
-        "img": "portraits/44.png",
+        "img": "driver/44.png",
         "compounds": [
           "S",
           "M"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+5.876s"
       },
       {
         "pos": 4,
         "name": "C. Leclerc",
-        "img": "portraits/16.png",
+        "img": "driver/16.png",
         "compounds": [
           "S",
           "M"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+7.113s"
       },
       {
         "pos": 5,
         "name": "G. Russell",
-        "img": "portraits/63.png",
+        "img": "driver/63.png",
         "compounds": [
           "S",
           "M"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+9.402s"
       },
       {
         "pos": 6,
         "name": "M. Verstappen",
-        "img": "portraits/3.png",
+        "img": "driver/3.png",
         "compounds": [
           "S",
           "M"
         ],
-        "dnf": false,
-        "dns": false,
-        "dsq": false,
         "time": "+11.654s"
       }
     ]

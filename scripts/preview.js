@@ -294,7 +294,7 @@ function serve() {
       // Rewrite portrait URLs — they appear in multiple locations (standings, results, winner,
       // champions) so use a string-replace pass over the whole payload rather than per-field rewrites.
       let raw = JSON.stringify(data);
-      raw = raw.replace(/https:\/\/raw\.githubusercontent\.com\/[^"]*\/assets\/portraits\/(\d+\.png)/g, '/assets/portraits/$1');
+      raw = raw.replace(/https:\/\/raw\.githubusercontent\.com\/[^"]*\/assets\/portraits\/(\d+\.png)/g, '/assets/driver/$1');
       data = JSON.parse(raw);
 
       const rendered = renderTemplate(template, data);
