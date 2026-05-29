@@ -9,6 +9,7 @@
   "scripts": {
     "preview": "node scripts/preview.js",
     "validate": "node scripts/validate-fixtures.js",
-    "pipeline": "node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js"
+    "pipeline": "node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js",
+    "download-assets": "node scripts/download-assets.js"
   }
 }

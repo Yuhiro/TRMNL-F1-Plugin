@@ -8,16 +8,18 @@
 if (!process.env.GITHUB_REPOSITORY) {
   process.stderr.write('Warning: GITHUB_REPOSITORY not set — asset URLs will not resolve\n');
 }
+const { existsSync } = require('fs');
+const { join } = require('path');
 const GITHUB_ASSETS_BASE = `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY ?? ''}/main/assets`;
 const GITHUB_RAW_BASE = `${GITHUB_ASSETS_BASE}/circuits`;
 const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1-logo.png`;
 const CIRCUITS = require('./circuits');
 
-// F1 portrait CDN base — used only to validate and strip incoming OpenF1 URLs.
-// The base URL and col size (1col/2col) are hardcoded in template.html per usage site,
-// so the payload carries only the driver-specific path segment (e.g. "A/ANDANT01_.../andant01.png").
-// This avoids repeating ~90 chars of shared CDN prefix for every driver in the payload.
-const PORTRAIT_CDN_BASE = 'https://media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/';
+// Portrait images are self-hosted in assets/portraits/{driver_number}.png (downloaded via
+// download-assets.js). Serving from GitHub raw avoids F1 CDN hotlink protection which
+// caused intermittent broken images when TRMNL's server fetched directly from formula1.com.
+const PORTRAITS_DIR = join(__dirname, '../assets/portraits');
+const PORTRAIT_ASSETS_BASE = `${GITHUB_ASSETS_BASE}/portraits`;
 
 // CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
 // Set via GitHub Actions repository variable (Settings → Secrets and variables → Variables).
@@ -49,18 +51,13 @@ function circuitType(shortName) {
   return CIRCUITS[shortName]?.type ?? null;
 }
 
-// Extracts the driver-specific path segment from an OpenF1 portrait URL.
-// Strips the shared CDN base and the .transform/Xcol/image.png suffix — the col size
-// (1col for small thumbnails, 2col for large portraits) is chosen per usage site in
-// template.html, so the payload doesn't need to duplicate it for every driver.
-// Returns null if the URL doesn't match the expected CDN structure.
-function portraitSlug(url) {
-  if (!url) return null;
-  if (!url.startsWith(PORTRAIT_CDN_BASE)) {
-    process.stderr.write(`Warning: unexpected portrait URL structure — CDN path may have changed: ${url}\n`);
-    return null;
-  }
-  return url.slice(PORTRAIT_CDN_BASE.length).split('.transform/')[0];
+// Returns a GitHub raw URL for a driver's self-hosted portrait, or null if the file
+// hasn't been downloaded yet (e.g. a mid-season replacement). Null → template shows
+// an empty placeholder div instead of a broken image box.
+function portraitImageUrl(driverNumber) {
+  if (!driverNumber) return null;
+  if (!existsSync(join(PORTRAITS_DIR, `${driverNumber}.png`))) return null;
+  return `${PORTRAIT_ASSETS_BASE}/${driverNumber}.png`;
 }
 
 // team short code → full display name
@@ -185,8 +182,6 @@ function main() {
         const constructors = standings.constructors ?? [];
         const wdc = drivers[0];
         const wcc = constructors[0];
-        // DEBUG — remove after confirming portrait URL format in Actions logs
-        process.stderr.write(`Debug portrait raw: ${wdc?.portrait_url ?? 'null'}\nDebug portrait slug: ${portraitSlug(wdc?.portrait_url) ?? 'null'}\n`);
         // MAX_STANDINGS_DRIVERS (repo variable): caps the number of drivers shown in the off_season
         // standings table. Useful for testing layout at different row counts.
         // Splits the total evenly across both columns. Unset = all drivers shown (normal behaviour).
@@ -201,7 +196,7 @@ function main() {
               name: wdc?.full_name ?? wdc?.name ?? '',
               team: TEAM_NAMES[wdc?.team] ?? '',
               points: wdc?.points_current ?? 0,
-              portrait_slug: portraitSlug(wdc?.portrait_url),
+              portrait_url: portraitImageUrl(wdc?.driver_number),
             },
             constructor: {
               name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',
@@ -213,13 +208,13 @@ function main() {
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
-              portrait_slug: portraitSlug(d.portrait_url),
+              portrait_url: portraitImageUrl(d.driver_number),
             })),
             drivers_col2: drivers.slice(Math.ceil(driverLimit / 2), driverLimit).map(d => ({
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
-              portrait_slug: portraitSlug(d.portrait_url),
+              portrait_url: portraitImageUrl(d.driver_number),
             })),
             constructors: constructors.map(c => ({
               position: c.position,
@@ -291,7 +286,7 @@ function main() {
           results: last_session.results.map(r => ({
             position: r.position,
             name: r.name ?? `#${r.driver_number}`,
-            portrait_slug: portraitSlug(r.portrait_url),
+            portrait_url: portraitImageUrl(r.driver_number),
             compounds: r.compounds,
             dnf: r.dnf ?? false,
             dns: r.dns ?? false,
@@ -308,7 +303,7 @@ function main() {
         payload.winner = {
           name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
           team: TEAM_NAMES[p1Standing?.team] ?? '',
-          portrait_slug: portraitSlug(p1.portrait_url),
+          portrait_url: portraitImageUrl(p1.driver_number),
           grid_position: gridResult ? `P${gridResult.position}` : null,
           finish_position: 'P1',
         };

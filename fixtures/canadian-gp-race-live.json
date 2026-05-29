@@ -1,6 +1,5 @@
 {
   "view": "live",
-  "portrait_base": "//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/",
   "meeting": {
     "name": "Canadian Grand Prix",
     "location": "Montréal, Canada",
@@ -124,7 +123,7 @@
       {
         "position": 1,
         "name": "G. Russell",
-        "portrait_slug": "G/GEORUS01_George_Russell/georus01.png.transform/2col/image.png",
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/63.png",
         "compounds": [
           "S"
         ],
@@ -133,7 +132,7 @@
       {
         "position": 2,
         "name": "K. Antonelli",
-        "portrait_slug": "A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/2col/image.png",
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png",
         "compounds": [
           "S"
         ],
@@ -142,7 +141,7 @@
       {
         "position": 3,
         "name": "L. Norris",
-        "portrait_slug": "L/LANNOR01_Lando_Norris/lannor01.png.transform/2col/image.png",
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/1.png",
         "compounds": [
           "S"
         ],
@@ -151,7 +150,7 @@
       {
         "position": 4,
         "name": "C. Leclerc",
-        "portrait_slug": "C/CHALEC01_Charles_Leclerc/chalec01.png.transform/2col/image.png",
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/16.png",
         "compounds": [
           "S"
         ],
@@ -160,7 +159,7 @@
       {
         "position": 5,
         "name": "O. Piastri",
-        "portrait_slug": "O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/2col/image.png",
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/81.png",
         "compounds": [
           "S"
         ],
@@ -169,7 +168,7 @@
       {
         "position": 6,
         "name": "L. Hamilton",
-        "portrait_slug": "L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/2col/image.png",
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/44.png",
         "compounds": [
           "S"
         ],

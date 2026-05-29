@@ -1,6 +1,5 @@
 {
   "view": "off_season",
-  "portrait_base": "//media.formula1.com/d_driver_fallback_image.png/content/dam/fom-website/drivers/",
   "season": {
     "year": 2026
   },
@@ -9,7 +8,7 @@
       "name": "Andrea Kimi Antonelli",
       "team": "Mercedes",
       "points": 285,
-      "portrait_slug": "A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/2col/image.png"
+      "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png"
     },
     "constructor": {
       "name": "Mercedes",
@@ -22,43 +21,43 @@
         "position": 1,
         "name": "K. Antonelli",
         "points": 285,
-        "portrait_slug": "A/ANDANT01_Andrea%20Kimi_Antonelli/andant01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png"
       },
       {
         "position": 2,
         "name": "G. Russell",
         "points": 280,
-        "portrait_slug": "G/GEORUS01_George_Russell/georus01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/63.png"
       },
       {
         "position": 3,
         "name": "L. Norris",
         "points": 262,
-        "portrait_slug": "L/LANNOR01_Lando_Norris/lannor01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/1.png"
       },
       {
         "position": 4,
         "name": "O. Piastri",
         "points": 248,
-        "portrait_slug": "O/OSCPIA01_Oscar_Piastri/oscpia01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/81.png"
       },
       {
         "position": 5,
         "name": "C. Leclerc",
         "points": 215,
-        "portrait_slug": "C/CHALEC01_Charles_Leclerc/chalec01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/16.png"
       },
       {
         "position": 6,
         "name": "L. Hamilton",
         "points": 198,
-        "portrait_slug": "L/LEWHAM01_Lewis_Hamilton/lewham01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/44.png"
       },
       {
         "position": 7,
         "name": "M. Verstappen",
         "points": 175,
-        "portrait_slug": "M/MAXVER01_Max_Verstappen/maxver01.png.transform/2col/image.png"
+        "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/3.png"
       },
       {
         "position": 8,
