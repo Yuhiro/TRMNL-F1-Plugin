@@ -11,7 +11,20 @@
 
 Priority: 🔴 High · 🟡 Medium · 🟢 Low
 
-## Round 3 findings
+## Round 4 findings
+
+- [x] B5 🟡 — `findCurrentMeeting` returns pre-season test meeting as current/next event
+  `fetch-data.js:82-99` — `assignRoundNumbers` filters test meetings with `!/test/i.test(m.meeting_official_name ?? '')` (the M2 fix), but `findCurrentMeeting` has no equivalent guard. Both the in-progress loop (line 83: only skips `is_cancelled`) and the `upcoming` filter (line 93) include test meetings. During the pre-season testing window (≈4 days in Feb/March), the plugin returns the test meeting as current, renders the test name as the race name, and `meeting.round_number` is `undefined` (test key absent from the `rounds` Map). In the weeks before testing starts, `upcoming[0]` resolves to the test instead of Round 1.
+  **Fix:** Add `&& !/test/i.test(m.meeting_official_name ?? '')` to the loop guard and to the `upcoming` filter in `findCurrentMeeting`.
+
+- [x] M7 🟢 — `validate-fixtures.js` doesn't check `last_session.name`
+  `validate-fixtures.js:53-55` — Only `last_session.results` is validated when `data.last_session` is present. The template renders `{{ last_session.name }}` (line 233 of `template.html`). A rename of this key in `build-payload.js` passes validation silently and blanks the session results header on device.
+  **Fix:** Add `if (!('name' in data.last_session)) errors.push('missing last_session.name');` alongside the existing `results` check.
+
+---
+<!-- completed -->
+
+## Round 3 findings (completed)
 
 - [x] B4 🟡 — `precip_probability` null from Open-Meteo renders as `"null%"` in weather display
   `build-payload.js:141,304` — `${f.precip_probability}%` has no null guard. Open-Meteo documents `precipitation_probability_max` as a best-estimate field that returns `null` beyond roughly the 7-day model horizon and for some climate zones. When null, the template renders the literal string `"null%"` on the device. (`temp_max` is safe: `Math.round(null) === 0`, so worst case is `"0°C"`.)
@@ -26,11 +39,6 @@ Priority: 🔴 High · 🟡 Medium · 🟢 Low
 - [x] M6 🟢 — Sprint compound rendering is untested; sprint-live fixture has inaccurate `compounds` for Sprint Qualifying
   `fixtures/miami-gp-sprint-live.json` and `build-payload.js:342` — `showCompounds` only triggers for `['Race', 'Sprint']`; Sprint Qualifying sessions produce `compounds: []`. But the sprint-live fixture has Sprint Qualifying as `last_session` with `compounds: ['S']` — data the pipeline would never produce. This gives a misleading template preview (tire circles appear for a Qualifying result). Additionally, there is no fixture with Sprint as `last_session`, so the Sprint compound rendering path is never exercised by `npm run validate`.
   **Fix:** (1) Clear `compounds: []` in the sprint-live fixture's Sprint Qualifying results. (2) Add a `miami-gp-after-sprint.json` fixture with Sprint as `last_session` and `compounds` populated.
-
----
-
----
-<!-- completed -->
 
 ## Round 1 findings (completed)
 

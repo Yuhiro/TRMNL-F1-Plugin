@@ -75,6 +75,7 @@ for (const file of fs.readdirSync(FIXTURES_DIR).filter(f => f.endsWith('.json'))
 
   // last_session sub-keys (present when a session has completed)
   if (data.last_session) {
+    if (!('name' in data.last_session)) errors.push(`missing last_session.name`);
     if (!('results' in data.last_session)) errors.push(`missing last_session.results`);
   }
 

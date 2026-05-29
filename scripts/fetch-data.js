@@ -81,6 +81,7 @@ function findCurrentMeeting(meetings, rounds) {
 
   for (const m of meetings) {
     if (m.is_cancelled) continue;
+    if (/test/i.test(m.meeting_official_name ?? '')) continue;
     const start = new Date(m.date_start);
     // Add 4h buffer after date_end to keep race-weekend mode through post-race
     const end = new Date(new Date(m.date_end).getTime() + 4 * 60 * 60 * 1000);
@@ -90,7 +91,7 @@ function findCurrentMeeting(meetings, rounds) {
   }
 
   const upcoming = meetings
-    .filter(m => !m.is_cancelled && new Date(m.date_start) > n)
+    .filter(m => !m.is_cancelled && !/test/i.test(m.meeting_official_name ?? '') && new Date(m.date_start) > n)
     .sort((a, b) => new Date(a.date_start) - new Date(b.date_start));
 
   const next = upcoming[0] ?? null;
