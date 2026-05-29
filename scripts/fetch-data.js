@@ -59,7 +59,8 @@ async function getMeetings() {
   // calendar may not be published yet — try next year as a fallback.
   // Cancelled meetings can have future dates, so they must be excluded from this check
   // or a cancelled end-of-season entry would block the year rollover indefinitely.
-  const allPast = meetings.length > 0 && meetings.filter(m => !m.is_cancelled).every(m => new Date(m.date_end) < new Date());
+  // Skip rollover when FORCE_SEASON is set — return exactly the requested year's meetings.
+  const allPast = !process.env.FORCE_SEASON && meetings.length > 0 && meetings.filter(m => !m.is_cancelled).every(m => new Date(m.date_end) < new Date());
   if (allPast) {
     const next = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year + 1}`).catch(() => []);
     if (next.length > 0) return next;
