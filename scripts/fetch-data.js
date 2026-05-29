@@ -266,7 +266,10 @@ async function getWeatherForecasts(circuitShortName, datestrs) {
 async function main() {
   const meetings = await getMeetings();
   const rounds = assignRoundNumbers(meetings);
-  const { meeting } = findCurrentMeeting(meetings, rounds);
+  // TEMP: force Canadian GP (meeting_key 1285) for UI testing
+  const meeting = meetings.find(m => m.meeting_key === 1285)
+    ? { ...meetings.find(m => m.meeting_key === 1285), round_number: rounds.get(1285) }
+    : findCurrentMeeting(meetings, rounds).meeting;
 
   let view;
   const output = {
