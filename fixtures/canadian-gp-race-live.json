@@ -4,9 +4,7 @@
   "meeting": {
     "name": "Canadian Grand Prix",
     "location": "Montréal, Canada",
-    "map": "circuits/openf1/Montreal.png",
-    "dates": "Jun 12 – 14 (Round 9)",
-    "circuit": "Circuit Gilles Villeneuve (Street)"
+    "dates": "Jun 12 – 14 (Round 9)"
   },
   "sessions": [
     {
@@ -14,28 +12,28 @@
       "month": "Jun",
       "name": "Practice 1",
       "time": "13:30 – 14:30",
-      "status": "completed"
+      "done": true
     },
     {
       "day": "12",
       "month": "Jun",
       "name": "Practice 2",
       "time": "17:00 – 18:00",
-      "status": "completed"
+      "done": true
     },
     {
       "day": "13",
       "month": "Jun",
       "name": "Practice 3",
       "time": "12:30 – 13:30",
-      "status": "completed"
+      "done": true
     },
     {
       "day": "13",
       "month": "Jun",
       "name": "Qualifying",
       "time": "16:00 – 17:00",
-      "status": "completed"
+      "done": true
     },
     {
       "day": "14",
@@ -174,6 +172,5 @@
         "time": "+0.456s"
       }
     ]
-  },
-  "logo": "f1.png"
+  }
 }

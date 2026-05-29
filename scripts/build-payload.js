@@ -187,7 +187,6 @@ function main() {
         const payload = {
           view: data.view,
           assets_base: GITHUB_ASSETS_BASE,
-          logo: 'f1.png',
           season: { year },
           champions: {
             driver: {
@@ -224,29 +223,34 @@ function main() {
       }
 
       const view = data.view;
+      const hasResults = !!(last_session?.results?.length);
 
       const payload = {
         view,
         assets_base: GITHUB_ASSETS_BASE,
-        logo: 'f1.png',
         meeting: {
           name: meeting.meeting_name,
           location: `${meeting.location}, ${meeting.country_name}`,
-          circuit: (() => { const n = circuitName(meeting.circuit_short_name); const t = circuitType(meeting.circuit_short_name); return t ? `${n} (${t})` : n; })(),
-          map: circuitImagePath(meeting.circuit_short_name),
           dates: `${buildDateRange(sessions, timezone)}${meeting.round_number ? ` (Round ${meeting.round_number})` : ''}`,
+          ...(!hasResults && {
+            circuit: (() => { const n = circuitName(meeting.circuit_short_name); const t = circuitType(meeting.circuit_short_name); return t ? `${n} (${t})` : n; })(),
+            map: circuitImagePath(meeting.circuit_short_name),
+          }),
         },
-        sessions: sessions.map(s => {
-          const { day, month } = sessionDateParts(s.date_start, timezone);
-          const w = sessionWeather(s, weather, forecasts);
-          return {
-            day,
-            month,
-            name: s.session_name,
-            time: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
-            ...(s.status !== 'upcoming' && { status: s.status }),
-            ...(w !== null && { weather: w }),
-          };
+        ...(view !== 'post_race' && {
+          sessions: sessions.map(s => {
+            const { day, month } = sessionDateParts(s.date_start, timezone);
+            const w = sessionWeather(s, weather, forecasts);
+            return {
+              day,
+              month,
+              name: s.session_name,
+              time: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
+              ...(s.status === 'completed' && { done: true }),
+              ...(s.status === 'live' && { status: 'live' }),
+              ...(w !== null && { weather: w }),
+            };
+          }),
         }),
         standings: {
           teams: standings.constructors

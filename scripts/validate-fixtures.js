@@ -12,11 +12,12 @@ const FIXTURES_DIR = path.join(__dirname, '..', 'fixtures');
 // Add to these when new required fields are introduced in build-payload.js.
 const REQUIRED_KEYS = {
   off_season:    ['view', 'season', 'champions', 'standings'],
-  race_weekend:  ['view', 'meeting', 'sessions', 'standings'],
+  race_weekend:  ['view', 'meeting', 'standings'],
+  post_race:     ['view', 'meeting', 'standings', 'winner'],
 };
 
 function requiredFor(view) {
-  return view === 'off_season' ? REQUIRED_KEYS.off_season : REQUIRED_KEYS.race_weekend;
+  return REQUIRED_KEYS[view] ?? REQUIRED_KEYS.race_weekend;
 }
 
 // Sub-key checks for commonly renamed fields
