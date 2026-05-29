@@ -127,60 +127,42 @@
         "time": "24:51.402",
         "p": 1,
         "n": "L. Norris",
-        "cpd": [
-          "S",
-          "M"
-        ]
+        "cpd": "S|M"
       },
       {
         "img": "driver/81.png",
         "time": "+3.241s",
         "p": 2,
         "n": "O. Piastri",
-        "cpd": [
-          "S",
-          "M"
-        ]
+        "cpd": "S|M"
       },
       {
         "img": "driver/44.png",
         "time": "+5.876s",
         "p": 3,
         "n": "L. Hamilton",
-        "cpd": [
-          "S",
-          "M"
-        ]
+        "cpd": "S|M"
       },
       {
         "img": "driver/16.png",
         "time": "+7.113s",
         "p": 4,
         "n": "C. Leclerc",
-        "cpd": [
-          "S",
-          "M"
-        ]
+        "cpd": "S|M"
       },
       {
         "img": "driver/63.png",
         "time": "+9.402s",
         "p": 5,
         "n": "G. Russell",
-        "cpd": [
-          "S",
-          "M"
-        ]
+        "cpd": "S|M"
       },
       {
         "img": "driver/3.png",
         "time": "+11.654s",
         "p": 6,
         "n": "M. Verstappen",
-        "cpd": [
-          "S",
-          "M"
-        ]
+        "cpd": "S|M"
       }
     ]
   }

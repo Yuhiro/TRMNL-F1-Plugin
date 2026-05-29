@@ -230,7 +230,8 @@
               {% endif %}
               <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ result.n }}</span>
               <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center; flex-shrink: 0;">
-                {% for compound in result.cpd %}
+                {% assign cpds = result.cpd | split: "|" %}
+                {% for compound in cpds %}
                 <div class="rounded--full" style="width: 24px; height: 24px; border: 4px solid var(--light-grey); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                   <span class="text--small">{{ compound }}</span>
                 </div>
