@@ -38,7 +38,9 @@ async function main() {
   process.stdin.on('end', async () => {
     try {
       const payload = JSON.parse(raw);
-      const res = await postWebhook(webhookUrl, JSON.stringify({ merge_variables: payload }));
+      const body = JSON.stringify({ merge_variables: payload });
+      process.stderr.write(`Payload (${Buffer.byteLength(body, 'utf8')} bytes):\n${JSON.stringify(payload, null, 2)}\n`);
+      const res = await postWebhook(webhookUrl, body);
       process.stdout.write(`Webhook delivered (HTTP ${res.status})\n`);
     } catch (err) {
       process.stderr.write(`Fatal: ${err.message}\n`);
