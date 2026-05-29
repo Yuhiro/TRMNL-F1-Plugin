@@ -12,7 +12,7 @@ const { existsSync } = require('fs');
 const { join } = require('path');
 const GITHUB_ASSETS_BASE = `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY ?? ''}/main/assets`;
 const GITHUB_RAW_BASE = `${GITHUB_ASSETS_BASE}/circuits`;
-const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1-logo.png`;
+const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1.png`;
 const CIRCUITS = require('./circuits');
 
 // Portrait images are self-hosted in assets/portraits/{driver_number}.png (downloaded via

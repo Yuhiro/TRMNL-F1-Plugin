@@ -66,5 +66,5 @@
       { "position": 6, "name": "L. Hamilton",  "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/44.png", "compounds": ["M", "S"], "dnf": false, "dns": false, "dsq": false, "time": "+0.512s" }
     ]
   },
-  "logo_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1-logo.png"
+  "logo_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
 }
