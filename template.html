@@ -9,8 +9,8 @@
 {% if view == 'off_season' %}
 
 <div class="layout layout--col layout--justify-start layout--stretch-x" style="padding: var(--gap-xxlarge); gap: var(--gap-xlarge);">
-  {% if logo_url %}
-  <img src="{{ logo_url }}" style="height: 20px; width: auto; align-self: flex-start;" alt="">
+  {% if logo %}
+  <img src="{{ logo }}" style="height: 20px; width: auto; align-self: flex-start;" alt="">
   {% endif %}
   <!-- Title -->
   <div class="text--xxlarge font--bold">{{ season.year }} F1 Championship</div>
@@ -23,15 +23,15 @@
 
       <!-- WDC winner (top) -->
       <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: center;">
-        {% if champions.driver.portrait_url %}
-        <img src="{{ champions.driver.portrait_url }}" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
+        {% if champions.driver.portrait %}
+        <img src="{{ champions.driver.portrait }}" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
         {% else %}
         <div style="width: 93px; height: 93px; flex-shrink: 0;"></div>
         {% endif %}
         <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall);">
           <span class="text--xlarge">{{ champions.driver.name }}</span>
           <span class="text--base text--muted">{{ champions.driver.team }}</span>
-          <span class="text--small text--muted">{{ champions.driver.points }}pts</span>
+          <span class="text--small text--muted">{{ champions.driver.pts }}pts</span>
         </div>
       </div>
 
@@ -39,21 +39,21 @@
       <div style="display: flex; flex-direction: row; gap: var(--gap-xxlarge);">
 
         <div style="flex: 1;">
-          {% for d in standings.drivers_col1 %}
+          {% for d in standings.d1 %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
+            <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.pos }}</span>
             <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ d.name }}</span>
-            <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ d.points }}</span>
+            <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ d.pts }}</span>
           </div>
           {% endfor %}
         </div>
 
         <div style="flex: 1;">
-          {% for d in standings.drivers_col2 %}
+          {% for d in standings.d2 %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
+            <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.pos }}</span>
             <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ d.name }}</span>
-            <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ d.points }}</span>
+            <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ d.pts }}</span>
           </div>
           {% endfor %}
         </div>
@@ -68,16 +68,16 @@
       <!-- WCC winner (top) -->
       <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall);">
         <span class="text--xlarge">{{ champions.constructor.name }}</span>
-        <span class="text--small text--muted">{{ champions.constructor.points }}pts</span>
+        <span class="text--small text--muted">{{ champions.constructor.pts }}pts</span>
       </div>
 
       <!-- Constructor standings (bottom) -->
       <div>
-        {% for c in standings.constructors %}
+        {% for c in standings.teams %}
         <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-          <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ c.position }}</span>
+          <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ c.pos }}</span>
           <span class="text--large" style="flex: 1;">{{ c.name }}</span>
-          <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ c.points }}</span>
+          <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ c.pts }}</span>
         </div>
         {% endfor %}
       </div>
@@ -94,8 +94,8 @@
 
   <!-- Top Content: logo + race name -->
   <div style="display: flex; flex-direction: column; gap: var(--gap-large); width: 100%; flex-shrink: 0;">
-    {% if logo_url %}
-    <img src="{{ logo_url }}" style="height: 20px; width: auto; align-self: flex-start;" alt="">
+    {% if logo %}
+    <img src="{{ logo }}" style="height: 20px; width: auto; align-self: flex-start;" alt="">
     {% endif %}
     <div class="text--xxxlarge" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">{{ meeting.name }}</div>
   </div>
@@ -109,7 +109,7 @@
       <!-- Location + date -->
       <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall);">
         <div class="text--xxlarge">{{ meeting.location }}</div>
-        <div class="text--xlarge text--muted">{{ meeting.date_range }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
+        <div class="text--xlarge text--muted">{{ meeting.dates }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
       </div>
 
       {% if view == 'post_race' %}
@@ -122,19 +122,19 @@
           <span class="text--xlarge">Winner!</span>
         </div>
         <div style="display: flex; flex-direction: row; gap: var(--gap-medium); align-items: center; width: 100%;">
-          {% if winner.portrait_url %}
-          <img src="{{ winner.portrait_url }}" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
+          {% if winner.portrait %}
+          <img src="{{ winner.portrait }}" style="width: 93px; height: 93px; object-fit: cover; flex-shrink: 0;" alt="">
           {% else %}
           <div style="width: 93px; height: 93px; flex-shrink: 0;"></div>
           {% endif %}
           <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall); align-items: flex-start; justify-content: center; align-self: stretch;">
             <span class="text--xlarge">{{ winner.name }}</span>
             <span class="text--base">{{ winner.team }}</span>
-            {% if winner.grid_position %}
+            {% if winner.grid %}
             <div style="display: flex; flex-direction: row; align-items: flex-start;">
-              <span class="text--base">{{ winner.grid_position }}</span>
+              <span class="text--base">{{ winner.grid }}</span>
               <i class="ti ti-arrow-narrow-right-dashed text--large" style="line-height: 1;"></i>
-              <span class="text--base">{{ winner.finish_position }}</span>
+              <span class="text--base">{{ winner.finish }}</span>
             </div>
             {% endif %}
           </div>
@@ -149,7 +149,7 @@
         <span class="text--xxlarge">{{ next_race.name }}</span>
         <span class="text--xlarge">{{ next_race.location }}</span>
         <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
-          <span class="text--large">{{ next_race.date_range }}{% if next_race.round %} (Round {{ next_race.round }}){% endif %}</span>
+          <span class="text--large">{{ next_race.dates }}{% if next_race.round %} (Round {{ next_race.round }}){% endif %}</span>
           {% if next_race.weather %}
           <span class="text--large text--muted">·</span>
           <span class="text--large">{{ next_race.weather.temp }}</span>
@@ -177,7 +177,7 @@
             <div style="width: 1px; align-self: stretch; flex-shrink: 0; background-color: var(--light-grey);"></div>
             <div style="display: flex; flex-direction: column; gap: 2px;">
               <span class="text--large text--muted">{{ session.name }}</span>
-              <span class="text--base text--muted">{{ session.time_range }}</span>
+              <span class="text--base text--muted">{{ session.time }}</span>
             </div>
           </div>
 
@@ -196,7 +196,7 @@
                 {% endif %}
               </div>
               <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
-                <span class="text--base">{{ session.time_range }}</span>
+                <span class="text--base">{{ session.time }}</span>
                 {% if session.weather %}
                 <span class="text--large text--muted">·</span>
                 <span class="text--base">{{ session.weather.temp }}</span>
@@ -226,9 +226,9 @@
         <div>
           {% for result in last_session.results %}
           <div class="timing-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ result.position }}</span>
-            {% if result.portrait_url %}
-            <img src="{{ result.portrait_url }}" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
+            <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ result.pos }}</span>
+            {% if result.portrait %}
+            <img src="{{ result.portrait }}" style="width: 25px; height: 25px; object-fit: cover; flex-shrink: 0;" alt="">
             {% else %}
             <div style="width: 25px; height: 25px; flex-shrink: 0;"></div>
             {% endif %}
@@ -245,10 +245,10 @@
           {% endfor %}
         </div>
       </div>
-      {% elsif meeting.circuit_image_url %}
+      {% elsif meeting.map %}
       <!-- Circuit image: grows to fill all available vertical space -->
       <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: var(--gap-small);">
-        <img src="{{ meeting.circuit_image_url }}" style="flex: 1; min-height: 0; width: 100%; object-fit: contain;" alt="">
+        <img src="{{ meeting.map }}" style="flex: 1; min-height: 0; width: 100%; object-fit: contain;" alt="">
         <div class="text--large text--muted">{{ meeting.circuit_name }}{% if meeting.circuit_type %} ({{ meeting.circuit_type }}){% endif %}</div>
       </div>
       {% endif %}
@@ -258,12 +258,12 @@
 
         <!-- Constructors -->
         <div style="flex: 1;">
-          {% for c in standings.constructors %}
+          {% for c in standings.teams %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ c.position }}</span>
-            <span style="width: 14px; flex-shrink: 0; line-height: 1;">{% if c.position_change > 0 %}<i class="ti ti-arrow-narrow-up text--base"></i>{% elsif c.position_change < 0 %}<i class="ti ti-arrow-narrow-down text--base"></i>{% endif %}</span>
+            <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ c.pos }}</span>
+            <span style="width: 14px; flex-shrink: 0; line-height: 1;">{% if c.delta > 0 %}<i class="ti ti-arrow-narrow-up text--base"></i>{% elsif c.delta < 0 %}<i class="ti ti-arrow-narrow-down text--base"></i>{% endif %}</span>
             <span class="text--large" style="flex: 1;">{{ c.name }}</span>
-            <span class="text--large" style="min-width: 36px; text-align: right;">{{ c.points }}</span>
+            <span class="text--large" style="min-width: 36px; text-align: right;">{{ c.pts }}</span>
           </div>
           {% endfor %}
         </div>
@@ -272,10 +272,10 @@
         <div style="flex: 1;">
           {% for d in standings.drivers %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ d.position }}</span>
-            <span style="width: 14px; flex-shrink: 0; line-height: 1;">{% if d.position_change > 0 %}<i class="ti ti-arrow-narrow-up text--base"></i>{% elsif d.position_change < 0 %}<i class="ti ti-arrow-narrow-down text--base"></i>{% endif %}</span>
+            <span class="text--base text--muted" style="min-width: 20px; text-align: center;">{{ d.pos }}</span>
+            <span style="width: 14px; flex-shrink: 0; line-height: 1;">{% if d.delta > 0 %}<i class="ti ti-arrow-narrow-up text--base"></i>{% elsif d.delta < 0 %}<i class="ti ti-arrow-narrow-down text--base"></i>{% endif %}</span>
             <span class="text--large" style="flex: 1;">{{ d.name }}</span>
-            <span class="text--large" style="min-width: 36px; text-align: right;">{{ d.points }}</span>
+            <span class="text--large" style="min-width: 36px; text-align: right;">{{ d.pts }}</span>
           </div>
           {% endfor %}
         </div>

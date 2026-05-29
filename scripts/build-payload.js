@@ -189,35 +189,35 @@ function main() {
 
         const payload = {
           view: data.view,
-          logo_url: LOGO_URL,
+          logo: LOGO_URL,
           season: { year },
           champions: {
             driver: {
               name: wdc?.full_name ?? wdc?.name ?? '',
               team: TEAM_NAMES[wdc?.team] ?? '',
-              points: wdc?.points_current ?? 0,
-              portrait_url: portraitImageUrl(wdc?.driver_number),
+              pts: wdc?.points_current ?? 0,
+              portrait: portraitImageUrl(wdc?.driver_number),
             },
             constructor: {
               name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',
-              points: wcc?.points ?? 0,
+              pts: wcc?.points ?? 0,
             },
           },
           standings: {
-            drivers_col1: drivers.slice(0, Math.ceil(driverLimit / 2)).map(d => ({
-              position: d.position_current,
+            d1: drivers.slice(0, Math.ceil(driverLimit / 2)).map(d => ({
+              pos: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
-              points: d.points_current ?? 0,
+              pts: d.points_current ?? 0,
             })),
-            drivers_col2: drivers.slice(Math.ceil(driverLimit / 2), driverLimit).map(d => ({
-              position: d.position_current,
+            d2: drivers.slice(Math.ceil(driverLimit / 2), driverLimit).map(d => ({
+              pos: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
-              points: d.points_current ?? 0,
+              pts: d.points_current ?? 0,
             })),
-            constructors: constructors.map(c => ({
-              position: c.position,
+            teams: constructors.map(c => ({
+              pos: c.position,
               name: TEAM_NAMES[c.team] ?? c.team,
-              points: c.points,
+              pts: c.points,
             })),
           },
         };
@@ -229,15 +229,15 @@ function main() {
 
       const payload = {
         view,
-        logo_url: LOGO_URL,
+        logo: LOGO_URL,
         meeting: {
           name: meeting.meeting_name,
           location: `${meeting.location}, ${meeting.country_name}`,
           round: meeting.round_number,
           circuit_name: circuitName(meeting.circuit_short_name),
           circuit_type: circuitType(meeting.circuit_short_name),
-          circuit_image_url: circuitImageUrl(meeting.circuit_short_name),
-          date_range: buildDateRange(sessions, timezone),
+          map: circuitImageUrl(meeting.circuit_short_name),
+          dates: buildDateRange(sessions, timezone),
         },
         sessions: sessions.map(s => {
           const { day, month } = sessionDateParts(s.date_start, timezone);
@@ -246,33 +246,33 @@ function main() {
             day,
             month,
             name: s.session_name,
-            time_range: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
+            time: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
             ...(s.status !== 'upcoming' && { status: s.status }),
             ...(w !== null && { weather: w }),
           };
         }),
         standings: {
-          constructors: standings.constructors
+          teams: standings.constructors
             .slice(0, 6)
             .map(c => {
-              const position_change = (c.position_start ?? c.position) - c.position;
+              const delta = (c.position_start ?? c.position) - c.position;
               return {
-                position: c.position,
+                pos: c.position,
                 name: TEAM_NAMES[c.team] ?? c.team,
-                points: c.points,
-                ...(position_change !== 0 && { position_change }),
+                pts: c.points,
+                ...(delta !== 0 && { delta }),
               };
             }),
           drivers: standings.drivers
             .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
             .slice(0, 6)
             .map(d => {
-              const position_change = (d.position_start ?? d.position_current ?? 0) - (d.position_current ?? 0);
+              const delta = (d.position_start ?? d.position_current ?? 0) - (d.position_current ?? 0);
               return {
-                position: d.position_current ?? 0,
+                pos: d.position_current ?? 0,
                 name: d.name ?? `#${d.driver_number}`,
-                points: d.points_current ?? 0,
-                ...(position_change !== 0 && { position_change }),
+                pts: d.points_current ?? 0,
+                ...(delta !== 0 && { delta }),
               };
             }),
         },
@@ -282,9 +282,9 @@ function main() {
         payload.last_session = {
           name: `${last_session.session_name} Results`,
           results: last_session.results.map(r => ({
-            position: r.position,
+            pos: r.position,
             name: r.name ?? `#${r.driver_number}`,
-            portrait_url: portraitImageUrl(r.driver_number),
+            portrait: portraitImageUrl(r.driver_number),
             compounds: r.compounds,
             dnf: r.dnf ?? false,
             dns: r.dns ?? false,
@@ -301,9 +301,9 @@ function main() {
         payload.winner = {
           name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
           team: TEAM_NAMES[p1Standing?.team] ?? '',
-          portrait_url: portraitImageUrl(p1.driver_number),
-          grid_position: gridResult ? `P${gridResult.position}` : null,
-          finish_position: 'P1',
+          portrait: portraitImageUrl(p1.driver_number),
+          grid: gridResult ? `P${gridResult.position}` : null,
+          finish: 'P1',
         };
       }
 
@@ -312,7 +312,7 @@ function main() {
           name: next_meeting.meeting_name,
           location: `${next_meeting.location}, ${next_meeting.country_name}`,
           round: next_meeting.round_number,
-          date_range: buildDateRange(next_meeting.sessions, timezone),
+          dates: buildDateRange(next_meeting.sessions, timezone),
           weather: next_meeting.race_forecast ? {
             temp: `${Math.round(next_meeting.race_forecast.temp_max)}°C`,
             icon: weathercodeIcon(next_meeting.race_forecast.weathercode),

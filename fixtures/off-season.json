@@ -7,54 +7,186 @@
     "driver": {
       "name": "Andrea Kimi Antonelli",
       "team": "Mercedes",
-      "points": 285,
-      "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png"
+      "pts": 285,
+      "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png"
     },
-    "constructor": {
+    "function Object() { [native code] }": {
       "name": "Mercedes",
-      "points": 565
+      "pts": 565
     }
   },
   "standings": {
-    "drivers_col1": [
-      { "position": 1,  "name": "K. Antonelli",  "points": 285 },
-      { "position": 2,  "name": "G. Russell",    "points": 280 },
-      { "position": 3,  "name": "L. Norris",     "points": 262 },
-      { "position": 4,  "name": "O. Piastri",    "points": 248 },
-      { "position": 5,  "name": "C. Leclerc",    "points": 215 },
-      { "position": 6,  "name": "L. Hamilton",   "points": 198 },
-      { "position": 7,  "name": "M. Verstappen", "points": 175 },
-      { "position": 8,  "name": "I. Hadjar",     "points": 142 },
-      { "position": 9,  "name": "P. Gasly",      "points": 89  },
-      { "position": 10, "name": "F. Colapinto",  "points": 76  },
-      { "position": 11, "name": "F. Alonso",     "points": 58  }
+    "teams": [
+      {
+        "pos": 1,
+        "name": "Mercedes",
+        "pts": 565
+      },
+      {
+        "pos": 2,
+        "name": "McLaren",
+        "pts": 510
+      },
+      {
+        "pos": 3,
+        "name": "Ferrari",
+        "pts": 413
+      },
+      {
+        "pos": 4,
+        "name": "Red Bull",
+        "pts": 317
+      },
+      {
+        "pos": 5,
+        "name": "Alpine",
+        "pts": 165
+      },
+      {
+        "pos": 6,
+        "name": "Aston Martin",
+        "pts": 100
+      },
+      {
+        "pos": 7,
+        "name": "Williams",
+        "pts": 69
+      },
+      {
+        "pos": 8,
+        "name": "Audi",
+        "pts": 46
+      },
+      {
+        "pos": 9,
+        "name": "Haas",
+        "pts": 25
+      },
+      {
+        "pos": 10,
+        "name": "Racing Bulls",
+        "pts": 13
+      },
+      {
+        "pos": 11,
+        "name": "Cadillac",
+        "pts": 3
+      }
     ],
-    "drivers_col2": [
-      { "position": 12, "name": "L. Stroll",     "points": 42 },
-      { "position": 13, "name": "C. Sainz",      "points": 38 },
-      { "position": 14, "name": "A. Albon",      "points": 31 },
-      { "position": 15, "name": "N. Hülkenberg", "points": 27 },
-      { "position": 16, "name": "G. Bortoleto",  "points": 19 },
-      { "position": 17, "name": "O. Bearman",    "points": 14 },
-      { "position": 18, "name": "E. Ocon",       "points": 11 },
-      { "position": 19, "name": "L. Lawson",     "points": 8  },
-      { "position": 20, "name": "A. Lindblad",   "points": 5  },
-      { "position": 21, "name": "V. Bottas",     "points": 2  },
-      { "position": 22, "name": "S. Pérez",      "points": 1  }
+    "d1": [
+      {
+        "pos": 1,
+        "name": "K. Antonelli",
+        "pts": 285
+      },
+      {
+        "pos": 2,
+        "name": "G. Russell",
+        "pts": 280
+      },
+      {
+        "pos": 3,
+        "name": "L. Norris",
+        "pts": 262
+      },
+      {
+        "pos": 4,
+        "name": "O. Piastri",
+        "pts": 248
+      },
+      {
+        "pos": 5,
+        "name": "C. Leclerc",
+        "pts": 215
+      },
+      {
+        "pos": 6,
+        "name": "L. Hamilton",
+        "pts": 198
+      },
+      {
+        "pos": 7,
+        "name": "M. Verstappen",
+        "pts": 175
+      },
+      {
+        "pos": 8,
+        "name": "I. Hadjar",
+        "pts": 142
+      },
+      {
+        "pos": 9,
+        "name": "P. Gasly",
+        "pts": 89
+      },
+      {
+        "pos": 10,
+        "name": "F. Colapinto",
+        "pts": 76
+      },
+      {
+        "pos": 11,
+        "name": "F. Alonso",
+        "pts": 58
+      }
     ],
-    "constructors": [
-      { "position": 1,  "name": "Mercedes",     "points": 565 },
-      { "position": 2,  "name": "McLaren",      "points": 510 },
-      { "position": 3,  "name": "Ferrari",      "points": 413 },
-      { "position": 4,  "name": "Red Bull",     "points": 317 },
-      { "position": 5,  "name": "Alpine",       "points": 165 },
-      { "position": 6,  "name": "Aston Martin", "points": 100 },
-      { "position": 7,  "name": "Williams",     "points": 69  },
-      { "position": 8,  "name": "Audi",         "points": 46  },
-      { "position": 9,  "name": "Haas",         "points": 25  },
-      { "position": 10, "name": "Racing Bulls", "points": 13  },
-      { "position": 11, "name": "Cadillac",     "points": 3   }
+    "d2": [
+      {
+        "pos": 12,
+        "name": "L. Stroll",
+        "pts": 42
+      },
+      {
+        "pos": 13,
+        "name": "C. Sainz",
+        "pts": 38
+      },
+      {
+        "pos": 14,
+        "name": "A. Albon",
+        "pts": 31
+      },
+      {
+        "pos": 15,
+        "name": "N. Hülkenberg",
+        "pts": 27
+      },
+      {
+        "pos": 16,
+        "name": "G. Bortoleto",
+        "pts": 19
+      },
+      {
+        "pos": 17,
+        "name": "O. Bearman",
+        "pts": 14
+      },
+      {
+        "pos": 18,
+        "name": "E. Ocon",
+        "pts": 11
+      },
+      {
+        "pos": 19,
+        "name": "L. Lawson",
+        "pts": 8
+      },
+      {
+        "pos": 20,
+        "name": "A. Lindblad",
+        "pts": 5
+      },
+      {
+        "pos": 21,
+        "name": "V. Bottas",
+        "pts": 2
+      },
+      {
+        "pos": 22,
+        "name": "S. Pérez",
+        "pts": 1
+      }
     ]
   },
-  "logo_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
+  "logo": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
 }

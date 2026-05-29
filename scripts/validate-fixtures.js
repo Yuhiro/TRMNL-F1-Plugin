@@ -20,10 +20,10 @@ function requiredFor(view) {
 }
 
 // Sub-key checks for commonly renamed fields
-const REQUIRED_MEETING_KEYS  = ['name', 'location', 'date_range'];
-const REQUIRED_STANDING_KEYS = { race: ['constructors', 'drivers'], off_season: ['constructors', 'drivers_col1', 'drivers_col2'] };
-const REQUIRED_WINNER_KEYS   = ['name', 'team', 'grid_position', 'finish_position'];
-const REQUIRED_NEXT_RACE_KEYS = ['name', 'location', 'date_range', 'round'];
+const REQUIRED_MEETING_KEYS  = ['name', 'location', 'dates'];
+const REQUIRED_STANDING_KEYS = { race: ['teams', 'drivers'], off_season: ['teams', 'd1', 'd2'] };
+const REQUIRED_WINNER_KEYS   = ['name', 'team', 'grid', 'finish'];
+const REQUIRED_NEXT_RACE_KEYS = ['name', 'location', 'dates', 'round'];
 
 let passed = 0;
 let failed = 0;

@@ -5,20 +5,44 @@
     "location": "Montréal, Canada",
     "round": 9,
     "circuit_name": "Circuit Gilles Villeneuve",
-    "circuit_image_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/circuits/openf1/Montreal.png",
-    "date_range": "Jun 12 – 14",
+    "map": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/circuits/openf1/Montreal.png",
+    "dates": "Jun 12 – 14",
     "circuit_type": "Street"
   },
   "sessions": [
-    { "day": "12", "month": "Jun", "name": "Practice 1", "time_range": "13:30 – 14:30", "status": "completed" },
-    { "day": "12", "month": "Jun", "name": "Practice 2", "time_range": "17:00 – 18:00", "status": "completed" },
-    { "day": "13", "month": "Jun", "name": "Practice 3", "time_range": "12:30 – 13:30", "status": "completed" },
-    { "day": "13", "month": "Jun", "name": "Qualifying",  "time_range": "16:00 – 17:00", "status": "completed" },
+    {
+      "day": "12",
+      "month": "Jun",
+      "name": "Practice 1",
+      "time": "13:30 – 14:30",
+      "status": "completed"
+    },
+    {
+      "day": "12",
+      "month": "Jun",
+      "name": "Practice 2",
+      "time": "17:00 – 18:00",
+      "status": "completed"
+    },
+    {
+      "day": "13",
+      "month": "Jun",
+      "name": "Practice 3",
+      "time": "12:30 – 13:30",
+      "status": "completed"
+    },
+    {
+      "day": "13",
+      "month": "Jun",
+      "name": "Qualifying",
+      "time": "16:00 – 17:00",
+      "status": "completed"
+    },
     {
       "day": "14",
       "month": "Jun",
       "name": "Race",
-      "time_range": "14:00 – 16:00",
+      "time": "14:00 – 16:00",
       "status": "live",
       "weather": {
         "temp": "24°C",
@@ -28,33 +52,147 @@
     }
   ],
   "standings": {
-    "constructors": [
-      { "position": 1, "name": "McLaren",      "points": 279 },
-      { "position": 2, "name": "Ferrari",      "points": 231 },
-      { "position": 3, "name": "Mercedes",     "points": 198 },
-      { "position": 4, "name": "Red Bull",     "points": 187 },
-      { "position": 5, "name": "Aston Martin", "points": 89 },
-      { "position": 6, "name": "Alpine",       "points": 63 }
+    "teams": [
+      {
+        "pos": 1,
+        "name": "McLaren",
+        "pts": 279
+      },
+      {
+        "pos": 2,
+        "name": "Ferrari",
+        "pts": 231
+      },
+      {
+        "pos": 3,
+        "name": "Mercedes",
+        "pts": 198
+      },
+      {
+        "pos": 4,
+        "name": "Red Bull",
+        "pts": 187
+      },
+      {
+        "pos": 5,
+        "name": "Aston Martin",
+        "pts": 89
+      },
+      {
+        "pos": 6,
+        "name": "Alpine",
+        "pts": 63
+      }
     ],
     "drivers": [
-      { "position": 1, "name": "L. Norris",     "points": 156 },
-      { "position": 2, "name": "O. Piastri",    "points": 123 },
-      { "position": 3, "name": "C. Leclerc",    "points": 118 },
-      { "position": 4, "name": "L. Hamilton",   "points": 102 },
-      { "position": 5, "name": "G. Russell",    "points": 96 },
-      { "position": 6, "name": "M. Verstappen", "points": 87 }
+      {
+        "pos": 1,
+        "name": "L. Norris",
+        "pts": 156
+      },
+      {
+        "pos": 2,
+        "name": "O. Piastri",
+        "pts": 123
+      },
+      {
+        "pos": 3,
+        "name": "C. Leclerc",
+        "pts": 118
+      },
+      {
+        "pos": 4,
+        "name": "L. Hamilton",
+        "pts": 102
+      },
+      {
+        "pos": 5,
+        "name": "G. Russell",
+        "pts": 96
+      },
+      {
+        "pos": 6,
+        "name": "M. Verstappen",
+        "pts": 87
+      }
     ]
   },
   "last_session": {
     "name": "Qualifying Results",
     "results": [
-      { "position": 1, "name": "G. Russell",   "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/63.png", "compounds": ["S"], "dnf": false, "dns": false, "dsq": false, "time": "1:10.087" },
-      { "position": 2, "name": "K. Antonelli", "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png", "compounds": ["S"], "dnf": false, "dns": false, "dsq": false, "time": "+0.034s" },
-      { "position": 3, "name": "L. Norris",    "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/1.png",  "compounds": ["S"], "dnf": false, "dns": false, "dsq": false, "time": "+0.218s" },
-      { "position": 4, "name": "C. Leclerc",   "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/16.png", "compounds": ["S"], "dnf": false, "dns": false, "dsq": false, "time": "+0.291s" },
-      { "position": 5, "name": "O. Piastri",   "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/81.png", "compounds": ["S"], "dnf": false, "dns": false, "dsq": false, "time": "+0.374s" },
-      { "position": 6, "name": "L. Hamilton",  "portrait_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/44.png", "compounds": ["S"], "dnf": false, "dns": false, "dsq": false, "time": "+0.456s" }
+      {
+        "pos": 1,
+        "name": "G. Russell",
+        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/63.png",
+        "compounds": [
+          "S"
+        ],
+        "dnf": false,
+        "dns": false,
+        "dsq": false,
+        "time": "1:10.087"
+      },
+      {
+        "pos": 2,
+        "name": "K. Antonelli",
+        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png",
+        "compounds": [
+          "S"
+        ],
+        "dnf": false,
+        "dns": false,
+        "dsq": false,
+        "time": "+0.034s"
+      },
+      {
+        "pos": 3,
+        "name": "L. Norris",
+        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/1.png",
+        "compounds": [
+          "S"
+        ],
+        "dnf": false,
+        "dns": false,
+        "dsq": false,
+        "time": "+0.218s"
+      },
+      {
+        "pos": 4,
+        "name": "C. Leclerc",
+        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/16.png",
+        "compounds": [
+          "S"
+        ],
+        "dnf": false,
+        "dns": false,
+        "dsq": false,
+        "time": "+0.291s"
+      },
+      {
+        "pos": 5,
+        "name": "O. Piastri",
+        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/81.png",
+        "compounds": [
+          "S"
+        ],
+        "dnf": false,
+        "dns": false,
+        "dsq": false,
+        "time": "+0.374s"
+      },
+      {
+        "pos": 6,
+        "name": "L. Hamilton",
+        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/44.png",
+        "compounds": [
+          "S"
+        ],
+        "dnf": false,
+        "dns": false,
+        "dsq": false,
+        "time": "+0.456s"
+      }
     ]
   },
-  "logo_url": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
+  "logo": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
 }
