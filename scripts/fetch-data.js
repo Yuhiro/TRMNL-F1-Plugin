@@ -51,7 +51,7 @@ async function fetchJSON(url, retries = 1) {
 }
 
 async function getMeetings() {
-  const year = new Date().getFullYear();
+  const year = process.env.FORCE_SEASON ? parseInt(process.env.FORCE_SEASON, 10) : new Date().getFullYear();
   const meetings = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year}`);
   // If every non-cancelled meeting in the current year is in the past, the new season
   // calendar may not be published yet — try next year as a fallback.
