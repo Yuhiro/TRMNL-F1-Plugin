@@ -8,8 +8,9 @@ Reference for the `merge_variables` JSON pushed to the TRMNL webhook. All keys a
 
 | Payload key | Full meaning |
 |---|---|
-| `logo` | Logo image URL (`logo_url`) |
-| `portrait` | Driver portrait image URL (`portrait_url`) |
+| `assets_base` | GitHub raw base URL for all assets. Template constructs full URLs as `{assets_base}/{path}` |
+| `logo` | Logo image path relative to `assets_base`, e.g. `f1.png` |
+| `portrait` | Driver portrait path relative to `assets_base`, e.g. `portraits/44.png` |
 | `pos` | Standing position (`position`) |
 | `pts` | Points total (`points`) |
 | `delta` | Position change since last race (`position_change`). Positive = gained places. Only present when non-zero. |
@@ -17,7 +18,7 @@ Reference for the `merge_variables` JSON pushed to the TRMNL webhook. All keys a
 | `d2` | Second (right) column of driver standings — off_season view only (`drivers_col2`) |
 | `teams` | Constructor/team standings array (`constructors`) |
 | `time` | Session time range string, e.g. `"14:00 – 16:00"` (`time_range`) |
-| `map` | Circuit map image URL (`circuit_image_url`) |
+| `map` | Circuit map image path relative to `assets_base`, e.g. `circuits/openf1/Montreal.png` (`circuit_image_url`) |
 | `dates` | Weekend or session date range string, e.g. `"Jun 13 – 15"` (`date_range`) |
 | `grid` | Race winner's qualifying grid position, e.g. `"P3"` (`grid_position`) |
 | `finish` | Race winner's finish position — always `"P1"` (`finish_position`) |
@@ -30,7 +31,8 @@ Reference for the `merge_variables` JSON pushed to the TRMNL webhook. All keys a
 
 ```
 view          "off_season"
-logo          GitHub raw URL for assets/f1.png
+assets_base   GitHub raw base URL, e.g. "https://raw.githubusercontent.com/owner/repo/main/assets"
+logo          "f1.png"
 season.year   integer
 
 champions
@@ -38,7 +40,7 @@ champions
     name      full display name
     team      full team name
     pts       integer
-    portrait  GitHub raw URL, or null if no portrait file
+    portrait  relative path e.g. "portraits/12.png", or null if no portrait file
 
   constructor
     name      full team name
@@ -69,7 +71,8 @@ standings
 
 ```
 view          "pre_weekend" | "race_weekend" | "live"
-logo          GitHub raw URL for assets/f1.png
+assets_base   GitHub raw base URL
+logo          "f1.png"
 
 meeting
   name        full GP name, e.g. "Canadian Grand Prix"
@@ -77,7 +80,7 @@ meeting
   round       integer
   circuit_name  display name from circuits.js
   circuit_type  "street" | "permanent" | null
-  map           GitHub raw URL for circuit image, or null
+  map           relative path e.g. "circuits/openf1/Montreal.png", or null
   dates         date range string, e.g. "Jun 13 – 15"
 
 sessions[]
@@ -110,7 +113,7 @@ last_session  present after any session completes
   results[]
     pos       finish position integer
     name      "F. Surname"
-    portrait  GitHub raw URL, or null
+    portrait  relative path e.g. "portraits/44.png", or null
     compounds string[], e.g. ["S", "M", "H"]
     dnf       boolean
     dns       boolean
@@ -144,15 +147,15 @@ next_race   present when a subsequent GP exists in the calendar
 
 ## Asset URLs
 
-All image URLs are GitHub raw URLs constructed from `GITHUB_REPOSITORY` at build time:
+`assets_base` is constructed from `GITHUB_REPOSITORY` at build time and sent in every payload. The template constructs full URLs as `{assets_base}/{path}`.
 
 ```
-Base: https://raw.githubusercontent.com/{owner}/{repo}/main/assets
+assets_base:  https://raw.githubusercontent.com/{owner}/{repo}/main/assets
 
-Logo:     {base}/f1.png
-Portrait: {base}/portraits/{driver_number}.png
-Circuit:  {base}/circuits/openf1/{image}      (default)
-          {base}/circuits/official/{f1_slug}.webp  (CIRCUIT_IMAGE_SOURCE=official)
+logo:     f1.png
+portrait: portraits/{driver_number}.png
+map:      circuits/openf1/{image}             (default)
+          circuits/official/{f1_slug}.webp    (CIRCUIT_IMAGE_SOURCE=official)
 ```
 
 Portrait files only exist if previously downloaded via `scripts/download-assets.js`. If the file is absent, `portrait` is `null` and the template renders a placeholder div.

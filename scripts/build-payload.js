@@ -11,15 +11,12 @@ if (!process.env.GITHUB_REPOSITORY) {
 const { existsSync } = require('fs');
 const { join } = require('path');
 const GITHUB_ASSETS_BASE = `https://raw.githubusercontent.com/${process.env.GITHUB_REPOSITORY ?? ''}/main/assets`;
-const GITHUB_RAW_BASE = `${GITHUB_ASSETS_BASE}/circuits`;
-const LOGO_URL = `${GITHUB_ASSETS_BASE}/f1.png`;
 const CIRCUITS = require('./circuits');
 
 // Portrait images are self-hosted in assets/portraits/{driver_number}.png (downloaded via
 // download-assets.js). Serving from GitHub raw avoids F1 CDN hotlink protection which
 // caused intermittent broken images when TRMNL's server fetched directly from formula1.com.
 const PORTRAITS_DIR = join(__dirname, '../assets/portraits');
-const PORTRAIT_ASSETS_BASE = `${GITHUB_ASSETS_BASE}/portraits`;
 
 // CIRCUIT_IMAGE_SOURCE controls which set of circuit images is used.
 // Set via GitHub Actions repository variable (Settings → Secrets and variables → Variables).
@@ -27,20 +24,21 @@ const PORTRAIT_ASSETS_BASE = `${GITHUB_ASSETS_BASE}/portraits`;
 // Default: 'openf1' — no variable needed for the default behaviour.
 const CIRCUIT_IMAGE_SOURCE = process.env.CIRCUIT_IMAGE_SOURCE || 'openf1';
 
-function circuitImageUrl(shortName) {
+// Returns the relative asset path for a circuit image (template prepends assets_base).
+function circuitImagePath(shortName) {
   const circuit = CIRCUITS[shortName];
   if (!circuit) return null;
 
   // Official F1 CDN images — fall back to OpenF1 if no slug exists for this circuit.
   if (CIRCUIT_IMAGE_SOURCE === 'official') {
     if (circuit.f1_slug) {
-      return `${GITHUB_RAW_BASE}/official/${circuit.f1_slug}.webp`;
+      return `circuits/official/${circuit.f1_slug}.webp`;
     }
     process.stderr.write(`Warning: no f1_slug for ${shortName}, falling back to openf1\n`);
   }
 
   // OpenF1 images (default).
-  return circuit.image ? `${GITHUB_RAW_BASE}/openf1/${circuit.image}` : null;
+  return circuit.image ? `circuits/openf1/${circuit.image}` : null;
 }
 
 function circuitName(shortName) {
@@ -51,13 +49,12 @@ function circuitType(shortName) {
   return CIRCUITS[shortName]?.type ?? null;
 }
 
-// Returns a GitHub raw URL for a driver's self-hosted portrait, or null if the file
-// hasn't been downloaded yet (e.g. a mid-season replacement). Null → template shows
-// an empty placeholder div instead of a broken image box.
-function portraitImageUrl(driverNumber) {
+// Returns the relative asset path for a driver portrait, or null if the file hasn't been
+// downloaded yet (e.g. a mid-season replacement). Null → template shows a placeholder div.
+function portraitPath(driverNumber) {
   if (!driverNumber) return null;
   if (!existsSync(join(PORTRAITS_DIR, `${driverNumber}.png`))) return null;
-  return `${PORTRAIT_ASSETS_BASE}/${driverNumber}.png`;
+  return `portraits/${driverNumber}.png`;
 }
 
 // team short code → full display name
@@ -189,14 +186,15 @@ function main() {
 
         const payload = {
           view: data.view,
-          logo: LOGO_URL,
+          assets_base: GITHUB_ASSETS_BASE,
+          logo: 'f1.png',
           season: { year },
           champions: {
             driver: {
               name: wdc?.full_name ?? wdc?.name ?? '',
               team: TEAM_NAMES[wdc?.team] ?? '',
               pts: wdc?.points_current ?? 0,
-              portrait: portraitImageUrl(wdc?.driver_number),
+              portrait: portraitPath(wdc?.driver_number),
             },
             constructor: {
               name: TEAM_NAMES[wcc?.team] ?? wcc?.team ?? '',
@@ -229,14 +227,15 @@ function main() {
 
       const payload = {
         view,
-        logo: LOGO_URL,
+        assets_base: GITHUB_ASSETS_BASE,
+        logo: 'f1.png',
         meeting: {
           name: meeting.meeting_name,
           location: `${meeting.location}, ${meeting.country_name}`,
           round: meeting.round_number,
           circuit_name: circuitName(meeting.circuit_short_name),
           circuit_type: circuitType(meeting.circuit_short_name),
-          map: circuitImageUrl(meeting.circuit_short_name),
+          map: circuitImagePath(meeting.circuit_short_name),
           dates: buildDateRange(sessions, timezone),
         },
         sessions: sessions.map(s => {
@@ -284,7 +283,7 @@ function main() {
           results: last_session.results.map(r => ({
             pos: r.position,
             name: r.name ?? `#${r.driver_number}`,
-            portrait: portraitImageUrl(r.driver_number),
+            portrait: portraitPath(r.driver_number),
             compounds: r.compounds,
             dnf: r.dnf ?? false,
             dns: r.dns ?? false,
@@ -301,7 +300,7 @@ function main() {
         payload.winner = {
           name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
           team: TEAM_NAMES[p1Standing?.team] ?? '',
-          portrait: portraitImageUrl(p1.driver_number),
+          portrait: portraitPath(p1.driver_number),
           grid: gridResult ? `P${gridResult.position}` : null,
           finish: 'P1',
         };

@@ -1,11 +1,12 @@
 {
   "view": "pre_weekend",
+  "assets_base": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets",
   "meeting": {
     "name": "Canadian Grand Prix",
     "location": "Montréal, Canada",
     "round": 9,
     "circuit_name": "Circuit Gilles Villeneuve",
-    "map": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/circuits/openf1/Montreal.png",
+    "map": "circuits/openf1/Montreal.png",
     "dates": "Jun 12 – 14",
     "circuit_type": "Street"
   },
@@ -132,5 +133,5 @@
       }
     ]
   },
-  "logo": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
+  "logo": "f1.png"
 }

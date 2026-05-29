@@ -1,5 +1,6 @@
 {
   "view": "off_season",
+  "assets_base": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets",
   "season": {
     "year": 2026
   },
@@ -8,7 +9,7 @@
       "name": "Andrea Kimi Antonelli",
       "team": "Mercedes",
       "pts": 285,
-      "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png"
+      "portrait": "portraits/12.png"
     },
     "function Object() { [native code] }": {
       "name": "Mercedes",
@@ -188,5 +189,5 @@
       }
     ]
   },
-  "logo": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
+  "logo": "f1.png"
 }

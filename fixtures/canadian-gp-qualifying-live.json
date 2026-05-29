@@ -1,11 +1,12 @@
 {
   "view": "live",
+  "assets_base": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets",
   "meeting": {
     "name": "Canadian Grand Prix",
     "location": "Montréal, Canada",
     "round": 9,
     "circuit_name": "Circuit Gilles Villeneuve",
-    "map": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/circuits/openf1/Montreal.png",
+    "map": "circuits/openf1/Montreal.png",
     "dates": "Jun 12 – 14",
     "circuit_type": "Street"
   },
@@ -127,7 +128,7 @@
       {
         "pos": 1,
         "name": "L. Norris",
-        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/1.png",
+        "portrait": "portraits/1.png",
         "compounds": [
           "M",
           "S"
@@ -140,7 +141,7 @@
       {
         "pos": 2,
         "name": "C. Leclerc",
-        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/16.png",
+        "portrait": "portraits/16.png",
         "compounds": [
           "M",
           "S"
@@ -153,7 +154,7 @@
       {
         "pos": 3,
         "name": "G. Russell",
-        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/63.png",
+        "portrait": "portraits/63.png",
         "compounds": [
           "M",
           "S"
@@ -166,7 +167,7 @@
       {
         "pos": 4,
         "name": "K. Antonelli",
-        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/12.png",
+        "portrait": "portraits/12.png",
         "compounds": [
           "M",
           "S"
@@ -179,7 +180,7 @@
       {
         "pos": 5,
         "name": "O. Piastri",
-        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/81.png",
+        "portrait": "portraits/81.png",
         "compounds": [
           "M",
           "S"
@@ -192,7 +193,7 @@
       {
         "pos": 6,
         "name": "L. Hamilton",
-        "portrait": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/portraits/44.png",
+        "portrait": "portraits/44.png",
         "compounds": [
           "M",
           "S"
@@ -204,5 +205,5 @@
       }
     ]
   },
-  "logo": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets/f1.png"
+  "logo": "f1.png"
 }
