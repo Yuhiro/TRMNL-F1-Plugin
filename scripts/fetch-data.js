@@ -347,14 +347,16 @@ async function main() {
       // Only built when needed: maps driver_number → enriched driver for result rows
       const driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
       try {
-        const showCompounds = ['Race', 'Sprint'].includes(lastCompleted.session_name);
         const qualiSession = lastCompleted.session_name === 'Race'
           ? output.sessions.find(s => s.session_name === 'Qualifying')
           : null;
 
         const [results, stints, qualiResults] = await Promise.all([
           getSessionResult(lastCompleted.session_key),
-          showCompounds ? getStints(lastCompleted.session_key) : Promise.resolve([]),
+          getStints(lastCompleted.session_key).catch(err => {
+            process.stderr.write(`Stints fetch failed (skipping): ${err.message}\n`);
+            return [];
+          }),
           qualiSession
             ? getSessionResult(qualiSession.session_key).catch(err => {
                 process.stderr.write(`Qualifying results fetch failed (skipping): ${err.message}\n`);

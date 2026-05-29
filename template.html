@@ -41,7 +41,7 @@
         <div style="flex: 1;">
           {% for d in standings.drivers_col1 %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
+            <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
             <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ d.name }}</span>
             <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ d.points }}</span>
           </div>
@@ -51,7 +51,7 @@
         <div style="flex: 1;">
           {% for d in standings.drivers_col2 %}
           <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-            <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
+            <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ d.position }}</span>
             <span class="text--large" style="flex: 1; white-space: nowrap; overflow: hidden;">{{ d.name }}</span>
             <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ d.points }}</span>
           </div>
@@ -75,7 +75,7 @@
       <div>
         {% for c in standings.constructors %}
         <div class="standings-row" style="display: flex; flex-direction: row; align-items: center; gap: var(--gap-small); padding: var(--gap-small) 0;">
-          <span class="text--large text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ c.position }}</span>
+          <span class="text--base text--muted" style="width: 24px; text-align: center; flex-shrink: 0;">{{ c.position }}</span>
           <span class="text--large" style="flex: 1;">{{ c.name }}</span>
           <span class="text--large" style="min-width: 36px; text-align: right; flex-shrink: 0;">{{ c.points }}</span>
         </div>

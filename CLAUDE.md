@@ -40,6 +40,8 @@ GitHub Actions workflow → fetches APIs → pushes JSON payload → TRMNL webho
 ### TRMNL Plugin Type
 Private Plugin using **Webhook** strategy (not polling). GitHub Actions pushes data to TRMNL on a schedule.
 
+**Payload size limit: 2KB (2048 bytes)** — measured as the full POST body `{"merge_variables": {...}}`. The user is on the free tier. Exceeding this silently truncates or rejects the push. The off-season payload (22 drivers + 11 constructors + 1 champion portrait URL) currently sits at ~2,008 bytes — 40 bytes of headroom. Any new fields added to the off-season branch must be weighed against this limit.
+
 ### Polling Frequency
 - **Mon/Wed (off-weekend):** Once at noon UTC
 - **Fri–Sun (race weekend):** Every 30 minutes (cron)

@@ -280,7 +280,7 @@ function serve() {
 
     try {
       const template = fs.readFileSync(TEMPLATE_PATH, 'utf8');
-      const data = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
+      let data = JSON.parse(fs.readFileSync(fixturePath, 'utf8'));
 
       // Rewrite GitHub raw image URLs to local paths so images load without a network request.
       if (data.meeting?.circuit_image_url) {
