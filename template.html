@@ -232,7 +232,7 @@
               <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center; flex-shrink: 0;">
                 {% assign cpds = result.cpd | split: "|" %}
                 {% for compound in cpds %}
-                <span class="label label--outline rounded--full text--small" style="width: 24px; height: 24px; border-width: 4px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0;">{{ compound }}</span>
+                <span class="label label--outline rounded--full text--small" style="width: 24px; height: 24px; border-width: 4px; border-color: var(--light-grey); display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; padding: 0;">{{ compound }}</span>
                 {% endfor %}
               </div>
               <span class="text--large" style="min-width: 94px; text-align: right; flex-shrink: 0;">{% if result.dnf %}DNF{% elsif result.dns %}DNS{% elsif result.dsq %}DSQ{% else %}{{ result.time }}{% endif %}</span>
