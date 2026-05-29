@@ -232,11 +232,10 @@ function main() {
         meeting: {
           name: meeting.meeting_name,
           location: `${meeting.location}, ${meeting.country_name}`,
-          round: meeting.round_number,
           circuit_name: circuitName(meeting.circuit_short_name),
           circuit_type: circuitType(meeting.circuit_short_name),
           map: circuitImagePath(meeting.circuit_short_name),
-          dates: buildDateRange(sessions, timezone),
+          dates: `${buildDateRange(sessions, timezone)}${meeting.round_number ? ` (Round ${meeting.round_number})` : ''}`,
         },
         sessions: sessions.map(s => {
           const { day, month } = sessionDateParts(s.date_start, timezone);
@@ -310,8 +309,7 @@ function main() {
         payload.next_race = {
           name: next_meeting.meeting_name,
           location: `${next_meeting.location}, ${next_meeting.country_name}`,
-          round: next_meeting.round_number,
-          dates: buildDateRange(next_meeting.sessions, timezone),
+          dates: `${buildDateRange(next_meeting.sessions, timezone)}${next_meeting.round_number ? ` (Round ${next_meeting.round_number})` : ''}`,
           weather: next_meeting.race_forecast ? {
             temp: `${Math.round(next_meeting.race_forecast.temp_max)}°C`,
             icon: weathercodeIcon(next_meeting.race_forecast.weathercode),

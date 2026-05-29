@@ -77,11 +77,10 @@ logo          "f1.png"
 meeting
   name        full GP name, e.g. "Canadian Grand Prix"
   location    "City, Country"
-  round       integer
   circuit_name  display name from circuits.js
   circuit_type  "street" | "permanent" | null
   map           relative path e.g. "circuits/openf1/Montreal.png", or null
-  dates         date range string, e.g. "Jun 13 – 15"
+  dates         date range + round, e.g. "Jun 13 – 15 (Round 9)"
 
 sessions[]
   day         numeric day, e.g. "13"
@@ -138,8 +137,7 @@ winner
 next_race   present when a subsequent GP exists in the calendar
   name      full GP name
   location  "City, Country"
-  round     integer
-  dates     date range string
+  dates     date range + round, e.g. "Jun 19 – 22 (Round 10)"
   weather   race-day forecast (see weather object above), or null
 ```
 

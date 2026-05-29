@@ -23,7 +23,7 @@ function requiredFor(view) {
 const REQUIRED_MEETING_KEYS  = ['name', 'location', 'dates'];
 const REQUIRED_STANDING_KEYS = { race: ['teams', 'drivers'], off_season: ['teams', 'd1', 'd2'] };
 const REQUIRED_WINNER_KEYS   = ['name', 'team', 'grid', 'finish'];
-const REQUIRED_NEXT_RACE_KEYS = ['name', 'location', 'dates', 'round'];
+const REQUIRED_NEXT_RACE_KEYS = ['name', 'location', 'dates'];
 
 let passed = 0;
 let failed = 0;

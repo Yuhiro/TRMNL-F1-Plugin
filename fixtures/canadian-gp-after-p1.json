@@ -4,10 +4,9 @@
   "meeting": {
     "name": "Canadian Grand Prix",
     "location": "Montréal, Canada",
-    "round": 9,
     "circuit_name": "Circuit Gilles Villeneuve",
     "map": "circuits/openf1/Montreal.png",
-    "dates": "Jun 12 – 14",
+    "dates": "Jun 12 – 14 (Round 9)",
     "circuit_type": "Street"
   },
   "sessions": [

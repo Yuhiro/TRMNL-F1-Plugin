@@ -109,7 +109,7 @@
         <!-- Location + date -->
         <div style="display: flex; flex-direction: column; gap: var(--gap-xsmall);">
           <div class="text--xxlarge">{{ meeting.location }}</div>
-          <div class="text--xlarge text--muted">{{ meeting.dates }}{% if meeting.round %} (Round {{ meeting.round }}){% endif %}</div>
+          <div class="text--xlarge text--muted">{{ meeting.dates }}</div>
         </div>
 
         {% if view == 'post_race' %}
@@ -149,7 +149,7 @@
           <span class="text--xxlarge">{{ next_race.name }}</span>
           <span class="text--xlarge">{{ next_race.location }}</span>
           <div style="display: flex; flex-direction: row; gap: var(--gap-xsmall); align-items: center;">
-            <span class="text--large">{{ next_race.dates }}{% if next_race.round %} (Round {{ next_race.round }}){% endif %}</span>
+            <span class="text--large">{{ next_race.dates }}</span>
             {% if next_race.weather %}
             <span class="text--large text--muted">·</span>
             <span class="text--large">{{ next_race.weather.temp }}</span>
