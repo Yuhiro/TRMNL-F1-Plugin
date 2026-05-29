@@ -51,6 +51,8 @@ async function fetchJSON(url, retries = 1) {
 }
 
 async function getMeetings() {
+  // Testing: set FORCE_SEASON repo variable (e.g. 2025) to fetch a specific season instead of the current year.
+  // Produces off_season view for completed seasons. Remove the variable to restore normal behaviour.
   const year = process.env.FORCE_SEASON ? parseInt(process.env.FORCE_SEASON, 10) : new Date().getFullYear();
   const meetings = await fetchJSON(`${OPENF1_BASE}/meetings?year=${year}`);
   // If every non-cancelled meeting in the current year is in the past, the new season

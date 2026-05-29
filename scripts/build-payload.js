@@ -182,6 +182,9 @@ function main() {
         const constructors = standings.constructors ?? [];
         const wdc = drivers[0];
         const wcc = constructors[0];
+        // Testing: set MAX_STANDINGS_DRIVERS repo variable to cap the off-season driver standings rows.
+        // Splits evenly across both columns. Unset = all drivers shown (normal behaviour).
+        const driverLimit = process.env.MAX_STANDINGS_DRIVERS ? parseInt(process.env.MAX_STANDINGS_DRIVERS, 10) : drivers.length;
 
         const payload = {
           view: data.view,
@@ -201,13 +204,13 @@ function main() {
             },
           },
           standings: {
-            drivers_col1: drivers.slice(0, 11).map(d => ({
+            drivers_col1: drivers.slice(0, Math.ceil(driverLimit / 2)).map(d => ({
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
               portrait_slug: portraitSlug(d.portrait_url),
             })),
-            drivers_col2: drivers.slice(11).map(d => ({
+            drivers_col2: drivers.slice(Math.ceil(driverLimit / 2), driverLimit).map(d => ({
               position: d.position_current,
               name: d.name ?? `#${d.driver_number}`,
               points: d.points_current ?? 0,
