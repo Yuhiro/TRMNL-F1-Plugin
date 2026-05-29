@@ -11,7 +11,7 @@ Start by reading every source file:
 7. Read `.github/workflows/trmnl-update.yml`
 8. Read `template.html`
 9. Read `CLAUDE.md` for architecture context
-10. Read `issues.md` — note the highest existing number per prefix (B, I, D, Q, T, M) so new issues continue the sequence without collision
+10. Read `ISSUES.md` in full — understand every open and closed issue before writing a single new finding
 11. Run `git log --oneline -10` for recent change history
 
 Then review the full codebase across these dimensions and report your findings:
@@ -47,6 +47,18 @@ Format each issue as:
 
 ---
 
+## Before reporting any finding, check ISSUES.md
+
+An issue that is already tracked — open or closed — must NOT be reported again unless one of these three conditions holds:
+
+1. **It's a new distinct issue** — same general area but a different root cause, file, or line than the existing entry.
+2. **A closed issue was wrong to close** — the fix wasn't actually applied, or the "won't fix" rationale no longer holds given recent changes.
+3. **A prior decision has been invalidated** — e.g. a refactor reintroduced a problem that was previously resolved.
+
+If none of those conditions hold, skip it entirely. Do not restate, re-number, or re-open it. Flip-flopping on closed issues wastes review cycles and erodes trust in the tracker.
+
+---
+
 ## Bugs
 List anything that will cause incorrect behaviour, silent failures, data loss, or crashes. Be specific — name the file, line/function, and what breaks and under what conditions.
 
@@ -73,19 +85,42 @@ Format your output with clear `##` section headers. Be direct and opinionated �
 
 ---
 
-## Writing findings to issues.md
+## Writing findings to ISSUES.md
 
-After presenting your findings, do the following:
+After presenting your findings:
 
-1. **Ask:** "Before I add these to issues.md — do you want to remove completed (`[x]`) issues first to keep the file tidy, or keep them for history?"
+1. Only include issues that are **not already tracked** in `ISSUES.md` (applying the three-condition rule above). Do not duplicate existing open issues.
 
-2. Wait for the answer. Then:
-   - If clearing: rewrite `issues.md` keeping only open (`[ ]`) issues plus the legend table, then append the new round's findings as a new `## Round N findings` section (where N is one more than the current highest round number in the file).
-   - If keeping: append only the new round's findings as a new `## Round N findings` section.
+2. Append the new round's findings as a new `## Round N findings` section (where N is one more than the current highest round number in the file), above the `---` divider that separates open from completed issues.
 
-3. Only include issues that are **not already tracked** in `issues.md` (same title or same file:line). Do not duplicate existing open issues.
+3. Move any newly-resolved issues (closed during this session) to the completed section below the divider.
 
-4. Use the same bullet-point format as the existing entries in `issues.md`:
+4. The file structure must follow this layout:
+
+```
+# Issues Tracker
+
+[legend table]
+
+---
+
+## Round N findings
+- [ ] ...open issues...
+
+## Round N-1 findings (open only)
+- [ ] ...remaining open issues from prior rounds...
+
+---
+<!-- completed -->
+
+## Round N findings (completed)
+- [x] ...
+
+## Round N-1 findings (completed)
+- [x] ...
+```
+
+5. Use the same bullet-point format as the existing entries:
    ```
    - [ ] CODE 🔴 — Short title
      `file:line` — Description.
