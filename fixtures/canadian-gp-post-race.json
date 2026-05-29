@@ -23,135 +23,135 @@
     }
   },
   "standings": {
-    "teams": [
+    "t": [
       {
-        "pos": 1,
-        "name": "McLaren",
+        "p": 1,
+        "n": "McLaren",
         "pts": 304
       },
       {
-        "pos": 2,
-        "name": "Ferrari",
+        "p": 2,
+        "n": "Ferrari",
         "pts": 249
       },
       {
-        "pos": 3,
-        "name": "Mercedes",
+        "p": 3,
+        "n": "Mercedes",
         "pts": 215
       },
       {
-        "pos": 4,
-        "name": "Red Bull",
+        "p": 4,
+        "n": "Red Bull",
         "pts": 196
       },
       {
-        "pos": 5,
-        "name": "Aston Martin",
+        "p": 5,
+        "n": "Aston Martin",
         "pts": 91
       },
       {
-        "pos": 6,
-        "name": "Alpine",
+        "p": 6,
+        "n": "Alpine",
         "pts": 67
       }
     ],
-    "drivers": [
+    "d": [
       {
-        "pos": 1,
-        "name": "L. Norris",
+        "p": 1,
+        "n": "L. Norris",
         "pts": 181
       },
       {
-        "pos": 2,
-        "name": "C. Leclerc",
+        "p": 2,
+        "n": "C. Leclerc",
         "pts": 130,
         "delta": 1
       },
       {
-        "pos": 3,
-        "name": "O. Piastri",
+        "p": 3,
+        "n": "O. Piastri",
         "pts": 123,
         "delta": -1
       },
       {
-        "pos": 4,
-        "name": "L. Hamilton",
+        "p": 4,
+        "n": "L. Hamilton",
         "pts": 117
       },
       {
-        "pos": 5,
-        "name": "G. Russell",
+        "p": 5,
+        "n": "G. Russell",
         "pts": 98
       },
       {
-        "pos": 6,
-        "name": "M. Verstappen",
+        "p": 6,
+        "n": "M. Verstappen",
         "pts": 91
       }
     ]
   },
   "last_session": {
-    "name": "Race Results",
+    "name": "Race",
     "results": [
       {
-        "pos": 1,
-        "name": "L. Norris",
         "img": "driver/1.png",
-        "compounds": [
+        "time": "1:32:14.456",
+        "p": 1,
+        "n": "L. Norris",
+        "cpd": [
           "M",
           "H"
-        ],
-        "time": "1:32:14.456"
+        ]
       },
       {
-        "pos": 2,
-        "name": "C. Leclerc",
         "img": "driver/16.png",
-        "compounds": [
+        "time": "+3.412s",
+        "p": 2,
+        "n": "C. Leclerc",
+        "cpd": [
           "M",
           "H"
-        ],
-        "time": "+3.412s"
+        ]
       },
       {
-        "pos": 3,
-        "name": "G. Russell",
         "img": "driver/63.png",
-        "compounds": [
+        "time": "+8.761s",
+        "p": 3,
+        "n": "G. Russell",
+        "cpd": [
           "M",
           "H"
-        ],
-        "time": "+8.761s"
+        ]
       },
       {
-        "pos": 4,
-        "name": "K. Antonelli",
         "img": "driver/12.png",
-        "compounds": [
+        "time": "+12.334s",
+        "p": 4,
+        "n": "K. Antonelli",
+        "cpd": [
           "M",
           "H"
-        ],
-        "time": "+12.334s"
+        ]
       },
       {
-        "pos": 5,
-        "name": "O. Piastri",
         "img": "driver/81.png",
-        "compounds": [
+        "time": "+19.087s",
+        "p": 5,
+        "n": "O. Piastri",
+        "cpd": [
           "M",
           "H"
-        ],
-        "time": "+19.087s"
+        ]
       },
       {
-        "pos": 6,
-        "name": "L. Hamilton",
         "img": "driver/44.png",
-        "compounds": [
+        "time": "+24.512s",
+        "p": 6,
+        "n": "L. Hamilton",
+        "cpd": [
           "M",
           "H"
-        ],
-        "time": "+24.512s"
+        ]
       }
     ]
   }

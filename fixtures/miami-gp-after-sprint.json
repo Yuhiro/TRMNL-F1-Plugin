@@ -11,176 +11,176 @@
       "day": "1",
       "month": "May",
       "name": "Practice 1",
-      "time": "12:30 – 13:30",
-      "done": true
+      "done": true,
+      "t": "12:30 – 13:30"
     },
     {
       "day": "1",
       "month": "May",
       "name": "Sprint Qualifying",
-      "time": "16:30 – 17:30",
-      "done": true
+      "done": true,
+      "t": "16:30 – 17:30"
     },
     {
       "day": "2",
       "month": "May",
       "name": "Sprint",
-      "time": "13:00 – 14:00",
-      "done": true
+      "done": true,
+      "t": "13:00 – 14:00"
     },
     {
       "day": "2",
       "month": "May",
       "name": "Qualifying",
-      "time": "17:00 – 18:00",
       "weather": {
         "temp": "29°C",
         "icon": "sun",
         "precip": "5%"
-      }
+      },
+      "t": "17:00 – 18:00"
     },
     {
       "day": "3",
       "month": "May",
       "name": "Race",
-      "time": "16:00 – 18:00",
       "weather": {
         "temp": "28°C",
         "icon": "cloud",
         "precip": "20%"
-      }
+      },
+      "t": "16:00 – 18:00"
     }
   ],
   "standings": {
-    "teams": [
+    "t": [
       {
-        "pos": 1,
-        "name": "McLaren",
+        "p": 1,
+        "n": "McLaren",
         "pts": 204
       },
       {
-        "pos": 2,
-        "name": "Ferrari",
+        "p": 2,
+        "n": "Ferrari",
         "pts": 175
       },
       {
-        "pos": 3,
-        "name": "Mercedes",
+        "p": 3,
+        "n": "Mercedes",
         "pts": 149
       },
       {
-        "pos": 4,
-        "name": "Red Bull",
+        "p": 4,
+        "n": "Red Bull",
         "pts": 138
       },
       {
-        "pos": 5,
-        "name": "Racing Bulls",
+        "p": 5,
+        "n": "Racing Bulls",
         "pts": 62
       },
       {
-        "pos": 6,
-        "name": "Aston Martin",
+        "p": 6,
+        "n": "Aston Martin",
         "pts": 51
       }
     ],
-    "drivers": [
+    "d": [
       {
-        "pos": 1,
-        "name": "L. Norris",
+        "p": 1,
+        "n": "L. Norris",
         "pts": 118
       },
       {
-        "pos": 2,
-        "name": "C. Leclerc",
+        "p": 2,
+        "n": "C. Leclerc",
         "pts": 96
       },
       {
-        "pos": 3,
-        "name": "O. Piastri",
+        "p": 3,
+        "n": "O. Piastri",
         "pts": 86
       },
       {
-        "pos": 4,
-        "name": "L. Hamilton",
+        "p": 4,
+        "n": "L. Hamilton",
         "pts": 78,
         "delta": 1
       },
       {
-        "pos": 5,
-        "name": "M. Verstappen",
+        "p": 5,
+        "n": "M. Verstappen",
         "pts": 68
       },
       {
-        "pos": 6,
-        "name": "G. Russell",
+        "p": 6,
+        "n": "G. Russell",
         "pts": 67,
         "delta": -1
       }
     ]
   },
   "last_session": {
-    "name": "Sprint Results",
+    "name": "Sprint",
     "results": [
       {
-        "pos": 1,
-        "name": "L. Norris",
         "img": "driver/1.png",
-        "compounds": [
+        "time": "24:51.402",
+        "p": 1,
+        "n": "L. Norris",
+        "cpd": [
           "S",
           "M"
-        ],
-        "time": "24:51.402"
+        ]
       },
       {
-        "pos": 2,
-        "name": "O. Piastri",
         "img": "driver/81.png",
-        "compounds": [
+        "time": "+3.241s",
+        "p": 2,
+        "n": "O. Piastri",
+        "cpd": [
           "S",
           "M"
-        ],
-        "time": "+3.241s"
+        ]
       },
       {
-        "pos": 3,
-        "name": "L. Hamilton",
         "img": "driver/44.png",
-        "compounds": [
+        "time": "+5.876s",
+        "p": 3,
+        "n": "L. Hamilton",
+        "cpd": [
           "S",
           "M"
-        ],
-        "time": "+5.876s"
+        ]
       },
       {
-        "pos": 4,
-        "name": "C. Leclerc",
         "img": "driver/16.png",
-        "compounds": [
+        "time": "+7.113s",
+        "p": 4,
+        "n": "C. Leclerc",
+        "cpd": [
           "S",
           "M"
-        ],
-        "time": "+7.113s"
+        ]
       },
       {
-        "pos": 5,
-        "name": "G. Russell",
         "img": "driver/63.png",
-        "compounds": [
+        "time": "+9.402s",
+        "p": 5,
+        "n": "G. Russell",
+        "cpd": [
           "S",
           "M"
-        ],
-        "time": "+9.402s"
+        ]
       },
       {
-        "pos": 6,
-        "name": "M. Verstappen",
         "img": "driver/3.png",
-        "compounds": [
+        "time": "+11.654s",
+        "p": 6,
+        "n": "M. Verstappen",
+        "cpd": [
           "S",
           "M"
-        ],
-        "time": "+11.654s"
+        ]
       }
     ]
   }

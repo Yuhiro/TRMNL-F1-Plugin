@@ -202,18 +202,18 @@ function main() {
           },
           standings: {
             d1: drivers.slice(0, Math.ceil(driverLimit / 2)).map(d => ({
-              pos: d.position_current,
-              name: d.name ?? `#${d.driver_number}`,
+              p: d.position_current,
+              n: d.name ?? `#${d.driver_number}`,
               pts: d.points_current ?? 0,
             })),
             d2: drivers.slice(Math.ceil(driverLimit / 2), driverLimit).map(d => ({
-              pos: d.position_current,
-              name: d.name ?? `#${d.driver_number}`,
+              p: d.position_current,
+              n: d.name ?? `#${d.driver_number}`,
               pts: d.points_current ?? 0,
             })),
-            teams: constructors.map(c => ({
-              pos: c.position,
-              name: TEAM_NAMES[c.team] ?? c.team,
+            t: constructors.map(c => ({
+              p: c.position,
+              n: TEAM_NAMES[c.team] ?? c.team,
               pts: c.points,
             })),
           },
@@ -245,7 +245,7 @@ function main() {
               day,
               month,
               name: s.session_name,
-              time: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
+              t: `${formatTime(s.date_start, timezone)} – ${formatTime(s.date_end, timezone)}`,
               ...(s.status === 'completed' && { done: true }),
               ...(s.status === 'live' && { status: 'live' }),
               ...(w !== null && { weather: w }),
@@ -253,25 +253,25 @@ function main() {
           }),
         }),
         standings: {
-          teams: standings.constructors
+          t: standings.constructors
             .slice(0, 6)
             .map(c => {
               const delta = (c.position_start ?? c.position) - c.position;
               return {
-                pos: c.position,
-                name: TEAM_NAMES[c.team] ?? c.team,
+                p: c.position,
+                n: TEAM_NAMES[c.team] ?? c.team,
                 pts: c.points,
                 ...(delta !== 0 && { delta }),
               };
             }),
-          drivers: standings.drivers
+          d: standings.drivers
             .sort((a, b) => (a.position_current ?? 99) - (b.position_current ?? 99))
             .slice(0, 6)
             .map(d => {
               const delta = (d.position_start ?? d.position_current ?? 0) - (d.position_current ?? 0);
               return {
-                pos: d.position_current ?? 0,
-                name: d.name ?? `#${d.driver_number}`,
+                p: d.position_current ?? 0,
+                n: d.name ?? `#${d.driver_number}`,
                 pts: d.points_current ?? 0,
                 ...(delta !== 0 && { delta }),
               };
@@ -281,12 +281,12 @@ function main() {
 
       if (last_session?.results?.length) {
         payload.last_session = {
-          name: `${last_session.session_name} Results`,
+          name: last_session.session_name,
           results: last_session.results.map(r => ({
-            pos: r.position,
-            name: r.name ?? `#${r.driver_number}`,
+            p: r.position,
+            n: r.name ?? `#${r.driver_number}`,
             img: portraitPath(r.driver_number),
-            compounds: r.compounds,
+            cpd: r.compounds,
             ...(r.dnf && { dnf: true }),
             ...(r.dns && { dns: true }),
             ...(r.dsq && { dsq: true }),
