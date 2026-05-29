@@ -232,8 +232,7 @@ function main() {
         meeting: {
           name: meeting.meeting_name,
           location: `${meeting.location}, ${meeting.country_name}`,
-          circuit_name: circuitName(meeting.circuit_short_name),
-          circuit_type: circuitType(meeting.circuit_short_name),
+          circuit: (() => { const n = circuitName(meeting.circuit_short_name); const t = circuitType(meeting.circuit_short_name); return t ? `${n} (${t})` : n; })(),
           map: circuitImagePath(meeting.circuit_short_name),
           dates: `${buildDateRange(sessions, timezone)}${meeting.round_number ? ` (Round ${meeting.round_number})` : ''}`,
         },
@@ -299,9 +298,8 @@ function main() {
         payload.winner = {
           name: p1.full_name ?? p1.name ?? `#${p1.driver_number}`,
           team: TEAM_NAMES[p1Standing?.team] ?? '',
-          portrait: portraitPath(p1.driver_number),
+          img: portraitPath(p1.driver_number),
           grid: gridResult ? `P${gridResult.position}` : null,
-          finish: 'P1',
         };
       }
 

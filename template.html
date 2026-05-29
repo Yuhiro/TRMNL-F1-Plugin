@@ -134,7 +134,7 @@
               <div style="display: flex; flex-direction: row; align-items: flex-start;">
                 <span class="text--base">{{ winner.grid }}</span>
                 <i class="ti ti-arrow-narrow-right-dashed text--large" style="line-height: 1;"></i>
-                <span class="text--base">{{ winner.finish }}</span>
+                <span class="text--base">P1</span>
               </div>
               {% endif %}
             </div>
@@ -249,7 +249,7 @@
         <!-- Circuit image: grows to fill all available vertical space -->
         <div style="flex: 1; min-height: 0; display: flex; flex-direction: column; align-items: center; gap: var(--gap-small);">
           <img src="{{ assets_base }}/{{ meeting.map }}" style="flex: 1; min-height: 0; width: 100%; object-fit: contain;" alt="">
-          <div class="text--large text--muted">{{ meeting.circuit_name }}{% if meeting.circuit_type %} ({{ meeting.circuit_type }}){% endif %}</div>
+          <div class="text--large text--muted">{{ meeting.circuit }}</div>
         </div>
         {% endif %}
 

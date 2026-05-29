@@ -77,9 +77,8 @@ logo          "f1.png"
 meeting
   name        full GP name, e.g. "Canadian Grand Prix"
   location    "City, Country"
-  circuit_name  display name from circuits.js
-  circuit_type  "street" | "permanent" | null
-  map           relative path e.g. "circuits/openf1/Montreal.png", or null
+  circuit   display name with type appended, e.g. "Circuit Gilles Villeneuve (Street)"
+  map       relative path e.g. "circuits/openf1/Montreal.png", or null
   dates         date range + round, e.g. "Jun 13 – 15 (Round 9)"
 
 sessions[]
@@ -132,7 +131,6 @@ winner
   team      full team name
   img       relative path e.g. "driver/44.png", or null
   grid      qualifying position, e.g. "P3", or null if unknown
-  finish    always "P1"
 
 next_race   present when a subsequent GP exists in the calendar
   name      full GP name

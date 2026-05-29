@@ -4,10 +4,9 @@
   "meeting": {
     "name": "Canadian Grand Prix",
     "location": "Montréal, Canada",
-    "circuit_name": "Circuit Gilles Villeneuve",
     "map": "circuits/openf1/Montreal.png",
     "dates": "Jun 12 – 14 (Round 9)",
-    "circuit_type": "Street"
+    "circuit": "Circuit Gilles Villeneuve (Street)"
   },
   "sessions": [
     {
@@ -50,8 +49,7 @@
     "name": "Lando Norris",
     "team": "McLaren",
     "img": "driver/1.png",
-    "grid": "P3",
-    "finish": "P1"
+    "grid": "P3"
   },
   "next_race": {
     "name": "Spanish Grand Prix",
