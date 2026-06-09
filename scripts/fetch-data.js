@@ -33,14 +33,20 @@ const DRIVER_MAP = {
 };
 
 
+// OpenF1 locks their entire API during live sessions for unauthenticated users.
+// Thrown immediately on 401 — no retry, no fatal exit; pipeline exits cleanly.
+class ApiLockedError extends Error {}
+
 // One retry with 2 s backoff — a single transient OpenF1 500 or network blip would
 // otherwise exit the pipeline and leave the display stale until the next run.
 async function fetchJSON(url, retries = 1) {
   try {
     const res = await fetch(url, { signal: AbortSignal.timeout(10_000) });
+    if (res.status === 401) throw new ApiLockedError(`HTTP 401 fetching ${url}`);
     if (!res.ok) throw new Error(`HTTP ${res.status} fetching ${url}`);
     return res.json();
   } catch (err) {
+    if (err instanceof ApiLockedError) throw err;
     if (retries > 0) {
       process.stderr.write(`Fetch failed, retrying in 2s: ${err.message}\n`);
       await new Promise(resolve => setTimeout(resolve, 2_000));
@@ -263,8 +269,35 @@ async function getWeatherForecasts(circuitShortName, datestrs) {
   return result;
 }
 
+// Reads the sessions array from the last successful fetch output (LAST_FETCH_CACHE env var).
+// Called when /sessions returns 401 so classifySessions() can still mark the live session.
+function loadCachedSessions() {
+  const cachePath = process.env.LAST_FETCH_CACHE;
+  if (!cachePath) {
+    process.stderr.write('OpenF1 API locked (sessions) — LAST_FETCH_CACHE not set, session list will be empty\n');
+    return [];
+  }
+  try {
+    const cached = JSON.parse(require('fs').readFileSync(cachePath, 'utf8'));
+    process.stderr.write('OpenF1 API locked (sessions) — using cached session times for LIVE classification\n');
+    return cached.sessions ?? [];
+  } catch {
+    process.stderr.write('OpenF1 API locked (sessions) — cache unavailable, session list will be empty\n');
+    return [];
+  }
+}
+
 async function main() {
-  const meetings = await getMeetings();
+  let meetings;
+  try {
+    meetings = await getMeetings();
+  } catch (err) {
+    if (err instanceof ApiLockedError) {
+      process.stderr.write('OpenF1 API locked (meetings) — skipping push, display retains last state\n');
+      return;
+    }
+    throw err;
+  }
   const rounds = assignRoundNumbers(meetings);
   const { meeting } = findCurrentMeeting(meetings, rounds);
 
@@ -284,7 +317,15 @@ async function main() {
   }
 
   if (meeting) {
-    const rawSessions = await getSessions(meeting.meeting_key);
+    let rawSessions;
+    try {
+      rawSessions = await getSessions(meeting.meeting_key);
+    } catch (err) {
+      rawSessions = err instanceof ApiLockedError ? loadCachedSessions() : [];
+      if (!(err instanceof ApiLockedError)) {
+        process.stderr.write(`Sessions fetch failed (skipping): ${err.message}\n`);
+      }
+    }
     output.sessions = classifySessions(rawSessions);
 
     const liveSession = output.sessions.find(s => s.status === 'live');

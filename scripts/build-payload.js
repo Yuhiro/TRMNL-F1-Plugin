@@ -167,6 +167,7 @@ function main() {
   process.stdin.on('data', chunk => { raw += chunk; });
   process.stdin.on('end', () => {
     try {
+      if (!raw.trim()) return;
       const data = JSON.parse(raw);
       const timezone = data.timezone || process.env.USER_TIMEZONE || 'UTC';
       const { meeting, sessions, weather, forecasts, standings, last_session, qualifying_results, next_meeting } = data;

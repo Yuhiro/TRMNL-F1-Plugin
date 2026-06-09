@@ -37,6 +37,7 @@ async function main() {
   process.stdin.on('data', chunk => { raw += chunk; });
   process.stdin.on('end', async () => {
     try {
+      if (!raw.trim()) return;
       const payload = JSON.parse(raw);
       const body = JSON.stringify({ merge_variables: payload });
       process.stderr.write(`Payload (${Buffer.byteLength(body, 'utf8')} bytes):\n${JSON.stringify(payload, null, 2)}\n`);

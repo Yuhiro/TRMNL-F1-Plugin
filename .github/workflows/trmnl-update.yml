@@ -14,6 +14,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Restore last fetch cache
+        uses: actions/cache@v4
+        with:
+          path: /tmp/last-fetch.json
+          key: last-fetch-${{ github.run_id }}
+          restore-keys: |
+            last-fetch-
+
       - name: Fetch, build, and push to TRMNL
         env:
           TRMNL_WEBHOOK_URL: ${{ secrets.TRMNL_WEBHOOK_URL }}
@@ -26,5 +34,14 @@ jobs:
           # MAX_STANDINGS_DRIVERS: caps the driver rows in the off_season standings table.
           FORCE_SEASON: ${{ vars.FORCE_SEASON }}
           MAX_STANDINGS_DRIVERS: ${{ vars.MAX_STANDINGS_DRIVERS }}
+          LAST_FETCH_CACHE: /tmp/last-fetch.json
         shell: bash
-        run: set -o pipefail && node scripts/fetch-data.js | node scripts/build-payload.js | node scripts/push-webhook.js
+        run: |
+          set -eo pipefail
+          node scripts/fetch-data.js > /tmp/new-fetch.json
+          if [ -s /tmp/new-fetch.json ]; then
+            cp /tmp/new-fetch.json /tmp/last-fetch.json
+            cat /tmp/new-fetch.json | node scripts/build-payload.js | node scripts/push-webhook.js
+          else
+            echo "OpenF1 API locked (meetings unavailable) — skipping push, display retains last state"
+          fi
