@@ -269,6 +269,18 @@ async function getWeatherForecasts(circuitShortName, datestrs) {
   return result;
 }
 
+// Reads the full output of the last successful fetch-data.js run from LAST_FETCH_CACHE.
+// Called when /meetings returns 401 so we can re-emit with refreshed session statuses.
+function loadCachedOutput() {
+  const cachePath = process.env.LAST_FETCH_CACHE;
+  if (!cachePath) return null;
+  try {
+    return JSON.parse(require('fs').readFileSync(cachePath, 'utf8'));
+  } catch {
+    return null;
+  }
+}
+
 // Reads the sessions array from the last successful fetch output (LAST_FETCH_CACHE env var).
 // Called when /sessions returns 401 so classifySessions() can still mark the live session.
 function loadCachedSessions() {
@@ -293,7 +305,17 @@ async function main() {
     meetings = await getMeetings();
   } catch (err) {
     if (err instanceof ApiLockedError) {
-      process.stderr.write('OpenF1 API locked (meetings) — skipping push, display retains last state\n');
+      const cached = loadCachedOutput();
+      if (!cached) {
+        process.stderr.write('OpenF1 API locked (meetings) — no cache available, skipping push\n');
+        return;
+      }
+      if (Array.isArray(cached.sessions)) {
+        cached.sessions = classifySessions(cached.sessions);
+        cached.view = determineView(cached.sessions);
+      }
+      process.stderr.write('OpenF1 API locked (meetings) — pushing from cache with refreshed session statuses\n');
+      process.stdout.write(JSON.stringify(cached, null, 2) + '\n');
       return;
     }
     throw err;

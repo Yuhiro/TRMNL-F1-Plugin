@@ -43,5 +43,5 @@ jobs:
             cp /tmp/new-fetch.json /tmp/last-fetch.json
             cat /tmp/new-fetch.json | node scripts/build-payload.js | node scripts/push-webhook.js
           else
-            echo "OpenF1 API locked (meetings unavailable) — skipping push, display retains last state"
+            echo "fetch-data.js produced no output — skipping push"
           fi
