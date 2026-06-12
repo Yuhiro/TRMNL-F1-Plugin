@@ -171,12 +171,12 @@ function formatBroadcastName(name) {
   return `${initial}. ${surname}`;
 }
 
-async function getStandings() {
+async function getStandings(sessionKey = 'latest') {
   let rawDrivers, rawDriverInfo;
   try {
     [rawDrivers, rawDriverInfo] = await Promise.all([
-      fetchJSON(`${OPENF1_BASE}/championship_drivers?session_key=latest`),
-      fetchJSON(`${OPENF1_BASE}/drivers?session_key=latest`).catch(err => {
+      fetchJSON(`${OPENF1_BASE}/championship_drivers?session_key=${sessionKey}`),
+      fetchJSON(`${OPENF1_BASE}/drivers?session_key=${sessionKey}`).catch(err => {
         process.stderr.write(`Driver team fetch failed, falling back to static map: ${err.message}\n`);
         return [];
       }),
@@ -384,13 +384,36 @@ async function main() {
           })
         : Promise.resolve({}),
     ]);
-    // If standings came back empty (e.g. 401 on /championship_drivers during lockdown),
-    // fall back to cached standings so the display isn't blank and the cache stays useful.
+    // championship_drivers returns empty for non-race sessions (practice, qualifying).
+    // Tier 1: try cached standings from last successful push.
     if (!standingsResult.drivers.length) {
       const fb = loadCachedOutput()?.standings;
       if (fb?.drivers?.length) {
-        process.stderr.write('Standings fetch returned empty — falling back to cached standings\n');
+        process.stderr.write('Standings empty — falling back to cached standings\n');
         standingsResult = fb;
+      }
+    }
+    // Tier 2: if still empty, fetch from the most recently completed Race session.
+    if (!standingsResult.drivers.length) {
+      const lastRaceMeeting = meetings
+        .filter(m => !m.is_cancelled && !/test/i.test(m.meeting_official_name ?? ''))
+        .filter(m => !meeting || m.meeting_key !== meeting.meeting_key)
+        .filter(m => new Date(m.date_end) < new Date())
+        .sort((a, b) => new Date(b.date_end) - new Date(a.date_end))[0];
+      if (lastRaceMeeting) {
+        try {
+          const prevSessions = await getSessions(lastRaceMeeting.meeting_key);
+          const raceSession = prevSessions.find(s => s.session_name === 'Race');
+          if (raceSession) {
+            const prev = await getStandings(raceSession.session_key);
+            if (prev.drivers.length) {
+              process.stderr.write(`Standings from ${lastRaceMeeting.meeting_name} (session ${raceSession.session_key})\n`);
+              standingsResult = prev;
+            }
+          }
+        } catch (err) {
+          process.stderr.write(`Last race standings fallback failed: ${err.message}\n`);
+        }
       }
     }
     output.standings = standingsResult;
@@ -431,7 +454,26 @@ async function main() {
     const lastCompleted = output.sessions.filter(s => s.status === 'completed').at(-1);
     if (lastCompleted) {
       // Only built when needed: maps driver_number → enriched driver for result rows
-      const driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
+      let driverByNumber = Object.fromEntries(standingsResult.drivers.map(d => [d.driver_number, d]));
+      // Safety net: if all standings fallbacks failed, fetch driver names directly from /drivers
+      // so results show names rather than "#number" fallbacks.
+      if (!standingsResult.drivers.length) {
+        try {
+          const rawDrivers = await fetchJSON(`${OPENF1_BASE}/drivers?session_key=${lastCompleted.session_key}`);
+          for (const d of rawDrivers) {
+            if (d.driver_number != null) {
+              driverByNumber[d.driver_number] = {
+                name: formatBroadcastName(d.broadcast_name),
+                full_name: d.full_name ?? null,
+                portrait_url: d.headshot_url ?? null,
+              };
+            }
+          }
+          process.stderr.write('Standings unavailable — driver names fetched directly from /drivers\n');
+        } catch (err) {
+          process.stderr.write(`Driver name fallback fetch failed: ${err.message}\n`);
+        }
+      }
       try {
         const qualiSession = lastCompleted.session_name === 'Race'
           ? output.sessions.find(s => s.session_name === 'Qualifying')
