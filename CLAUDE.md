@@ -157,7 +157,7 @@ When a Figma node has `justify-content: center` on a flex-col, check whether the
 - `label`, `label--small`, `label--filled`, `label--outline`, `label--underline` for labels
 
 ### Rounded
-`rounded--full` (pill), `rounded--small` (7px), `rounded` (10px), `rounded--large` (20px)
+`rounded--none` (0), `rounded--xsmall` (5px), `rounded--small` (7px), `rounded` / `rounded--base` (10px), `rounded--medium` (15px), `rounded--large` (20px), `rounded--xlarge` (25px), `rounded--xxlarge` (30px), `rounded--full` (pill/9999px). Corner-specific variants supported: `rounded-tl--large`, `rounded-t--medium`, etc.
 
 ### Colours
 The TRMNL X supports **4-bit / 16 grayscale levels**. Use framework CSS variables, not hardcoded hex:
