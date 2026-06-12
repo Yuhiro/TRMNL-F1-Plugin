@@ -314,6 +314,20 @@ async function main() {
         cached.sessions = classifySessions(cached.sessions);
         cached.view = determineView(cached.sessions);
       }
+      // Standings endpoints may be unlocked even when /meetings is locked — try a refresh.
+      const freshStandings = await getStandings();
+      if (freshStandings.drivers.length > 0) {
+        cached.standings = freshStandings;
+        if (cached.last_session?.results) {
+          const byNum = Object.fromEntries(freshStandings.drivers.map(d => [d.driver_number, d]));
+          cached.last_session.results = cached.last_session.results.map(r => ({
+            ...r,
+            name: byNum[r.driver_number]?.name ?? r.name,
+            full_name: byNum[r.driver_number]?.full_name ?? r.full_name,
+            portrait_url: byNum[r.driver_number]?.portrait_url ?? r.portrait_url,
+          }));
+        }
+      }
       process.stderr.write('OpenF1 API locked (meetings) — pushing from cache with refreshed session statuses\n');
       process.stdout.write(JSON.stringify(cached, null, 2) + '\n');
       return;
@@ -355,7 +369,7 @@ async function main() {
 
     // Fetch standings, live weather, and forecasts all in parallel
     const uniqueDates = [...new Set(upcomingSessions.map(s => s.date_start.slice(0, 10)))];
-    const [standingsResult, liveWeather, forecasts] = await Promise.all([
+    let [standingsResult, liveWeather, forecasts] = await Promise.all([
       getStandings(),
       liveSession
         ? getLiveWeather(liveSession.session_key).catch(err => {
@@ -370,6 +384,15 @@ async function main() {
           })
         : Promise.resolve({}),
     ]);
+    // If standings came back empty (e.g. 401 on /championship_drivers during lockdown),
+    // fall back to cached standings so the display isn't blank and the cache stays useful.
+    if (!standingsResult.drivers.length) {
+      const fb = loadCachedOutput()?.standings;
+      if (fb?.drivers?.length) {
+        process.stderr.write('Standings fetch returned empty — falling back to cached standings\n');
+        standingsResult = fb;
+      }
+    }
     output.standings = standingsResult;
     output.weather = liveWeather;
     output.forecasts = forecasts;
