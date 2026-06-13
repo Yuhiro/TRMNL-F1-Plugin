@@ -158,6 +158,7 @@ function formatLapTime(seconds) {
 function formatGap(gap) {
   if (gap == null) return '';
   if (typeof gap === 'string') return gap.startsWith('+') ? gap : `+${gap}`;
+  if (typeof gap !== 'number') return '';
   return `+${gap.toFixed(3)}s`;
 }
 

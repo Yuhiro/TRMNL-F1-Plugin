@@ -150,6 +150,20 @@ async function getSessionResult(sessionKey) {
   return fetchJSON(`${OPENF1_BASE}/session_result?session_key=${sessionKey}`);
 }
 
+// Qualifying session_result returns gap_to_leader and duration as arrays — one value
+// per Q segment (Q1, Q2, Q3). Extract the scalar from the last segment where the
+// driver actually set a time (duration > 0). Practice/race sessions pass through unchanged.
+function extractBestSegment(duration, gap) {
+  if (!Array.isArray(duration)) return { duration: duration ?? null, gap: gap ?? null };
+  let i = duration.length - 1;
+  while (i >= 0 && !duration[i]) i--;
+  if (i < 0) return { duration: null, gap: null };
+  return {
+    duration: duration[i],
+    gap: Array.isArray(gap) ? (gap[i] ?? null) : (gap ?? null),
+  };
+}
+
 async function getStints(sessionKey) {
   return fetchJSON(`${OPENF1_BASE}/stints?session_key=${sessionKey}`);
 }
@@ -509,19 +523,22 @@ async function main() {
         output.last_session = {
           session_key: lastCompleted.session_key,
           session_name: lastCompleted.session_name,
-          results: top6.map(r => ({
-            position: r.position,
-            driver_number: r.driver_number,
-            name: driverByNumber[r.driver_number]?.name ?? null,
-            full_name: driverByNumber[r.driver_number]?.full_name ?? null,
-            portrait_url: driverByNumber[r.driver_number]?.portrait_url ?? null,
-            compounds: driverCompounds[r.driver_number] ?? [],
-            duration: r.duration ?? null,
-            gap_to_leader: r.gap_to_leader ?? null,
-            dnf: r.dnf ?? false,
-            dns: r.dns ?? false,
-            dsq: r.dsq ?? false,
-          })),
+          results: top6.map(r => {
+            const { duration, gap } = extractBestSegment(r.duration, r.gap_to_leader);
+            return {
+              position: r.position,
+              driver_number: r.driver_number,
+              name: driverByNumber[r.driver_number]?.name ?? null,
+              full_name: driverByNumber[r.driver_number]?.full_name ?? null,
+              portrait_url: driverByNumber[r.driver_number]?.portrait_url ?? null,
+              compounds: driverCompounds[r.driver_number] ?? [],
+              duration,
+              gap_to_leader: gap,
+              dnf: r.dnf ?? false,
+              dns: r.dns ?? false,
+              dsq: r.dsq ?? false,
+            };
+          }),
         };
 
         if (qualiResults) {
