@@ -1,0 +1,136 @@
+{
+  "view": "pre_weekend",
+  "assets_base": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets",
+  "meeting": {
+    "name": "Belgian Grand Prix",
+    "location": "Spa-Francorchamps, Belgium",
+    "dates": "Jul 17 – 19 (Round 10)",
+    "circuit": "Circuit de Spa (Permanent)",
+    "map": "circuits/openf1/Spa-Francorchamps.png"
+  },
+  "sessions": [
+    {
+      "day": "17",
+      "month": "Jul",
+      "name": "Practice 1",
+      "t": "07:30 – 08:30",
+      "weather": {
+        "temp": "32°C",
+        "icon": "cloud",
+        "precip": "43%"
+      }
+    },
+    {
+      "day": "17",
+      "month": "Jul",
+      "name": "Practice 2",
+      "t": "11:00 – 12:00",
+      "weather": {
+        "temp": "32°C",
+        "icon": "cloud",
+        "precip": "43%"
+      }
+    },
+    {
+      "day": "18",
+      "month": "Jul",
+      "name": "Practice 3",
+      "t": "06:30 – 07:30",
+      "weather": {
+        "temp": "32°C",
+        "icon": "cloud-storm",
+        "precip": "34%"
+      }
+    },
+    {
+      "day": "18",
+      "month": "Jul",
+      "name": "Qualifying",
+      "t": "10:00 – 11:00",
+      "weather": {
+        "temp": "32°C",
+        "icon": "cloud-storm",
+        "precip": "34%"
+      }
+    },
+    {
+      "day": "19",
+      "month": "Jul",
+      "name": "Race",
+      "t": "09:00 – 11:00",
+      "weather": {
+        "temp": "23°C",
+        "icon": "cloud-rain",
+        "precip": "44%"
+      }
+    }
+  ],
+  "standings": {
+    "t": [
+      {
+        "p": 1,
+        "n": "Mercedes",
+        "pts": 333
+      },
+      {
+        "p": 2,
+        "n": "Ferrari",
+        "pts": 255
+      },
+      {
+        "p": 3,
+        "n": "McLaren",
+        "pts": 179
+      },
+      {
+        "p": 4,
+        "n": "Red Bull",
+        "pts": 128
+      },
+      {
+        "p": 5,
+        "n": "Alpine",
+        "pts": 60
+      },
+      {
+        "p": 6,
+        "n": "Racing Bulls",
+        "pts": 59
+      }
+    ],
+    "d": [
+      {
+        "p": 1,
+        "n": "K. Antonelli",
+        "pts": 179
+      },
+      {
+        "p": 2,
+        "n": "G. Russell",
+        "pts": 154
+      },
+      {
+        "p": 3,
+        "n": "L. Hamilton",
+        "pts": 147
+      },
+      {
+        "p": 4,
+        "n": "C. Leclerc",
+        "pts": 108,
+        "delta": 1
+      },
+      {
+        "p": 5,
+        "n": "L. Norris",
+        "pts": 97,
+        "delta": -1
+      },
+      {
+        "p": 6,
+        "n": "O. Piastri",
+        "pts": 82
+      }
+    ]
+  }
+}
