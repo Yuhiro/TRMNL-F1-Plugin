@@ -41,7 +41,26 @@ jobs:
           node scripts/fetch-data.js > /tmp/new-fetch.json
           if [ -s /tmp/new-fetch.json ]; then
             cp /tmp/new-fetch.json /tmp/last-fetch.json
-            cat /tmp/new-fetch.json | node scripts/build-payload.js | node scripts/push-webhook.js
+            node scripts/build-payload.js < /tmp/new-fetch.json > /tmp/payload.json
+            node scripts/push-webhook.js < /tmp/payload.json
           else
             echo "fetch-data.js produced no output — skipping push"
           fi
+
+      # Keep every pushed payload so a device state can be replayed later (e.g. for photos):
+      #   node scripts/push-webhook.js < payload.json
+      - name: Name payload snapshot
+        id: snapshot
+        shell: bash
+        run: |
+          [ -s /tmp/payload.json ] || exit 0
+          view=$(node -p "require('/tmp/payload.json').view ?? 'unknown'")
+          echo "name=payload-$(date -u +%Y%m%d-%H%M)-${view}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload payload snapshot
+        if: steps.snapshot.outputs.name != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.snapshot.outputs.name }}
+          path: /tmp/payload.json
+          retention-days: 90

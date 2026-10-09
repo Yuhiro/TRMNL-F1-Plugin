@@ -1,0 +1,173 @@
+{
+  "view": "race_weekend",
+  "assets_base": "https://raw.githubusercontent.com/Yuhiro/TRMNL-F1-Plugin/main/assets",
+  "meeting": {
+    "name": "Singapore Grand Prix",
+    "location": "Marina Bay, Singapore",
+    "dates": "Oct 9 – 11 (Round 17)"
+  },
+  "sessions": [
+    {
+      "day": "9",
+      "month": "Oct",
+      "name": "Practice 1",
+      "t": "04:30 – 05:30",
+      "done": true
+    },
+    {
+      "day": "9",
+      "month": "Oct",
+      "name": "Sprint Qualifying",
+      "t": "08:30 – 09:14",
+      "done": true
+    },
+    {
+      "day": "10",
+      "month": "Oct",
+      "name": "Sprint",
+      "t": "05:00 – 06:00",
+      "weather": {
+        "temp": "30°C",
+        "icon": "cloud-rain",
+        "precip": "100%"
+      }
+    },
+    {
+      "day": "10",
+      "month": "Oct",
+      "name": "Qualifying",
+      "t": "09:00 – 10:00",
+      "weather": {
+        "temp": "30°C",
+        "icon": "cloud-rain",
+        "precip": "100%"
+      }
+    },
+    {
+      "day": "11",
+      "month": "Oct",
+      "name": "Race",
+      "t": "08:00 – 10:00",
+      "weather": {
+        "temp": "30°C",
+        "icon": "cloud-rain",
+        "precip": "100%"
+      }
+    }
+  ],
+  "standings": {
+    "t": [
+      {
+        "p": 1,
+        "n": "Mercedes",
+        "pts": 556
+      },
+      {
+        "p": 2,
+        "n": "Ferrari",
+        "pts": 405
+      },
+      {
+        "p": 3,
+        "n": "McLaren",
+        "pts": 316
+      },
+      {
+        "p": 4,
+        "n": "Red Bull",
+        "pts": 284
+      },
+      {
+        "p": 5,
+        "n": "Racing Bulls",
+        "pts": 103
+      },
+      {
+        "p": 6,
+        "n": "Alpine",
+        "pts": 68
+      }
+    ],
+    "d": [
+      {
+        "p": 1,
+        "n": "K. Antonelli",
+        "pts": 320
+      },
+      {
+        "p": 2,
+        "n": "G. Russell",
+        "pts": 236
+      },
+      {
+        "p": 3,
+        "n": "L. Hamilton",
+        "pts": 214
+      },
+      {
+        "p": 4,
+        "n": "C. Leclerc",
+        "pts": 191,
+        "delta": 1
+      },
+      {
+        "p": 5,
+        "n": "L. Norris",
+        "pts": 188,
+        "delta": -1
+      },
+      {
+        "p": 6,
+        "n": "M. Verstappen",
+        "pts": 188
+      }
+    ]
+  },
+  "last_session": {
+    "name": "Sprint Qualifying",
+    "results": [
+      {
+        "p": 1,
+        "n": "M. Verstappen",
+        "img": "driver/3.png",
+        "cpd": "M|S",
+        "time": "1:31.156"
+      },
+      {
+        "p": 2,
+        "n": "G. Russell",
+        "img": "driver/63.png",
+        "cpd": "M|S",
+        "time": "+0.120s"
+      },
+      {
+        "p": 3,
+        "n": "C. Leclerc",
+        "img": "driver/16.png",
+        "cpd": "M|S",
+        "time": "+0.243s"
+      },
+      {
+        "p": 4,
+        "n": "O. Piastri",
+        "img": "driver/81.png",
+        "cpd": "M|S",
+        "time": "+0.298s"
+      },
+      {
+        "p": 5,
+        "n": "L. Norris",
+        "img": "driver/1.png",
+        "cpd": "M|S",
+        "time": "+0.431s"
+      },
+      {
+        "p": 6,
+        "n": "L. Hamilton",
+        "img": "driver/44.png",
+        "cpd": "M|S",
+        "time": "+0.546s"
+      }
+    ]
+  }
+}

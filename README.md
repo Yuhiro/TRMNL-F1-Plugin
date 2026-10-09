@@ -117,6 +117,72 @@ Set `TRMNL_WEBHOOK_URL`, `USER_TIMEZONE`, and `GITHUB_REPOSITORY` (format: `owne
 
 ---
 
+## Capturing and replaying device states
+
+The template has no clock logic — it renders exactly what's in the payload. A saved payload pushed weeks later looks identical on the device, which makes it easy to photograph a specific state (live session, post-race, etc.) whenever it's convenient.
+
+### Capturing automatically (GitHub Actions)
+
+Every workflow run uploads the payload it pushed as an artifact, named `payload-YYYYMMDD-HHMM-<view>` (time in **UTC**), e.g. `payload-20261011-1230-live`.
+
+To download one:
+
+1. Open the repo on GitHub → **Actions** tab → **TRMNL F1 Update**
+2. Click the run from the time you want
+3. Scroll to the **Artifacts** section at the bottom of the run summary
+4. Download the artifact — it's a `.zip` containing `payload.json`
+5. Unzip, rename descriptively, and move into `fixtures/`:
+
+   ```bash
+   unzip ~/Downloads/payload-20261011-1230-live.zip -d /tmp/snap
+   mv /tmp/snap/payload.json fixtures/singapore-gp-race-live.json
+   ```
+
+6. Commit it.
+
+> **Artifacts expire after 90 days.** Move anything you want to keep into `fixtures/` and commit it before then.
+
+A push to the repo does not trigger a capture — only scheduled runs do. To capture the current state right now, use **Actions → TRMNL F1 Update → Run workflow**.
+
+### Capturing manually (local)
+
+Captures the current live state without pushing to the device:
+
+```bash
+export GITHUB_REPOSITORY=Yuhiro/TRMNL-F1-Plugin USER_TIMEZONE=America/Toronto
+node scripts/fetch-data.js | node scripts/build-payload.js > fixtures/<gp>-<state>.json
+```
+
+A local capture can differ slightly from production (e.g. standings fallback — production uses its cached last fetch). For the exact payload the device showed, use the Actions artifact.
+
+### Replaying onto the device
+
+1. **Disable the workflow** first, or the next scheduled run overwrites your data:
+   **Actions → TRMNL F1 Update → ⋯ → Disable workflow**
+2. Check the fixture still matches the current schema:
+
+   ```bash
+   npm run validate
+   ```
+
+3. Push it:
+
+   ```bash
+   TRMNL_WEBHOOK_URL=<your webhook url> node scripts/push-webhook.js < fixtures/singapore-gp-race-live.json
+   ```
+
+4. Wait for (or force) a device refresh and take your photo. Free tier allows 12 pushes per hour.
+5. **Re-enable the workflow** when done.
+
+To preview a fixture in the browser before pushing: `npm run preview`.
+
+### Caveats
+
+- **Images load live from `main`.** Driver portraits, circuit maps and the F1 logo resolve against `assets_base` (the repo's `main` branch). If those files are renamed or removed, old captures will show broken images.
+- **The template lives on TRMNL.** If `template.html` changes later, old payloads render with the new markup — and may break if payload keys were renamed (`npm run validate` catches this).
+
+---
+
 ## Circuit images
 
 Two sets of circuit images are committed to the repo and served via GitHub raw content URLs:
